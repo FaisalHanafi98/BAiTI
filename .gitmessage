@@ -1,0 +1,23 @@
+Type(Scope): Title in sentence case, under 72 chars, ending with a full stop.
+
+Project: BAiTI
+Date: DD Month YYYY
+Task:
+
+[Short human title]
+
+[Plain-language explanation of what changed and why.]
+
+Verified that:
+
+1. [specific check actually run]
+2. [specific check actually run]
+
+[Short explanation of why the change matters.]
+
+[Assisted by AI, reviewed manually by Faisal]
+
+# Format source: ../CREAMS/docs/COMMIT_MESSAGE_SOP.md (adapted for BAiTI).
+# Activate locally with: git config commit.template .gitmessage
+# Types: Feat Fix Refactor Docs Test Chore Security
+# UK English. No Co-Authored-By trailers naming an AI model.

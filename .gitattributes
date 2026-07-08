@@ -1,0 +1,15 @@
+# Normalize line endings; LF in the repository for everything text.
+* text=auto eol=lf
+
+# Shell scripts MUST be LF — CRLF breaks them inside Linux containers (db-init mounts).
+*.sh text eol=lf
+
+# Windows-only scripts keep CRLF
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binaries
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jar binary

@@ -1,0 +1,39 @@
+name: baiti
+
+services:
+  db:
+    image: postgres:16
+    container_name: baiti-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-baiti}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in .env}
+      # consumed by db-init/01_roles.sh on FIRST container start only
+      DB_APP_PASSWORD: ${DB_APP_PASSWORD:?set in .env}
+      DB_MIGRATOR_PASSWORD: ${DB_MIGRATOR_PASSWORD:?set in .env}
+    ports:
+      - "5432:5432"
+    volumes:
+      - baiti_pgdata:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-baiti}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: baiti-pgadmin
+    profiles: ["tools"]          # opt-in: docker compose --profile tools up -d
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "5050:80"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  baiti_pgdata:

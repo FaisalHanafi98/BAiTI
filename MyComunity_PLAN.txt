@@ -1,0 +1,526 @@
+# MyComunity — Deployment-Ready SDLC Plan
+
+> **Project**: MyComunity (community/condominium management system)
+> **Path**: `C:\Users\User1\Desktop\Career\Development\Anep's Project` → rename to `MyComunity`
+> **Collaborators**: Faisal + Anep
+> **Stack (decided)**: Spring Boot 3.x (Java 17, Maven) + PostgreSQL 16 + React 18 (Vite, TypeScript, Tailwind)
+> **Tenancy (decided)**: **Multi-tenant from day 1** — SaaS-style, one deployment serves N condos
+> **Governance**: Root SOP v2.2.0 (`Development/CLAUDE.md`) — TIER 3/4 discipline, TDD mandatory, 8-actor validation on schema and new modules
+> **Mobile rationale**: React frontend chosen to enable React Native port after web MVP stabilizes
+> **Commit workflow (decided)**: I draft every commit message → you review and edit → you hand it back → I run the commit. **No pushes** without explicit instruction.
+> **Plan persistence (decided)**: This plan is mirrored to a `.txt` file at `C:\Users\User1\Desktop\Career\Development\Anep's Project\MyComunity_PLAN.txt` (will move with the directory rename to `MyComunity\MyComunity_PLAN.txt` in Phase 1). **Maintenance rule**: every edit to the markdown plan file MUST be reflected in the `.txt` mirror in the same turn.
+
+---
+
+## 1. Context
+
+Greenfield project. Only artifact that exists is `MyComunity 1.0 data model.pdf` — a 22-table schema. No code, no repo, no CI. Tech stack is confirmed (Spring Boot + Maven + PostgreSQL + React/TS). Dev environment is **not ready**: Java 8 only (need 17+), no Maven, no Node, no PostgreSQL, no Docker, no `gh` CLI. Goal: produce a complete, CTO-reviewable roadmap to take MyComunity from zero → deployment-ready.
+
+---
+
+## 2. System Understanding
+
+### 2.1 Problem domain
+Condominium / community management system covering property, people, finance, complaints, maintenance, facilities, community comms, visitors, and system audit. RBAC is role-permission based (`users → roles → roles_permissions → permissions`).
+
+### 2.2 Data model — 22 tables + tenancy layer (typos corrected from PDF)
+
+**Tenancy addition (not in PDF)**: A new `tenants` table is added as the root entity. **Every domain table gets a `tenant_id UUID NOT NULL REFERENCES tenants(id)` column**, and PostgreSQL Row-Level Security (RLS) policies enforce tenant isolation at the database layer.
+
+| Domain | Tables |
+|---|---|
+| **Tenancy (new)** | **`tenants`** |
+| Property | `blocks`, `units` |
+| People / RBAC | `users`, `roles`, `permissions`, `roles_permissions`, `residents`, `family_members` |
+| Finance | `bills` (PDF: `billings`), `payments`, `payment_methods` |
+| Complaints | `complaints`, `complaint_categories`, `complaint_updates` (PDF: `complaints_updates`) |
+| Maintenance | `maintenance_requests` |
+| Facilities | `facilities`, `facility_bookings` |
+| Community | `announcements`, `events` |
+| Visitors | `visitors`, `visitor_pre_registrations` |
+| System | `notifications`, `activity_logs` |
+
+**Typo corrections (do NOT replicate from PDF):**
+- `residents.resident_type` → enum `OWNER | TENANT`
+- `announcements.tittle` → `title`
+- `events.tittle` → `title`
+- `events.loacation` → `location`
+- `notifications.messaage` → `message`
+- Normalize `billings` → `bills` throughout
+
+**Tenant scoping rule**: Every FK relationship scoped within same tenant. Composite uniques: `(tenant_id, ...)`. Example: `UNIQUE (tenant_id, email)` on users.
+
+### 2.3 Current state
+- Code: 0 lines | Repo: none | Tests: none | CI/CD: none
+- Environment: Java 8 only, no Maven/Node/PostgreSQL/Docker/gh
+- Sibling projects: `CREAMS/`, `Portfolio/`, `AutoRecruit/`, `RinggitSense/`, `Sen2Nal/`, `PowerBI/`
+
+---
+
+## 3. SOP Compliance Audit (v2.2.0)
+
+| SOP Requirement | Current | Gap |
+|---|---|---|
+| TDD on all implementation | ❌ | JUnit 5 + Vitest from commit 1 |
+| 8-actor validation on new modules | ❌ | Mandatory before every domain module |
+| Debuggability | ❌ | SLF4J + Logback, structured JSON logs |
+| CI/CD readiness | ❌ | GitHub Actions from day 1 |
+| Security (auth, OWASP Top 10) | ❌ | Spring Security + JWT, bcrypt, validation |
+| Performance (<200ms queries) | ❌ | Index strategy at migration time |
+| No secrets in commits | ⚠️ | `.gitignore` + `.env.example` + git-secrets hook |
+| Commit protocol | ⚠️ | Conventional commits, `type(scope): msg` |
+| TIER 3/4 pipeline | ⚠️ | `docs/plans/` + `docs/specs/` discipline |
+| PDPA compliance | ⚠️ | Anonymized seed data, no real data in repo |
+
+---
+
+## 4. Gap Analysis
+
+### 4.1 CRITICAL (blocks any work)
+1. Java 17+ not installed (have Corretto 8)
+2. Maven not installed
+3. Node.js 18+ not installed
+4. PostgreSQL not installed
+5. No git repo
+6. No project scaffolding
+
+### 4.2 HIGH (risky in production)
+7. No authentication/authorization
+8. No CI pipeline
+9. No database migration tool (Flyway)
+10. No secrets management strategy
+11. No API contract / OpenAPI spec
+12. No containerization
+13. No rollback strategy
+14. Docker not installed
+15. GitHub CLI (`gh`) not installed
+
+### 4.3 MEDIUM
+16. No test coverage targets (target: backend ≥70%, frontend ≥60%)
+17. No code style enforcement (Spotless / ESLint+Prettier)
+18. No commit hooks
+19. No observability (Actuator + Prometheus)
+20. No API rate limiting / CORS policy
+21. No frontend state management decision (TanStack Query + Zustand)
+
+### 4.4 LOW
+22. No Storybook
+23. No E2E test harness (Playwright later)
+24. No performance benchmarks baseline
+
+---
+
+## 5. Solution Decisions
+
+### 5.1 Environment provisioning (winget where possible)
+- Java 17 → `winget install Amazon.Corretto.17` (coexist with Java 8 via per-project `JAVA_HOME`)
+- Maven → `winget install Apache.Maven`
+- Node LTS → `winget install OpenJS.NodeJS.LTS`
+- PostgreSQL → run via Docker (preferred — no host pollution)
+- Docker Desktop → `winget install Docker.DockerDesktop`
+- GitHub CLI → `winget install GitHub.cli`
+
+### 5.2 Repo layout — Monorepo, two modules
+```
+MyComunity/
+├── backend/                    # Spring Boot 3.x (Maven)
+│   ├── src/main/java/my/comunity/...
+│   ├── src/main/resources/
+│   │   ├── application.yml
+│   │   ├── application-dev.yml
+│   │   ├── application-prod.yml
+│   │   └── db/migration/       # Flyway V1__*.sql ...
+│   ├── src/test/java/          # JUnit 5 + Testcontainers
+│   └── pom.xml
+├── frontend/                   # Vite + React 18 + TypeScript
+│   ├── src/
+│   ├── tests/                  # Vitest + RTL
+│   ├── package.json
+│   └── vite.config.ts
+├── infra/
+│   ├── docker-compose.yml      # postgres + pgadmin (dev)
+│   ├── Dockerfile.backend
+│   └── Dockerfile.frontend
+├── docs/
+│   ├── specs/                  # Stage 1 brainstorm outputs
+│   ├── plans/                  # Stage 2 plan outputs
+│   └── adr/                    # Architecture decision records
+├── .github/workflows/
+│   ├── ci-backend.yml
+│   ├── ci-frontend.yml
+│   └── cd.yml
+├── .gitignore
+├── .env.example
+├── README.md
+├── CLAUDE.md                   # project-specific SOP extension
+└── MyComunity_PLAN.txt         # this plan, mirrored from .claude/plans/
+```
+
+### 5.3 Backend architecture — Layered, package-by-feature
+```
+my.comunity
+├── config/          # Spring config, security, CORS, OpenAPI
+├── common/          # base entities (TenantAwareBaseEntity), error handlers, auditing
+├── tenancy/         # TenantContext, tenant resolution filter, tenant CRUD
+├── security/        # JWT, filters, UserDetailsService
+├── property/        # blocks, units
+├── people/          # users, roles, permissions, residents, family
+├── finance/         # bills, payments, payment_methods
+├── complaints/      # complaints, categories, updates
+├── maintenance/     # requests
+├── facilities/      # facilities, bookings
+├── community/       # announcements, events
+├── visitors/        # visitors, pre-registrations
+└── system/          # notifications, activity_logs
+```
+
+### 5.4 Database migrations — Flyway, one file per table, tenant-aware
+- V1: extensions (uuid-ossp, pgcrypto)
+- V2: tenants (root tenancy table)
+- V3..V24: domain tables, all with `tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE RESTRICT`, indexed
+- V25: enable_rls — RLS + `tenant_isolation` policy: `USING (tenant_id = current_setting('app.current_tenant')::uuid)` on every domain table
+- V26: seed_roles_permissions (template — copied per tenant on creation)
+- V27: seed_dev_data (dev profile only — TWO synthetic tenants for cross-tenant isolation testing)
+- V28: refresh_tokens (tenant-scoped)
+
+**RLS is non-negotiable for multi-tenant** — application filtering alone is one bug from a leak.
+
+### 5.5 Authentication & Tenancy — JWT (tenant-scoped) + bcrypt + Spring Security + RLS
+- Access token: 15 min, HS256, claims = `userId`, `tenantId`, `roles`, `permissions`
+- Refresh token: 7 days, rotating, stored server-side
+- bcrypt cost 12
+- Endpoints: `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`, `GET /auth/me`
+- `@PreAuthorize("hasPermission(...)")` method-level
+
+**Tenant resolution flow**:
+1. JwtAuthenticationFilter extracts `tenantId` claim from JWT
+2. TenantContext (ThreadLocal) set with tenantId
+3. Hibernate interceptor sets PG session var: `SET LOCAL app.current_tenant = '<uuid>'`
+4. RLS policies enforce isolation (even raw SQL cannot leak)
+5. TenantContext cleared in `finally`
+
+**Tenant resolution strategy (decided)**: `X-Tenant-Slug` header in dev, `condoA.mycomunity.app` subdomain in prod. `TenantResolver` interface with two implementations behind Spring profile.
+
+**Tenant onboarding**: `POST /admin/tenants` (super-admin only) creates tenant + copies role/permission templates + seeds initial tenant Admin.
+
+### 5.6 Frontend architecture
+- Routing: React Router v6
+- Data: TanStack Query + Zustand
+- Forms: React Hook Form + Zod
+- HTTP: Axios with JWT refresh interceptor
+- UI: Tailwind + Headless UI
+- API client: auto-generated from backend OpenAPI via `openapi-typescript`
+
+### 5.7 Testing strategy
+| Layer | Tool | Target |
+|---|---|---|
+| Backend unit | JUnit 5 + Mockito | ≥70% lines |
+| Backend integration | Spring Boot Test + Testcontainers (Postgres) | All repos + controllers |
+| Backend contract | Spring REST Docs → OpenAPI | All endpoints |
+| Frontend unit | Vitest + RTL | ≥60% lines |
+| Frontend E2E | Playwright (post-MVP) | Critical flows |
+| Security | OWASP Dependency-Check + npm audit | Zero high/critical |
+
+**TDD discipline**: Every feature starts with a failing test. Prefer vertical slices (API → service → repo → DB) tested end-to-end with Testcontainers.
+
+---
+
+## 6. Final Architecture
+
+### 6.1 Runtime view (dev)
+```
+┌─────────────┐       ┌──────────────────┐      ┌────────────────┐
+│  Browser    │──────▶│  React (Vite)    │─────▶│ Spring Boot    │
+│             │       │  localhost:5173  │      │ localhost:8080 │
+└─────────────┘       └──────────────────┘      └───────┬────────┘
+                                                        │
+                                                        ▼
+                                              ┌───────────────────┐
+                                              │ PostgreSQL 16     │
+                                              │ docker-compose    │
+                                              │ localhost:5432    │
+                                              └───────────────────┘
+```
+
+### 6.2 Request flow (create complaint)
+```
+User → React form → Axios POST /api/complaints (JWT)
+     → Spring Security filter (validate JWT, load user+perms)
+     → TenantContext set from JWT claim
+     → SET LOCAL app.current_tenant = '<uuid>'
+     → ComplaintController (@PreAuthorize("hasPermission('COMPLAINT_CREATE')"))
+     → ComplaintService (business rules)
+     → ComplaintRepository (JPA, RLS-scoped)
+     → PostgreSQL insert
+     → ActivityLogService (async audit)
+     → NotificationService (notify Manager role)
+     → Response DTO → React TanStack Query cache update
+```
+
+### 6.3 Module responsibilities
+- `security` owns auth; no other module imports JWT internals
+- `tenancy` owns TenantContext, resolution filter, tenant CRUD, super-admin endpoints
+- `common` owns `TenantAwareBaseEntity` (id, tenantId, createdAt, updatedAt, createdBy, updatedBy)
+- Domain modules expose services via interfaces; cross-module calls through interfaces, never repositories
+- **Every domain entity extends TenantAwareBaseEntity** — enforced by ArchUnit test in CI
+
+### 6.4 Integration points
+| Integration | Protocol | Notes |
+|---|---|---|
+| Frontend ↔ Backend | REST/JSON over HTTPS (prod) | OpenAPI 3 contract |
+| Backend ↔ PostgreSQL | JDBC | HikariCP pool |
+| Backend ↔ Email (future) | SMTP | Profile-gated; mock in dev |
+| Backend ↔ SMS (future) | Twilio or local | Profile-gated |
+| Backend ↔ File storage | Local FS (dev) → S3 (prod) | StorageService interface |
+
+---
+
+## 7. SDLC + CI/CD Plan
+
+### 7.1 Development workflow
+```
+Story → Brainstorm doc (docs/specs/) → Plan doc (docs/plans/) →
+  Feature branch → Failing test → Implementation → Green test →
+  Code-reviewer agent → 8-actor validation →
+  Draft commit message → USER REVIEWS & EDITS → Commit → PR → CI green → Merge
+```
+
+### 7.1.1 Commit Workflow (per user instruction — overrides default auto-commit)
+**Mandatory for every commit, no exceptions:**
+1. Stage files (specific paths, never `git add -A`)
+2. Draft commit message → present to user (do NOT run `git commit` yet)
+3. User reviews, edits, hands final message back
+4. Run `git commit -m "<final message>"`
+5. **No `git push` ever** unless user explicitly says "push"
+6. Applies to first commit and every subsequent commit
+
+This supersedes SOP Section 13.3 — no auto-commits, period.
+
+### 7.2 Branching model
+- `main` → protected, production-ready
+- `dev` → integration branch
+- `feature/<slice>` → short-lived, merged via PR
+- No direct pushes to `main` or `dev`
+
+### 7.3 CI pipeline — GitHub Actions
+**`ci-backend.yml`** (trigger: `backend/**`, `pom.xml`)
+1. Checkout
+2. Setup JDK 17 (Corretto)
+3. Cache `~/.m2`
+4. `mvn verify` (unit + integration via Testcontainers)
+5. OWASP Dependency-Check
+6. Upload JaCoCo coverage
+7. Fail if coverage < 70% on changed files
+
+**`ci-frontend.yml`** (trigger: `frontend/**`)
+1. Checkout
+2. Setup Node 18
+3. Cache `node_modules`
+4. `npm ci`
+5. `npm run lint`
+6. `npm run typecheck`
+7. `npm run test`
+8. `npm run build`
+9. `npm audit --audit-level=high`
+
+### 7.4 CD pipeline (stubbed now, activated at MVP)
+- Stage 1 — Dev: merge to `dev` → build images → push GHCR → deploy dev env
+- Stage 2 — Staging: manual approval → deploy staging → smoke tests
+- Stage 3 — Prod: manual approval + checklist → blue/green
+
+### 7.5 Rollback strategy
+- DB: no Flyway undo; forward-fix migrations + backups before deploy
+- App: previous Docker image tag retained; rollback = re-deploy previous tag
+- Trigger: smoke fail, error rate > baseline, or manual
+
+---
+
+## 8. Execution Roadmap
+
+### PHASE 0 — Environment Provisioning (blocks everything)
+0.1 Install Corretto 17 via winget, set JAVA_HOME
+0.2 Install Maven via winget
+0.3 Install Node.js LTS via winget
+0.4 Install Docker Desktop via winget
+0.5 Install GitHub CLI via winget, `gh auth login`
+0.6 Verify Java 8 still works (coexistence check)
+**Exit**: all tools reachable; `java -version` shows 17+
+
+### PHASE 1 — Repo Bootstrap
+1.1 Rename `Anep's Project` → `MyComunity` (confirm with user)
+1.2 `git init`, create `.gitignore`
+1.3 Create `README.md`, `.env.example`, `docs/` tree
+1.4 Create project `CLAUDE.md` (extends root SOP)
+1.5 Create `infra/docker-compose.yml` (postgres:16, pgadmin)
+1.6 Draft initial commit message → user edits → commit (NO push)
+1.7 GitHub repo creation **deferred** until Anep alignment confirmed
+**Exit**: local repo, first commit landed with user-approved message
+
+### PHASE 2 — Backend Scaffolding
+2.1 `spring init` (web, data-jpa, security, validation, flyway, actuator, lombok, postgresql, testcontainers)
+2.2 Configure `application.yml` with `dev`, `test`, `prod` profiles
+2.3 Add Spotless, JaCoCo, OWASP Dependency-Check to `pom.xml`
+2.4 Health-check integration test using Testcontainers (TDD baseline)
+2.5 Commit (drafted → user-edited → committed)
+**Exit**: `mvn verify` green, health endpoint returns 200
+
+### PHASE 3 — Database Schema (tenancy + 22 migrations + RLS + seed)
+3.1 V1 extensions
+3.2 V2 tenants
+3.3 V3 blocks, V4 units
+3.4 V5–V8 permissions, roles, roles_permissions, users (UNIQUE (tenant_id, email))
+3.5 V9 residents, V10 family_members
+3.6 V11–V13 payment_methods, bills, payments
+3.7 V14–V16 complaint_categories, complaints, complaint_updates
+3.8 V17 maintenance_requests
+3.9 V18 facilities, V19 facility_bookings
+3.10 V20 announcements, V21 events
+3.11 V22 visitors, V23 visitor_pre_registrations
+3.12 V24 notifications, V25 activity_logs
+3.13 V26 enable_rls (policy on every domain table)
+3.14 V27 seed_roles_permissions (template)
+3.15 V28 refresh_tokens (tenant-scoped)
+3.16 V29 seed_dev_data (TWO synthetic tenants)
+3.17 Migration test: Testcontainer postgres → all migrations → assert schema + RLS policies
+3.18 **Cross-tenant isolation test**: tenant A query → assert zero rows from tenant B
+3.19 Commits per logical group (each drafted → user-edited → committed)
+**Exit**: `mvn verify` green, RLS verified, isolation test green
+
+### PHASE 4 — JPA Entities + Repositories
+4.1 `TenantAwareBaseEntity` with auditing + `@EntityListeners`
+4.2 Entities per migration (one package-by-feature commit at a time)
+4.3 `@Repository` interfaces extending `JpaRepository`
+4.4 Repository integration tests (Testcontainers)
+**Exit**: every table has entity + repo + passing test
+
+### PHASE 5 — Security + Tenancy Module (Auth + RBAC + Tenant Isolation)
+5.1 `TenantContext` (ThreadLocal) + `TenantContextFilter`
+5.2 `JwtService` (with `tenantId` claim), `JwtAuthenticationFilter`, `SecurityConfig`
+5.3 Hibernate interceptor → `SET LOCAL app.current_tenant = '<uuid>'` per request
+5.4 `UserDetailsServiceImpl` loading user+permissions, scoped by tenant
+5.5 Endpoints: `/auth/login` (resolves tenant from header/subdomain), `/auth/refresh`, `/auth/logout`, `/auth/me`
+5.6 Super-admin endpoints: `POST /admin/tenants`, `GET /admin/tenants`
+5.7 `@PreAuthorize` wiring + permission evaluator
+5.8 Security integration tests:
+   - login → protected endpoint → 200
+   - wrong role → 403
+   - **tenant A user → tenant B resource → 404 (RLS hides it)**
+   - super-admin creates tenant → seeded with templates
+**Exit**: TIER 4 validation + 8-actor checklist; isolation green at three layers (JWT, service, DB)
+
+### PHASE 6 — Frontend Scaffolding
+6.1 `npm create vite@latest frontend -- --template react-ts`
+6.2 Add Tailwind, ESLint, Prettier, Vitest, RTL, TanStack Query, Zustand, React Router, Axios, RHF, Zod
+6.3 Path aliases, env (`VITE_API_URL`)
+6.4 `openapi-typescript` script
+6.5 Login page + auth store + JWT interceptor + protected route
+6.6 First Vitest test
+**Exit**: `npm run build` green, login flow works against backend
+
+### PHASE 7 — CI/CD Foundation
+7.1 `.github/workflows/ci-backend.yml`
+7.2 `.github/workflows/ci-frontend.yml`
+7.3 Branch protection rules on `main` and `dev`
+7.4 Dependabot config
+7.5 Test PR → verify green CI
+**Exit**: green checkmarks on test PR
+
+### PHASE 8 — Core CRUD (post-plan)
+Units, residents, bills — each as TIER 3 brainstorm → plan → execute → verify cycle.
+
+### PHASE 9 — Domain Workflows
+Complaints, maintenance, facility booking, visitors — per-domain TIER 3 cycles.
+
+### PHASE 10 — Dashboard + Observability
+Role-based dashboards, Actuator + Prometheus, structured logging.
+
+### PHASE 11 — Deployment
+Dockerize, choose host, staging env, prod env, smoke tests, rollback rehearsal.
+
+---
+
+## 9. Risks
+
+| # | Risk | L | I | Mitigation |
+|---|---|---|---|---|
+| R1 | winget install fails on Windows | M | H | Manual installer fallback URLs ready |
+| R2 | Java 8/17 coexistence breaks siblings | M | M | Per-project JAVA_HOME; verify CREAMS still builds |
+| R3 | Anep has different stack expectations | M | H | Confirm before renaming dir or creating repo |
+| R4 | PDF has structural issues beyond typos | M | M | Re-read in Phase 3, document in `docs/adr/0001-schema.md` |
+| R5 | Testcontainers slow on Windows | M | M | Keep suite < 2 min; CI gate so local skipping is OK |
+| R6 | JWT refresh rotation locks users out | L | H | Extensive security tests; feature flag to disable rotation |
+| R7 | Scope creep from Anep | H | M | Lock scope in signed-off plan |
+| R8 | PDPA: real resident data committed | L | H | `.gitignore` + secret scanning + synthetic seed only |
+| R9 | Stack duplication with Portfolio (recruiter view) | M | L | Differentiate via rich domain logic |
+| R10 | Flyway migration ordering breaks | M | M | Never edit existing; always add new `Vn__` |
+| R11 | **Cross-tenant data leak** | L | **CRITICAL** | Three-layer defence (JWT, service, DB RLS); ArchUnit test; mandatory isolation tests |
+| R12 | Forgetting tenant_id in raw/native SQL | M | **CRITICAL** | RLS catches at DB; discourage native queries in review |
+| R13 | Tenant onboarding partial state | M | M | `@Transactional` boundary; idempotency on slug |
+
+---
+
+## 10. Open Questions
+
+### Resolved
+- ✅ Multi-tenancy: from day 1 (real-world SaaS)
+- ✅ Java: Corretto 17 alongside 8, per-project JAVA_HOME
+- ✅ Commit workflow: user reviews/edits every message; no pushes
+- ✅ Tenant resolution: header in dev, subdomain in prod
+
+### Still open (do not block Phase 0)
+1. Anep alignment on stack + repo location (FaisalHanafi98 vs shared org)
+2. GitHub repo visibility (private recommended)
+3. Deployment target (Railway/Render/Fly.io/VPS) — defer to Phase 11
+4. Mobile timeline → recommend pure-web-first
+5. Billing currency (MYR only or multi-currency?)
+6. Language support (EN only or EN+BM?)
+7. Tenant plan tiers — deferred (no `plan` column for now)
+8. Super-admin model — recommend separate `super_admins` table
+
+---
+
+## 11. Verification (proves the plan worked)
+
+End of Phases 0–7, all true:
+- [ ] `java -version` 17+, `mvn -v` 3.9+, `node -v` 18+, `docker ps` works, `gh auth status` authenticated
+- [ ] `docker compose up -d` → postgres healthy
+- [ ] `mvn verify` → BUILD SUCCESS, ≥70% coverage on touched files, all migrations apply cleanly
+- [ ] `npm run build && npm run test` → green
+- [ ] `gh repo view` → repo exists, `main` protected (after Anep go-ahead)
+- [ ] Test PR → both CI workflows green
+- [ ] Login flow: seeded Admin → protected endpoint → 200
+- [ ] Roles (Admin, Manager, Resident, Guard) demonstrate distinct permission results
+- [ ] **Cross-tenant isolation proven**: tenant A cannot read/write tenant B; RLS enforced at DB layer
+- [ ] **ArchUnit test** verifies every domain entity extends `TenantAwareBaseEntity`
+- [ ] `docs/adr/0001-schema.md` documents PDF typo corrections
+- [ ] Project `CLAUDE.md` exists, extends root SOP without contradiction
+
+---
+
+## 12. Critical Files (to be created)
+
+| File | Purpose |
+|---|---|
+| `MyComunity/CLAUDE.md` | Project SOP extension |
+| `MyComunity/README.md` | Setup, architecture, contribution guide |
+| `MyComunity/.gitignore` | Java + Node + IDE + secrets |
+| `MyComunity/.env.example` | Documented env var template |
+| `MyComunity/MyComunity_PLAN.txt` | This plan, mirrored from `.claude/plans/` |
+| `MyComunity/infra/docker-compose.yml` | Local postgres + pgadmin |
+| `MyComunity/backend/pom.xml` | Maven config |
+| `MyComunity/backend/src/main/resources/application.yml` | Base config |
+| `MyComunity/backend/src/main/resources/application-dev.yml` | Dev profile |
+| `MyComunity/backend/src/main/resources/db/migration/V1..V29__*.sql` | Flyway migrations |
+| `MyComunity/frontend/package.json` | npm deps + scripts |
+| `MyComunity/frontend/vite.config.ts` | Vite + Vitest config |
+| `MyComunity/.github/workflows/ci-backend.yml` | Backend CI |
+| `MyComunity/.github/workflows/ci-frontend.yml` | Frontend CI |
+| `MyComunity/docs/adr/0001-schema.md` | Schema decisions + typo corrections |
+| `MyComunity/docs/adr/0002-auth.md` | JWT + RBAC + tenancy design |
+
+---
+
+*Plan reflects: System Architect (modularity, package-by-feature, tenancy boundaries), Tech Lead (TDD + Testcontainers), DevOps (GitHub Actions + Dockerized Postgres + branch protection), QA (coverage gates + cross-tenant isolation tests), Security (3-layer tenant defence + JWT rotation + bcrypt + OWASP scan + PDPA-safe seeds), PM (phased scope + Anep sign-off gate), Research (Flyway + TanStack Query + openapi-typescript).*
+
+---
+*Last updated: 2026-04-08 — initial creation. Mirror of `C:\Users\User1\.claude\plans\wild-hopping-lightning.md`*

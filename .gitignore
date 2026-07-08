@@ -1,0 +1,36 @@
+# --- secrets: never commit ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- Java / Maven ---
+target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties.lock
+
+# --- Node / frontend ---
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.vite/
+
+# --- IDE / editor ---
+.idea/
+*.iml
+.vscode/
+!.vscode/extensions.json
+*.swp
+
+# --- OS ---
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# --- tooling residue / local session artifacts ---
+.memsearch/
+*.log
