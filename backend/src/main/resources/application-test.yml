@@ -1,0 +1,15 @@
+# Test profile: connection properties are supplied per-test via @DynamicPropertySource
+# (singleton PostgreSQL16 Testcontainer — see HealthIT). Only structural config lives here.
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      pool-name: baiti-test-pool
+      maximum-pool-size: 5
+  jpa:
+    show-sql: false
+
+logging:
+  level:
+    org.hibernate.SQL: WARN
+    com.zaxxer.hikari: WARN

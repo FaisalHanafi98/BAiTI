@@ -1,0 +1,2 @@
+# Placeholder keeping the Flyway migration location on the classpath until P03 lands V1.
+# Remove this file once V1..V28 exist (docs/blueprint/08_ai_packets/PACKET_03).

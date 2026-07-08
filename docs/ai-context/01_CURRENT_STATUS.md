@@ -1,15 +1,15 @@
 # BAiTI — Current Status
 
-> **Last Updated**: 2026-07-08 — **P00 + P01 executed; repo live at commit `467d574`; session handed over** (see `ENGINEERING_HANDOVER_2026-07-08.md` and root `CURRENT_MODULE_STATE.md`). Next: P01 residue (Docker verify + folder rename), then packet P02.
-> **Updated By**: Blueprint session (full SDLC planning & architecture programme)
-> **Evidence Basis**: Direct inspection of every repository file, including a full read of `MyComunity 1.0 data model.pdf`. No terminal/database evidence possible (still pre-code).
+> **Last Updated**: 2026-07-08 (session 2) — **P02 backend skeleton authored; compile + Spotless GREEN; HealthIT + boot proof blocked on Docker daemon.** Not yet committed (pending Faisal's approval). See `docs/audits/PHASE1_BACKEND_BOOTSTRAP_EVIDENCE.md` and root `CURRENT_MODULE_STATE.md`.
+> **Updated By**: OpenCode session (glm-5.2) — P02 authoring
+> **Evidence Basis**: Direct repository inspection + `mvn test-compile` output. Runtime/IT verification impossible (Docker daemon unavailable on the dev machine).
 > **Project name**: BAiTI (rename from MyComunity per `docs/audits/BAITI_LAUNCH_PROMPT.md`; folder rename still pending — gate G-NAME)
 
 ---
 
 ## Current Goal
 
-Execute Packet **P00** (environment verification) from the new engineering blueprint, then proceed through the packet sequence P01 → P05 toward gate **G-RLS**.
+Close the P02 DoD once Docker is restored (run `./mvnw verify` for `HealthIT` + `spring-boot:run` boot proof + compose role checks), then commit P02 and proceed to **P03** (database migrations V1–V28).
 
 ## What Changed This Session (2026-07-07)
 
@@ -25,11 +25,28 @@ Execute Packet **P00** (environment verification) from the new engineering bluep
 | `payments.payment_method` free text vs `payment_methods` table | 04 §4.5 FK normalization |
 | Missing SRS / use cases / access matrix / threat model / UAT / DR plans (2026-05-19 audit gaps) | blueprint docs 01, 02, 05, 06 |
 
-## Current Blockers (updated 2026-07-07, second session pass — user approved all pending decisions)
+## What Changed This Session (2026-07-08, session 2 — P02 authoring)
+
+P02 (backend skeleton) was **authored and compile-verified**, but not yet committed (pending Faisal's
+approval) and not yet runtime-verified (Docker daemon unavailable). Full detail in
+`docs/audits/PHASE1_BACKEND_BOOTSTRAP_EVIDENCE.md`.
+
+| Item | Status |
+|---|---|
+| `backend/` Maven project (Spring Boot 3.3.5 / Java 17) + wrapper (Maven 3.9.9) | CREATED |
+| `DataSourceConfig` dual-role wiring (`baiti_app` pool + Flyway `baiti_migrator` via props) | CREATED |
+| `SecurityConfig` (`/actuator/health` permitAll until P05) + `StartupDiagnostics` (logs current_user) | CREATED |
+| `application.yml` + dev/test/prod profiles (ddl-auto validate, prod no secret defaults) | CREATED |
+| `HealthIT` (singleton PG16 Testcontainer, dual-role, health UP) | CREATED (not executed) |
+| `mvn test-compile` = BUILD SUCCESS; Spotless clean; 5 classes compiled | **VERIFIED** |
+| `./mvnw verify` (HealthIT) + `spring-boot:run` boot proof + compose role checks | **UNVERIFIED — Docker-gated** |
+
+## Current Blockers (updated 2026-07-08, session 2)
 
 | Blocker | Gate | Status |
 |---|---|---|
-| Dev environment | P00 | **DONE with one deferral** — Java 21 ✓, Maven 3.9.16 installed ✓, Node 24 ✓, git ✓, gh (FaisalHanafi98) ✓; **Docker daemon not starting — deferred by user**; required again at P02 (Testcontainers). Evidence: `docs/audits/PHASE0_VERIFICATION.md` |
+| Dev environment | P00 | **DONE with one deferral** — Java 21 ✓, Maven 3.9.16 installed ✓, Node 24 ✓, git ✓, gh (FaisalHanafi98) ✓; **Docker daemon not starting — deferred by user (installation problem)**; required again now for P02 DoD (Testcontainers) and P01 residue (compose role checks). Evidence: `docs/audits/PHASE0_VERIFICATION.md` |
+| P02 DoD (HealthIT + boot proof) | P02 | **BLOCKED on Docker** — `./mvnw verify` and `spring-boot:run` need the daemon; compile + Spotless already GREEN |
 | Folder rename → `baiti` | G-NAME | **APPROVED**; physical rename blocked by the running session's file lock — run after closing the session: `Rename-Item "...\Anep's Project (Baiti)" -NewName "baiti"` |
 | Anep alignment | G-ANEP | **CLEARED** — `meeting/05_OUTCOME.md` (user confirmation) |
 | GitHub repo location | G-PUSH | **DECIDED** — `FaisalHanafi98/baiti` private; actual push still needs explicit instruction |
@@ -37,15 +54,18 @@ Execute Packet **P00** (environment verification) from the new engineering bluep
 
 ## Current Code / Database / Testing State
 
-**Zero lines of application code. No git repo. No database. No tests.** Unchanged — this session produced planning artifacts only, per its mandate.
+**P02 backend skeleton exists** (untracked, uncommitted): `backend/` Maven project with 4 main
+classes + `HealthIT`; `mvn test-compile` = BUILD SUCCESS; Spotless clean. **No runtime verification
+yet** — `HealthIT` not executed (Docker down). **No database** has ever run (Docker never came up).
+`infra/docker-compose.yml` + `infra/db-init/01_roles.sh` still unverified. No migrations yet (P03).
 
 ## SDLC Phase Status (blueprint milestones)
 
 | Milestone | Status |
 |---|---|
 | Blueprint (this package) | **DONE 2026-07-07** |
-| M0 environment (P00) | NOT STARTED — next action |
-| M1 foundation (P01–P03) | NOT STARTED |
+| M0 environment (P00) | **DONE** (Docker deferred) |
+| M1 foundation (P01–P03) | **IN PROGRESS** — P01 done (commit `467d574`); P02 authored (compile-verified, Docker-gated DoD open, uncommitted); P03 not started |
 | M2 security core (P04–P05, G-RLS) | NOT STARTED |
 | M3 rails (P06–P07) | NOT STARTED |
 | M4 v1.0 modules (P08–P12) | NOT STARTED |
@@ -53,10 +73,10 @@ Execute Packet **P00** (environment verification) from the new engineering bluep
 
 ## Next 5 Recommended Actions
 
-1. **User**: confirm folder rename (G-NAME) and, if known, record the Anep meeting outcome to `meeting/05_OUTCOME.md` (G-ANEP).
-2. Execute **P00** — run `java -version; mvn -v; node -v; npm -v; docker ps; git --version; gh auth status`, capture to `docs/audits/PHASE0_VERIFICATION.md`, install gaps.
-3. Execute **P01** — repo bootstrap with the two-role DB init (this is where RLS enforceability starts).
-4. Execute **P02–P03** — backend skeleton + all 28 migrations with the migration test.
+1. **User**: resolve the Docker daemon (installation problem) — it unblocks the P02 DoD and the P01 compose role checks.
+2. **Agent**: once Docker is up, run U1–U4 (`docs/audits/PHASE1_BACKEND_BOOTSTRAP_EVIDENCE.md §5`): `./mvnw verify` (HealthIT) → `spring-boot:run` boot proof (current_user=baiti_app) → compose role checks; append results to the evidence file.
+3. **Faisal**: review the P02 files + evidence; approve the commit message; then commit (per CREAMS SOP — no auto-commit).
+4. Execute **P03** — all 28 migrations V1–V28 with `MigrationIT` (closes the `fail-on-missing-locations` relaxation).
 5. Execute **P04–P05** — entities + the security/tenancy core, exiting at **G-RLS** with the isolation suite green.
 
 ## Do-Not-Repeat List (updated)

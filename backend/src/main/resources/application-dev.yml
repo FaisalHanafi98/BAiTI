@@ -1,0 +1,26 @@
+# Dev profile: loads .env if present (optional), otherwise uses dev defaults matching .env.example.
+# These dev placeholders are NOT production secrets. Prod (application-prod.yml) has no defaults.
+spring:
+  config:
+    import: "optional:file:.env[.properties]"
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/baiti}
+    username: ${DB_APP_USER:baiti_app}
+    password: ${DB_APP_PASSWORD:change-me-app}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      pool-name: baiti-app-pool
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 20000
+  flyway:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/baiti}
+    user: ${DB_MIGRATOR_USER:baiti_migrator}
+    password: ${DB_MIGRATOR_PASSWORD:change-me-migrator}
+  jpa:
+    show-sql: true
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    com.zaxxer.hikari: DEBUG

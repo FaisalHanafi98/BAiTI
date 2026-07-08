@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: baiti-backend
+  main:
+    banner-mode: console
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+        format_sql: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    # No migrations exist until P03. Keep the empty location from failing boot, then remove this
+    # relaxation in P03 (docs/blueprint/08_ai_packets/PACKET_03).
+    fail-on-missing-locations: false
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: false
+
+info:
+  app:
+    name: BAiTI Backend
+    packet: P02
+
+logging:
+  level:
+    my.baiti: DEBUG
