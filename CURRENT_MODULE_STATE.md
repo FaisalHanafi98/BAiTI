@@ -28,6 +28,9 @@ Blocked:
 
 Regression Risk:   None (no application code exists).
 
+Master Plan:       docs/plans/EXECUTION_PLAN_v1.md (complete externalised
+                   execution plan: all 7 epics, 19 modules, gates, decisions)
+
 Next Action:       1) Rename folder. 2) Start Docker Desktop, verify
                    `docker ps`, then `docker compose -f infra/docker-compose.yml up -d`
                    and the P01 role checks. 3) Execute packet P02
