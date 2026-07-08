@@ -1,6 +1,6 @@
 # BAiTI — Current Status
 
-> **Last Updated**: 2026-07-07
+> **Last Updated**: 2026-07-08 — **P00 + P01 executed; repo live at commit `467d574`; session handed over** (see `ENGINEERING_HANDOVER_2026-07-08.md` and root `CURRENT_MODULE_STATE.md`). Next: P01 residue (Docker verify + folder rename), then packet P02.
 > **Updated By**: Blueprint session (full SDLC planning & architecture programme)
 > **Evidence Basis**: Direct inspection of every repository file, including a full read of `MyComunity 1.0 data model.pdf`. No terminal/database evidence possible (still pre-code).
 > **Project name**: BAiTI (rename from MyComunity per `docs/audits/BAITI_LAUNCH_PROMPT.md`; folder rename still pending — gate G-NAME)
