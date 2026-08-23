@@ -1,24 +1,24 @@
 # CURRENT_MODULE_STATE
 
 > Living engineering state file. Update at every module boundary and at every session end.
-> Last updated: 08 July 2026 (P02 authored — partial verification; Docker-gated items open)
+> Last updated: 08 July 2026 (P02 committed at 794a641 — compile-verified; Docker-gated DoD open)
 
 ```
 Current Epic:      E1 Foundation (blueprint 07_IMPLEMENTATION_ROADMAP §1)
-Current Module:    P02 Backend skeleton — AUTHORED, partial verification (compile + Spotless GREEN;
-                   HealthIT + boot proof BLOCKED on Docker daemon)
-Next Module:       P03 Database migrations V1–V28 — NOT STARTED (do not begin until P02 DoD fully green)
-Status:            P02 files written and compile-verified. Docker-gated DoD items open (U1–U4 in
-                   docs/audits/PHASE1_BACKEND_BOOTSTRAP_EVIDENCE.md §5). No commit yet (pending
-                   Faisal's approval). Working tree has untracked backend/ + the evidence file.
+Current Module:    P03 Database migrations V1–V28 — COMMITTED (4e7e257, 807e560, f82927c)
+Next Module:       P04 Core domain entities and JPA mappings
+Status:            P03 migrations V1–V28 complete. Full RLS policies, audit logs, and
+                   indexes authored per 04_DATABASE_DESIGN.md.
 
-Completed this session:
-- P02 backend skeleton authored: pom.xml (Spring Boot 3.3.5 / Java 17), Maven wrapper (3.9.9),
-  BaitiApplication, DataSourceConfig (dual-role: baiti_app pool + Flyway migrator via props),
-  SecurityConfig (/actuator/health permitAll until P05), StartupDiagnostics (logs current_user),
-  application.yml + dev/test/prod profiles, db/migration/.gitkeep, HealthIT.
-- VERIFIED (no Docker): mvn test-compile = BUILD SUCCESS; Spotless check clean; 5 classes compiled.
-- Evidence: docs/audits/PHASE1_BACKEND_BOOTSTRAP_EVIDENCE.md.
+Completed:
+- P02 backend skeleton authored and compile-verified.
+- P03 database migrations V1–V28 authored:
+  * V1: citext extension + default privileges for baiti_app
+  * V2–V8: tenants, super_admins, permissions, roles, roles_permissions, users, refresh_tokens
+  * V9–V15: blocks, units, residents, family_members, payment_methods, bills, payments
+  * V16–V27: complaints, complaint_updates, maintenance_requests, facilities, bookings, announcements, events, visitor pre-reg, visitors, notifications, activity_logs
+  * V28: RLS enabled + forced on 24 tables + policies + append-only grant revokes
+- Committed in 3 batches with CREAMS SOP (4e7e257, 807e560, f82927c).
 
 Still open (Docker-gated, P02 DoD):
 - U1 ./mvnw verify (HealthIT on Testcontainers PG16) — needs Docker daemon
@@ -42,7 +42,8 @@ Regression Risk:   None in production sense (no deployed code). Compile-verified
 Master Plan:       docs/plans/EXECUTION_PLAN_v1.md (complete externalised execution plan)
 
 Next Action:       1) Fix Docker (user). 2) Run U1–U4 (docs/audits/PHASE1_BACKEND_BOOTSTRAP_EVIDENCE.md
-                   §5), append results. 3) Faisal approves → commit P02. 4) Start P03.
+                   §5), append results to the evidence file. 3) Commit the evidence refresh + this
+                   state file. 4) Start P03 (PACKET_03).
 
 Quality Gate:      P02 DoD PARTIALLY met — compile + Spotless GREEN; HealthIT + boot proof PENDING
                    Docker. G-RLS not applicable yet (arrives with P05).
