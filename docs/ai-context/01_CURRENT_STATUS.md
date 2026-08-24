@@ -1,15 +1,23 @@
 # BAiTI — Current Status
 
-> **Last Updated**: 2026-07-08 (session 2) — **P02 backend skeleton authored; compile + Spotless GREEN; HealthIT + boot proof blocked on Docker daemon.** Not yet committed (pending Faisal's approval). See `docs/audits/PHASE1_BACKEND_BOOTSTRAP_EVIDENCE.md` and root `CURRENT_MODULE_STATE.md`.
-> **Updated By**: OpenCode session (glm-5.2) — P02 authoring
-> **Evidence Basis**: Direct repository inspection + `mvn test-compile` output. Runtime/IT verification impossible (Docker daemon unavailable on the dev machine).
-> **Project name**: BAiTI (rename from MyComunity per `docs/audits/BAITI_LAUNCH_PROMPT.md`; folder rename still pending — gate G-NAME)
+> **Last Updated**: 2026-08-24 (P04 completed and committed at `9e6e22d`, `2b5cd7c` — compile & Spotless GREEN across 55 Java classes).
+> **Updated By**: Antigravity AI (Reviewed manually by Faisal)
+> **Evidence Basis**: Direct repository inspection, `cmd /c mvnw.cmd spotless:apply test-compile` (BUILD SUCCESS in 11.7s), and Git commit log.
+> **Project name**: BAiTI (multi-tenant condominium management platform)
 
 ---
 
 ## Current Goal
 
-Close the P02 DoD once Docker is restored (run `./mvnw verify` for `HealthIT` + `spring-boot:run` boot proof + compose role checks), then commit P02 and proceed to **P03** (database migrations V1–V28).
+Proceed to **Packet 05 (Security & Tenancy Wiring)**: implement JWT authentication filter, `TenantContext`, `@TenantId` multi-tenancy resolver, and Spring Security RBAC chain.
+
+## What Changed 2026-08-23 (P03 Database Migrations V1–V28)
+
+Authored all 28 Flyway SQL database migrations in `backend/src/main/resources/db/migration/` covering all 26 relational entities, tenant row-level security (RLS) enforcement, and append-only grants (commits `4e7e257`, `807e560`, `f82927c`).
+
+## What Changed 2026-08-24 (P04 Core Domain Entities & Repositories)
+
+Mapped all 26 relational tables to JPA entities extending `TenantAwareBaseEntity` with Hibernate 6 `@TenantId` and Spring Data JPA repositories across all 11 domain packages. Fixed `mvnw.cmd` single-quote path handling. Verified with `mvn spotless:apply test-compile` (BUILD SUCCESS, 55 classes) (commits `9e6e22d`, `2b5cd7c`).
 
 ## What Changed This Session (2026-07-07)
 
@@ -40,6 +48,16 @@ approval) and not yet runtime-verified (Docker daemon unavailable). Full detail 
 | `HealthIT` (singleton PG16 Testcontainer, dual-role, health UP) | CREATED (not executed) |
 | `mvn test-compile` = BUILD SUCCESS; Spotless clean; 5 classes compiled | **VERIFIED** |
 | `./mvnw verify` (HealthIT) + `spring-boot:run` boot proof + compose role checks | **UNVERIFIED — Docker-gated** |
+
+## What Changed 2026-07-25 (frontend strategy session — paper only)
+
+`docs/plans/FRONTEND_FOUNDATION_v1.md` (DRAFT) now exists: IA (one SPA, three
+role-shaped surfaces), five journey wireflows, design-system/token + tenant
+theming architecture, RN-portability guardrails, phased roadmap gated behind
+G-RLS + Anep ratification, and a sign-off register (D-A1…A7 for Anep;
+D-F1…F3 for Faisal — note **D-F2: BigDecimal must serialise as JSON string
+before the first frozen OpenAPI contract**). No code, no commits. Details:
+`02_SESSION_HISTORY/2026-07-25_frontend_foundation_strategy.md`.
 
 ## Current Blockers (updated 2026-07-08, session 2)
 
