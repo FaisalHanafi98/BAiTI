@@ -5,20 +5,21 @@
 
 ```
 Current Epic:      E1 Foundation (blueprint 07_IMPLEMENTATION_ROADMAP §1)
-Current Module:    P03 Database migrations V1–V28 — COMMITTED (4e7e257, 807e560, f82927c)
-Next Module:       P04 Core domain entities and JPA mappings
-Status:            P03 migrations V1–V28 complete. Full RLS policies, audit logs, and
-                   indexes authored per 04_DATABASE_DESIGN.md.
+Current Module:    P04 Core domain entities and JPA mappings — COMMITTED (9e6e22d)
+Next Module:       P05 Security & Tenancy wiring (JWT filter + TenantContext + @TenantId resolver)
+Status:            P04 entities and Spring Data repositories complete across all 26
+                   relations. Compile-verified and Spotless clean (55 Java classes).
 
 Completed:
 - P02 backend skeleton authored and compile-verified.
-- P03 database migrations V1–V28 authored:
-  * V1: citext extension + default privileges for baiti_app
-  * V2–V8: tenants, super_admins, permissions, roles, roles_permissions, users, refresh_tokens
-  * V9–V15: blocks, units, residents, family_members, payment_methods, bills, payments
-  * V16–V27: complaints, complaint_updates, maintenance_requests, facilities, bookings, announcements, events, visitor pre-reg, visitors, notifications, activity_logs
-  * V28: RLS enabled + forced on 24 tables + policies + append-only grant revokes
-- Committed in 3 batches with CREAMS SOP (4e7e257, 807e560, f82927c).
+- P03 database migrations V1–V28 authored and committed (4e7e257, 807e560, f82927c).
+- P04 core JPA domain entities and Spring Data repositories authored across all 11 domain
+  packages (TenantAwareBaseEntity, Tenant, SuperAdmin, User, Role, Permission, Block, Unit,
+  Resident, FamilyMember, PaymentMethod, Bill, Payment, Complaint, ComplaintCategory,
+  ComplaintUpdate, MaintenanceRequest, Facility, FacilityBooking, Announcement, Event,
+  Visitor, VisitorPreRegistration, Notification, ActivityLog, RefreshToken).
+- Fixed mvnw.cmd to safely handle single quotes in directory paths.
+- Verified: mvn spotless:apply test-compile = BUILD SUCCESS (55 classes compiled).
 
 Still open (Docker-gated, P02 DoD):
 - U1 ./mvnw verify (HealthIT on Testcontainers PG16) — needs Docker daemon
