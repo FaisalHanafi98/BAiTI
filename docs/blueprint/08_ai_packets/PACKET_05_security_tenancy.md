@@ -1,5 +1,26 @@
 # P05 — Security & Tenancy Core (XL — execute as five sequential slices)
 
+## Slice 5a execution checkpoint — 29 October 2026
+
+Given an owned native PG16 database with named synthetic A/B communities, setting
+TenantContext must scope raw JDBC and Hibernate to that tenant. Returning the same
+physical connection must clear its setting, roll back unfinished work and recover
+an aborted transaction. Missing context must return zero rows/reject insertion;
+binding/reset/rollback failures must evict the connection. A request must use its
+resolved tenant only, reject invalid/unknown/suspended resolution generically and
+clear context after success or exceptions. Production resolution uses the explicit
+APP_BASE_DOMAIN and ignores forwarded headers. Global lookup must use the marked
+owner pool while the primary app path remains baiti_app.
+
+These cases pass in 208 local tests; see
+[slice evidence](../../ai-context/06_TESTING_EVIDENCE/2026-10-29_tenant_context.md).
+No DDL or role changes. The pre-authentication resolver order follows 02 §4.2's
+login prerequisite; JWT matching follows in 5b. The 5a owner lookup seam does not
+implement 5d's caller boundary or onboarding transaction. Docker/compose execution
+is replaced by the accepted native plan; hosted parity remains deferred. The
+owner's continuing local-commit instruction supersedes a separate message-approval
+pause. P05 as a whole and G-RLS remain unfinished.
+
 **Objective**: The load-bearing packet. Tenant context propagation to PostgreSQL, JWT auth with rotating refresh, RBAC enforcement, super-admin plane, atomic tenant onboarding, dev seeding — finished by the full isolation suite. **Exit = gate G-RLS**: nothing after this packet may start until I-1…I-9 are green in CI-equivalent runs.
 
 **Dependencies**: P04. **References**: 03_ARCHITECTURE §6–§7 (normative), 02_SYSTEM_ANALYSIS §4.1–4.2 & §8, 06_TESTING §3.4, §5.

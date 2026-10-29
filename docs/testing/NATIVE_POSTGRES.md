@@ -162,3 +162,14 @@ See [the acceptance mapping](../ai-context/06_TESTING_EVIDENCE/2026-10-29_persis
 and [structured evidence](../audits/persistence-acceptance-2026-10-29/P04_ACCEPTANCE.json).
 The older checkpoints above retain their original scope and counts. P05's
 production tenant context, authentication and onboarding remain unfinished.
+
+## Tenant-context checkpoint — 29 October 2026
+
+P05 slice 5a passes 208 tests (95 unit/architecture + 113 integration), with zero
+failures/errors/skips. The original mapping fixture remains test-only; new
+HibernateTenantIT uses the production resolver without that override. Native
+single-connection tests exercise binding, missing scope, pending/failed transaction
+cleanup and physical connection reuse. A bounded owner pool performs only the
+current global active-slug lookup; primary JPA/JDBC stays on baiti_app. See
+[the slice record](../ai-context/06_TESTING_EVIDENCE/2026-10-29_tenant_context.md).
+Real JWT login, refresh rotation, RBAC, actor auditing and full I1–I9 remain open.

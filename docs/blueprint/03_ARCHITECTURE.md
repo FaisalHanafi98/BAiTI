@@ -78,7 +78,7 @@ Structure per `meeting/04_REACT_REFRESHER.md` §11 (canonical): `api/` (axios cl
 | Layer | Mechanism | Fails how |
 |---|---|---|
 | 1 · Identity | `tenantId` claim inside signed JWT; `TenantContextFilter` rejects (401) any mismatch between claim and slug/subdomain resolution | Forged/mismatched context never reaches services |
-| 2 · Application | Hibernate 7 `@TenantId` inherited from `TenantScopedBaseEntity` + planned `CurrentTenantIdentifierResolver` reading `TenantContext` | Intended managed-entity scoping; production paths still require the complete isolation suite |
+| 2 · Application | Hibernate 7 `@TenantId` inherited from `TenantScopedBaseEntity` + `CurrentTenantIdentifierResolver` reading `TenantContext` | Intended managed-entity scoping; production paths still require the complete isolation suite |
 | 3 · Database | PostgreSQL RLS policy on every domain table: `USING (tenant_id = current_setting('app.current_tenant', true)::uuid)` | Native SQL, JDBC, or a layer-2 bug still cannot cross tenants |
 
 ### 6.2 Two database roles under forced RLS
@@ -107,15 +107,17 @@ Spring uses **two datasources by role**: Flyway runs as `baiti_migrator`; the Hi
 - Proxy `close()` → `RESET app.current_tenant` before returning the connection to the pool (no cross-request bleed).
 - RLS policies read with `current_setting('app.current_tenant', true)` → returns NULL when unset → predicate false → **zero rows, fail closed** (FR-TEN-05).
 
-`TenantContext` is set once by `TenantContextFilter` (after JWT auth) and cleared in `finally`. `@Async` side-effect listeners receive the tenantId explicitly inside the event payload — ThreadLocals do not cross thread pools.
+`TenantContextFilter` resolves the request tenant before authentication (login needs the resolved tenant), clears stale context on entry and removes it in `finally`. The subsequent P05 JWT filter must compare the signed tenant claim with that resolved context before calling the application. This sequencing resolves the earlier after-JWT wording against the normative login flow in 02 §4.2; it does not trust an unsigned tenant header as authentication. `@Async` side-effect listeners receive the tenantId explicitly inside the event payload — ThreadLocals do not cross thread pools.
 
 ### 6.4 Tenant resolution
 
-`TenantResolver` interface, profile-selected: `HeaderTenantResolver` (`X-Tenant-Slug`, dev/test) and `SubdomainTenantResolver` (`{slug}.baiti.app`, prod — final domain TBD/D3). Resolution feeds login (which tenant's users table to check) and the layer-1 mismatch check on every authenticated call.
+`TenantResolver` interface, profile-selected: `HeaderTenantResolver` (`X-Tenant-Slug`, dev/test) and `SubdomainTenantResolver` (`{slug}.{APP_BASE_DOMAIN}`, prod — explicit configuration required; final domain TBD/D3). Resolution feeds login (which tenant's users table to check) and the layer-1 mismatch check on every authenticated call.
 
 ### 6.5 Global (non-tenant) data and the super-admin path
 
 `tenants`, `super_admins` and `flyway_schema_history` are global tables. Role/permission templates belong to the planned application catalog, not extra authored tables. V30 gives only `baiti_migrator` explicit global SELECT/INSERT/UPDATE policies on tenants/admins, with no DELETE policy; FORCE RLS remains enabled. The ordinary app pool cannot assume that role or read/change super-admin rows. The schema owner remains trusted for DDL; DML policies do not remove its ownership authority.
+
+P05 slice 5a implements an annotated, bounded owner-role pool and parameterised active-slug lookup in `TenantDirectory`. The primary JPA/JDBC path stays on the wrapped app pool. This bootstrap lookup returns no tenant data to the caller. Production ignores forwarded host headers by default; a trusted-proxy design remains a later hosting decision.
 
 The separate P05 super-admin endpoints (`/api/admin/**`) remain unimplemented. They will run with empty `TenantContext` behind their own principal/filter chain and may only touch global tables (ArchUnit: `my.baiti.tenancy.admin` may not import domain repositories). Tenant onboarding (UC-T1) writes tenant-scoped rows *before a tenant user exists*: it deliberately uses the **migrator-role datasource** as the single annotated, reviewed exception (`@UsesPrivilegedDataSource`) and must still bind the new tenant for domain-table RLS. The SQL policy tests do not prove that service transaction or caller authorisation.
 

@@ -1,9 +1,12 @@
 package my.baiti.config;
 
+import my.baiti.tenancy.TenantContextFilter;
+import my.baiti.tenancy.TenantResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * P02 security baseline: only {@code /actuator/health} is reachable anonymously; everything else
@@ -17,7 +20,10 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http, TenantResolver resolver)
+      throws Exception {
+    http.addFilterBefore(
+        new TenantContextFilter(resolver), UsernamePasswordAuthenticationFilter.class);
     http.authorizeHttpRequests(
         auth ->
             auth.requestMatchers("/actuator/health")

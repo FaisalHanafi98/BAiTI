@@ -1,5 +1,12 @@
 # Prod profile: NO secret defaults. A missing env var must cause startup failure (by design).
 # Provide all DB_APP_*, DB_MIGRATOR_*, JWT_* and runtime vars via the platform secret store (P18).
+baiti:
+  tenancy:
+    base-domain: ${APP_BASE_DOMAIN}
+
+server:
+  forward-headers-strategy: none
+
 spring:
   datasource:
     url: ${DB_URL}

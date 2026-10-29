@@ -2,6 +2,7 @@ package my.baiti.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import javax.sql.DataSource;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
 import org.springframework.context.annotation.Bean;
@@ -14,9 +15,8 @@ import org.springframework.context.annotation.Primary;
  * <h2>appDataSource (primary, {@code baiti_app})</h2>
  *
  * HikariCP runtime pool. {@code baiti_app} is a non-owner role with {@code NOBYPASSRLS}. FORCE RLS
- * also binds the ordinary owner; the separate platform path needs its explicit policies. P05 wraps
- * this pool with {@code TenantAwareDataSource} (set/reset {@code app.current_tenant} on
- * borrow/return, ED-5).
+ * also binds the ordinary owner. {@code TenantAwareDataSource} sets/resets the tenant on
+ * borrow/return. The platform path requires its separate explicit privilege boundary.
  *
  * <h2>Flyway datasource ({@code baiti_migrator})</h2>
  *
@@ -31,12 +31,15 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class DataSourceConfig {
 
+  @Bean(destroyMethod = "close")
+  @ConfigurationProperties("spring.datasource.hikari")
+  public HikariDataSource appConnectionPool(DataSourceProperties dataSourceProperties) {
+    return dataSourceProperties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
+  }
+
   @Bean
   @Primary
-  @ConfigurationProperties("spring.datasource.hikari")
-  public DataSource appDataSource(DataSourceProperties dataSourceProperties) {
-    // P05: wrap the returned HikariDataSource with TenantAwareDataSource so that
-    // app.current_tenant is set on borrow and RESET on return (fail-closed, ED-5/ED-6).
-    return dataSourceProperties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
+  public DataSource appDataSource(@Qualifier("appConnectionPool") HikariDataSource pool) {
+    return new TenantAwareDataSource(pool);
   }
 }

@@ -1,0 +1,89 @@
+{
+  "date": "2026-10-29",
+  "baseCommit": "c4ffbac",
+  "branch": "feat/tenant-context",
+  "scope": "P05 slice 5a",
+  "database": {
+    "postgresql": "16.15",
+    "target": "baiti_test_p04_20261029_bb8f567e",
+    "version": 31,
+    "credentialsExcluded": true,
+    "schemaChanged": false
+  },
+  "final": {
+    "unitTests": 95,
+    "integrationTests": 113,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 43.126
+  },
+  "stages": [
+    {
+      "log": "01-context-red.log",
+      "sha256": "3fea20127ac0f4580c7e67fbf4c0de2ecf77ed9605729c8de118b4677059e3c1"
+    },
+    {
+      "log": "02-context-green.log",
+      "sha256": "414d7d48957b52f42816e10795ef96aefb6ede700e1f54f8c939bc6762c864a2"
+    },
+    {
+      "log": "03-pool-context-red.log",
+      "sha256": "9ff55bcf4ca29f061b17816a84d283c5c1ce5edd77378998f1ba9aa8e82a37f7"
+    },
+    {
+      "log": "08-pool-green.log",
+      "sha256": "5802b0833747bc85e5d637aa20b11e6eac48fef0e5b836f54ed8006d59f4da85"
+    },
+    {
+      "log": "10-hibernate-red.log",
+      "sha256": "9e850256316a99778da9da2258e42f9f6d981a97e971c5c13916c1da55a742e6"
+    },
+    {
+      "log": "12-hibernate-pool-green.log",
+      "sha256": "c26359a06de2c505d0f9e2d81c29600c0bf71f95a32a6590be3502d1c1fabc93"
+    },
+    {
+      "log": "15-pool-hibernate-full.log",
+      "sha256": "0c695cb8baa4df6994ae022db77edccb0db03c7f3da03fc52e15bcb4b8c13cc9"
+    },
+    {
+      "log": "16-request-context-red.log",
+      "sha256": "422efe4cad1d9da85a367ffb31ced64a15cc5c747570e1a6b1e7b94fde680a0a"
+    },
+    {
+      "log": "19-request-context-full.log",
+      "sha256": "fdd028d20fe0602f910172ba492b95c219277c6b42b446fa8f39b0cb744115c4"
+    }
+  ],
+  "red": {
+    "context": "unimplemented API compilation",
+    "pool": "resolved A raw JDBC read returned zero",
+    "hibernate": "missing production identifier prevents repository startup",
+    "request": "unknown slug reached protected route: expected 401, got 200"
+  },
+  "limits": [
+    "Full JWT, refresh, RBAC, actor auditing and I1-I9 not complete",
+    "No changed-line coverage or hosted CI claim",
+    "Standalone sandbox Mockito unit run stalled during attachment and was interrupted; authorised native full runs include and pass all four fault-path units",
+    "Mock-user HTTP checks do not prove real authentication",
+    "No push, PR, Docker, hosting or deployment"
+  ],
+  "securityReview": {
+    "mode": "author scoped review using security-review guide",
+    "verdict": "No blocking findings in reviewed scope",
+    "covered": [
+      "bound UUID and slug SQL",
+      "primary app vs annotated owner lookup pools",
+      "RLS positive and denied controls",
+      "connection cleanup and eviction failures",
+      "generic request denial and finally cleanup",
+      "host suffix and duplicate-header rejection"
+    ],
+    "unverified": [
+      "JWT claim identity matching and CSRF/refresh",
+      "full caller-authorised super-admin plane",
+      "async context propagation and onboarding rollback"
+    ]
+  }
+}
