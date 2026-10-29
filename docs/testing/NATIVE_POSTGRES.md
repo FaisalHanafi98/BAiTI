@@ -152,3 +152,13 @@ also exercised. The owner has DML SELECT/INSERT/UPDATE on the two global tables,
 with no DELETE policy; its trusted DDL ownership is unchanged. These checks do
 not implement the separate P05 HTTP principal, privileged pool or onboarding.
 See [the policy audit](../audits/persistence-acceptance-2026-10-29/VERIFICATION.json).
+
+## Persistence acceptance checkpoint — 29 October 2026
+
+The final P03/P04 local suite passes 159 tests (59 unit/architecture and 100
+integration), without failures/errors/skips, on upgraded V30→V31 and fresh
+V1–V31 targets. Fresh migrations were tested before explicit fixture provisioning.
+See [the acceptance mapping](../ai-context/06_TESTING_EVIDENCE/2026-10-29_persistence_acceptance.md)
+and [structured evidence](../audits/persistence-acceptance-2026-10-29/P04_ACCEPTANCE.json).
+The older checkpoints above retain their original scope and counts. P05's
+production tenant context, authentication and onboarding remain unfinished.

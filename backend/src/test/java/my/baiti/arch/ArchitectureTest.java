@@ -5,12 +5,19 @@ import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPac
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noFields;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import my.baiti.common.TenantScopedBaseEntity;
 import org.junit.jupiter.api.Test;
@@ -106,5 +113,42 @@ class ArchitectureTest {
         .should()
         .haveRawType(LocalDateTime.class)
         .check(MAIN);
+  }
+
+  @Test
+  void everyEntityAssociationDeclaresOrDefaultsToLazyFetching() {
+    int relationships = 0;
+    for (var type : MAIN) {
+      if (!type.isAnnotatedWith(Entity.class)) {
+        continue;
+      }
+      for (var field : type.reflect().getDeclaredFields()) {
+        FetchType fetch = associationFetch(field);
+        if (fetch != null) {
+          relationships++;
+          assertThat(fetch)
+              .as("%s.%s", type.getSimpleName(), field.getName())
+              .isEqualTo(FetchType.LAZY);
+        }
+      }
+    }
+    assertThat(relationships).isGreaterThan(0);
+  }
+
+  private static FetchType associationFetch(Field field) {
+    var manyToOne = field.getAnnotation(ManyToOne.class);
+    if (manyToOne != null) {
+      return manyToOne.fetch();
+    }
+    var oneToOne = field.getAnnotation(OneToOne.class);
+    if (oneToOne != null) {
+      return oneToOne.fetch();
+    }
+    var oneToMany = field.getAnnotation(OneToMany.class);
+    if (oneToMany != null) {
+      return oneToMany.fetch();
+    }
+    var manyToMany = field.getAnnotation(ManyToMany.class);
+    return manyToMany == null ? null : manyToMany.fetch();
   }
 }

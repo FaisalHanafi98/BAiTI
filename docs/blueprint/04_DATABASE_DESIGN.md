@@ -204,6 +204,15 @@ it neither removes that owner's existing DDL authority nor implements the
 separate P05 platform authentication/service boundary. No runtime pool may use
 the migrator identity.
 
+**V31 foreign-key indexes — 29 October 2026:** the P03 catalog regression found
+six missing indexes under section 1.10. Add unconditional leading-column indexes
+for `announcements(posted_by)`, `complaints(unit_id)`, `events(created_by)`,
+`facility_bookings(approved_by)`, `maintenance_requests(requested_by)` and
+`visitors(pre_registration_id)`. No column, FK, policy, grant or existing index
+definition changes. The regression accepts an existing valid unconditional
+index whose leading key columns cover the FK, including a suitable existing
+unique/primary index; it does not claim benchmarked query performance.
+
 ## 6. Migration Sequence — corrected (supersedes plan §5.4 and §8)
 
 Ordering rules that fixed the old defects: *(a)* every table exists before the RLS migration; *(b)* FK targets always earlier; *(c)* people before property is not required (audit stamps are not FKs — §1.3); *(d)* seeds are not migrations.
@@ -227,6 +236,7 @@ Ordering rules that fixed the old defects: *(a)* every table exists before the R
 | V28 | `V28__enable_rls.sql` | §5 pattern × 24 tables + tenants/super_admins policies + append-only grant revokes |
 | V29 | `V29__fail_closed_tenant_setting.sql` | Safe tenant-setting reader and corresponding policy expressions; no table/column or owner-bypass change |
 | V30 | `V30__explicit_platform_table_policies.sql` | Role-specific global SELECT/INSERT/UPDATE for the intended platform path; no DELETE, app/global or domain-policy expansion |
+| V31 | `V31__index_remaining_foreign_keys.sql` | Six missing FK indexes required by §1.10; no data, constraints, policies or grants changed |
 
 **Seeding**: no seed migrations. Dev data comes from `DevDataInitializer` (`@Profile("dev")`, idempotent by slug) which calls the real `TenantOnboardingService` to create **two synthetic tenants** (isolation testing needs ≥2; PDPA-safe fictional data per `docs/ai-context/04_DATABASE_STATE/seeders_status.md`). Why not SQL seeds: onboarding logic (role copies, admin user, must-change flag) lives in the service; a SQL twin would drift.
 

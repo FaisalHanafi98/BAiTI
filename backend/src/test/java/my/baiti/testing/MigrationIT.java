@@ -3,6 +3,7 @@ package my.baiti.testing;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +28,7 @@ class MigrationIT {
           """))
           .isEqualTo(26);
       assertThat(scalar(connection, "SELECT count(*) FROM flyway_schema_history WHERE success"))
-          .isEqualTo(30);
+          .isEqualTo(31);
     }
   }
 
@@ -125,6 +126,41 @@ class MigrationIT {
              AND c.relrowsecurity AND c.relforcerowsecurity
           """))
           .isEqualTo(2);
+    }
+  }
+
+  @Test
+  void everyForeignKeyHasAValidUnconditionalLeadingIndex() throws Exception {
+    try (var connection = config.openMigrationConnection();
+        var statement =
+            connection.prepareStatement(
+                """
+        SELECT t.relname || '.' || c.conname
+        FROM pg_constraint c
+        JOIN pg_class t ON t.oid = c.conrelid
+        JOIN pg_namespace n ON n.oid = t.relnamespace
+        WHERE c.contype = 'f' AND n.nspname = 'public'
+          AND NOT EXISTS (
+            SELECT 1 FROM pg_index i WHERE i.indrelid = c.conrelid
+              AND i.indisvalid AND i.indisready AND i.indpred IS NULL
+              AND i.indnkeyatts >= cardinality(c.conkey)
+              AND NOT EXISTS (
+                SELECT 1 FROM unnest(c.conkey) AS fk(attnum)
+                WHERE NOT EXISTS (
+                  SELECT 1 FROM unnest(i.indkey::smallint[])
+                    WITH ORDINALITY AS k(attnum, ord)
+                  WHERE k.ord <= cardinality(c.conkey) AND k.attnum = fk.attnum
+                )
+              )
+          )
+        ORDER BY 1
+        """);
+        var result = statement.executeQuery()) {
+      var missing = new ArrayList<String>();
+      while (result.next()) {
+        missing.add(result.getString(1));
+      }
+      assertThat(missing).isEmpty();
     }
   }
 

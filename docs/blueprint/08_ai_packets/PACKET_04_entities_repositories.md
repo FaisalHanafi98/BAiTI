@@ -8,6 +8,25 @@
 
 **Dependencies**: P03.
 
+**Acceptance continuation — 29 October 2026:** V30 supplies the explicit global
+owner SQL policy. Complete behavior tests for all 15 authored non-primary business
+unique indexes, the role-grant composite key, partial-index positive cases and
+all 16 entity enum fields. Inventory tests must identify a new unmapped constraint
+or enum case. Tenant-scoped cases use the actual app role. Global Tenant/SuperAdmin
+JPA cases use a labelled test-only owner datasource and assert that principal;
+they must not replace the application's pool or claim production platform wiring.
+Exercise timestamp auditing and invalid amount/calendar/order cases using only
+synthetic transactions that roll back. Enforce the lazy-fetch annotation contract.
+These are persistence/DDL acceptance cases, not service transition permissions,
+production auditing, onboarding or G-RLS proof.
+
+The FK-index regression produced one expected failure listing six missing
+relationships under P03/04 §1.10. The bounded F1 repair is forward V31 with only
+those six indexes. Preserve V1–V30, table data, constraints and security policies.
+Validate an actual V30→V31 fixture and a fresh target. Ordinary transactional
+index creation is suitable for these owned small test databases; deployment
+lock/capacity behaviour on populated production tables is not established here.
+
 **Files to create** (package-by-feature under `my.baiti.…`)
 ```
 common/TenantAwareBaseEntity.java     common/AuditorAwareImpl.java (stub → P05)
@@ -38,3 +57,11 @@ test: my/baiti/arch/ArchitectureTest.java · per-aggregate *RepositoryIT.java
 - [ ] All 26 relations mapped; `./mvnw verify` green (validate + smoke + ArchUnit); evidence captured.
 - [ ] No relationship uses EAGER; no entity is exposed by a controller (none exist — rule armed for the future).
 - [ ] Commits per domain group, user-approved.
+
+**Local acceptance evidence — 29 October 2026:** all 26 mapped relations validate;
+159 tests pass on fresh/upgraded targets. The 15 unique-index and 16 enum-field
+inventories, composite grant key, partial-index cases, timestamp auditing and
+lazy-fetch checks are exercised. See
+[acceptance mapping](../../ai-context/06_TESTING_EVIDENCE/2026-10-29_persistence_acceptance.md).
+This closes the bounded local persistence prerequisite for P05. Hosted CI,
+changed-line coverage and production actor/context/security wiring are separate.

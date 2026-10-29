@@ -1,5 +1,26 @@
 # BAiTI — Current Status
 
+## Persistence acceptance verified — 29 October 2026
+
+P03/P04 local persistence acceptance now passes **59 unit/architecture + 100
+integration tests**, with zero failures, errors or skips, on both a V30→V31
+upgrade and a separate fresh V1–V31 database. V31 adds the six missing FK indexes
+identified by the failing catalog regression. V1–V30 bytes remain unchanged.
+See [the acceptance record](../audits/persistence-acceptance-2026-10-29/P04_ACCEPTANCE.json)
+and [acceptance mapping](06_TESTING_EVIDENCE/2026-10-29_persistence_acceptance.md).
+
+All 15 authored business unique indexes, the role-grant composite key, all 16
+entity enum fields and the lazy-association contract have explicit checks.
+Tenant cases use baiti_app; global JPA cases use a labelled test-only owner pool.
+Timestamp auditing is exercised, while actor auditing remains the explicit P05
+stub. Constraint tests do not establish service transition permissions.
+
+Next: P05 slice 5a, production tenant propagation and pool return cleanup, followed
+by authentication, RBAC, platform onboarding and complete I1–I9. G-RLS,
+changed-line coverage, hosted CI and deployment remain open. Docker/hosting stay
+deferred. Local commits remain authorised after SOP/Humanizer and checks;
+publishing is not authorised. Earlier sections are dated checkpoints.
+
 ## Platform SQL boundary verified — 29 October 2026
 
 Active branch `test/persistence-acceptance`, based on runtime commit `781a401`.

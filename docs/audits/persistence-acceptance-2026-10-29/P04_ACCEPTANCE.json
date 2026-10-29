@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-29",
+  "branch": "test/persistence-acceptance",
+  "baseCommit": "1fa8535",
+  "database": {
+    "upgrade": "baiti_test_acceptance_fresh_20261029_465b41b9",
+    "fresh": "baiti_test_p04_20261029_bb8f567e",
+    "upgradeFrom": 30,
+    "currentVersion": 31,
+    "freshBeforeTables": 0,
+    "fixturesThrough": "baiti_migrator",
+    "existingTargetsReset": false
+  },
+  "result": {
+    "unitTests": 59,
+    "integrationTests": 100,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "freshSeconds": 37.165
+  },
+  "contracts": {
+    "mappedRelations": 26,
+    "businessUniqueIndexes": 15,
+    "entityEnumFields": 16,
+    "lazyAssociations": true,
+    "foreignKeyLeadingIndexes": true,
+    "compositeGrantKey": true,
+    "partialIndexPositiveCases": true,
+    "timestampAuditing": true,
+    "tenantJpaRole": "baiti_app",
+    "globalJpaRole": "baiti_migrator",
+    "globalJpaPool": "test-only"
+  },
+  "regression": {
+    "foreignKeyIndexFailuresBefore": 1,
+    "missingIndexes": 6,
+    "v31Sha256": "65fc2e1d795b9d2f92c862131bb1c7cb6e31f612bd32f5e10839f77f204743d5",
+    "v30Sha256": "42afbe84aa04997095069ac58c00342ea0f9a8b19af995fef2f0d565b0f01336"
+  },
+  "logs": [
+    {
+      "log": "12-constraint-characterization.log",
+      "sha256": "5aeda01114d037e3061b23688de04d7bc032018a7c0670e22618de8bb6eb9799"
+    },
+    {
+      "log": "14-fk-index-red.log",
+      "sha256": "8ad1634002fc93b302282fab84b9ee287f0d3b2fa499cd932d53d4d92b477eb6"
+    },
+    {
+      "log": "15-acceptance-green-full.log",
+      "sha256": "bb0aea4e3abb21d7f2c7eda32f6598a09ec4a9ebd105225ba224299f81011da6"
+    },
+    {
+      "log": "16-p04-fresh-migrations.log",
+      "sha256": "b92bcaf8be7fa57b349d6da807c83e4bcca8bd7bfdb787cd6391d5d74911f505"
+    },
+    {
+      "log": "17-p04-fresh-full.log",
+      "sha256": "450d20adcee64b1d1515448eec6875b44acfe9b5b548c91a8dcc1f201001627b"
+    }
+  ],
+  "limits": [
+    "P05 production context, actor auditing, JWT, RBAC and onboarding unfinished",
+    "Full I1-I9 G-RLS and changed-line coverage not claimed",
+    "Ordinary CREATE INDEX checked only on small synthetic local databases",
+    "No hosted CI, push, PR, Docker or deployment"
+  ]
+}
