@@ -9,7 +9,7 @@
 
 1. **PK**: `id UUID PRIMARY KEY DEFAULT gen_random_uuid()` (built into PG ≥13 — no extension needed).
 2. **Tenancy**: `tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE RESTRICT` on every tenant-scoped table, including pivots.
-3. **Audit columns**: `created_at TIMESTAMPTZ NOT NULL DEFAULT now()`, `updated_at TIMESTAMPTZ NOT NULL DEFAULT now()`, `created_by UUID NULL`, `updated_by UUID NULL`. `created_by/updated_by` are **plain UUIDs, deliberately not FKs** — they are audit stamps, not relations; this also removes migration-order coupling to `users`. Domain-meaningful user references (`posted_by`, `requested_by`, `updated_by` on complaint_updates, `approved_by`) **are** real FKs.
+3. **Audit columns**: `created_at TIMESTAMPTZ NOT NULL DEFAULT now()`, `updated_at TIMESTAMPTZ NOT NULL DEFAULT now()`, `created_by UUID NULL`, `updated_by UUID NULL`. `created_by/updated_by` are **plain UUIDs, deliberately not FKs** — they are audit stamps, not relations; this also removes migration-order coupling to `users`. Domain-meaningful user references (`posted_by`, `requested_by`, `user_id` on complaint_updates, `approved_by`) **are** real FKs.
 4. **Time**: `TIMESTAMPTZ` only, UTC. Calendar concepts (`billing_month`, `due_date`, `booking_date`, `visit_date`) are `DATE`.
 5. **Money**: `NUMERIC(12,2)` + `currency CHAR(3) DEFAULT 'MYR'`. Floats are forbidden schema-wide.
 6. **Enums**: `TEXT` + `CHECK (col IN (...))`, mapped `@Enumerated(EnumType.STRING)`. Why not native PG enums: adding values later is one `ALTER TABLE … DROP/ADD CONSTRAINT` in a new migration instead of `ALTER TYPE` gymnastics, and JPA mapping stays trivial.
@@ -49,7 +49,7 @@ erDiagram
   residents ||--o{ complaints : ""
   units ||--o{ complaints : ""
   complaints ||--o{ complaint_updates : ""
-  users ||--o{ complaint_updates : "updated_by"
+  users ||--o{ complaint_updates : "user_id"
   units ||--o{ maintenance_requests : ""
   users ||--o{ maintenance_requests : "requested_by"
   facilities ||--o{ facility_bookings : ""
@@ -112,7 +112,7 @@ Base columns (§1.1–1.3) are implied on every table below and not repeated. `�
 
 **complaints** — `resident_id UUID NOT NULL REFERENCES residents` · `unit_id UUID NOT NULL REFERENCES units` · `category_id UUID NOT NULL REFERENCES complaint_categories ON DELETE RESTRICT` · `title TEXT NOT NULL` · `description TEXT NOT NULL` · `status TEXT NOT NULL DEFAULT 'OPEN' CHECK (OPEN|IN_PROGRESS|RESOLVED|CLOSED|REJECTED)` · `submitted_at TIMESTAMPTZ NOT NULL DEFAULT now()` (PDF `submitted at` fixed) ⊕idx (resident_id), (tenant_id, status), (category_id).
 
-**complaint_updates** — `complaint_id UUID NOT NULL REFERENCES complaints ON DELETE RESTRICT` · `updated_by UUID NOT NULL REFERENCES users` · `message TEXT NOT NULL` · `status TEXT NOT NULL` (resulting status; same CHECK as complaints) ⊕idx (complaint_id). PDF `update_at` folded into base `created_at`. Table renamed from `complaints_updates`.
+**complaint_updates** — `complaint_id UUID NOT NULL REFERENCES complaints ON DELETE RESTRICT` · `user_id UUID NOT NULL REFERENCES users ON DELETE RESTRICT` · `message TEXT NOT NULL` · `status TEXT NOT NULL` (resulting status; same CHECK as complaints) ⊕idx (complaint_id), (user_id). PDF `update_at` folded into base `created_at`. Table renamed from `complaints_updates`. The domain actor uses `user_id` to avoid colliding with the nullable `updated_by` audit stamp; this records the existing V18 correction and JPA mapping, without rewriting an applied migration.
 
 **maintenance_requests** — `unit_id UUID NOT NULL REFERENCES units` · `requested_by UUID NOT NULL REFERENCES users` · `description TEXT NOT NULL` · `priority TEXT NOT NULL DEFAULT 'MEDIUM' CHECK (LOW|MEDIUM|HIGH|URGENT)` · `status TEXT NOT NULL DEFAULT 'PENDING' CHECK (PENDING|APPROVED|IN_PROGRESS|COMPLETED|REJECTED)` ⊕idx (unit_id), (tenant_id, status, priority).
 
@@ -213,5 +213,6 @@ Assumed v1.0 ceiling (ASM-3): 50 tenants × 2 000 units → bills ≈ 1.2 M rows
 | 9 | `permissions.name` | `code` | machine-name clarity |
 | 10 | — (absent) | `tenants`, `super_admins`, `refresh_tokens`, `visitors.pre_registration_id`, `bills.bill_type/currency/cancelled_reason`, `activity_logs.detail JSONB`, `is_active`/`is_system`/`must_change_password` flags, base audit columns | additions |
 | 11 | no RLS/indexes/uniques in PDF | §5, §4 per-table | additions |
+| 12 | complaint-update actor and audit stamp share `updated_by` in the earlier blueprint | domain actor `user_id` FK plus index; nullable audit `updated_by` retained | column-name collision correction, recorded 29 October 2026 |
 
 Every implementation packet that touches schema references this table; replicating a PDF spelling is a review-rejection (`docs/ai-context/01_CURRENT_STATUS.md` Do-Not-Repeat list).
