@@ -94,3 +94,24 @@ application health/runtime role and IP binding. Dependent foundation changes
 extend it with aggregate, permission-link and tenant-setting regressions. Full
 G-RLS, authentication, business services, frontend, CI and deployment are
 separate unfinished gates. A green foundation run does not close those gates.
+
+## Verified foundation checkpoint — 29 October 2026
+
+The complete runner passed **57 unit/architecture + 45 integration tests**, with
+no failures, errors or skips. See the committed
+[verification record](../audits/foundation-2026-10-29/VERIFICATION.json) and
+[acceptance mapping](../ai-context/06_TESTING_EVIDENCE/2026-10-27_native_harness.md).
+The ordered clean-export scopes passed 56, 81 and 95 tests; the later history
+repair and platform characterization increased the complete suite to 102.
+
+Fresh V1–V28 and V28→V29 upgrade evidence are distinct. The upgrade retained both
+named synthetic tenants and a sentinel in its own schema; no existing target was
+reset. V29 also has earlier fresh-install evidence. Complaint history survives
+parent/collection deletion attempts through the tested mapping, while new
+history insertion still works. Current global policies deny app and ordinary
+migrator provisioning; the separate platform policy is still required.
+
+The next runtime work is [ADR 0002](../adr/0002-supported-spring-baseline.md).
+Do not infer full P03/P04 acceptance, production tenant resolution, exhaustive
+constraint/enum coverage, I1–I9, changed-line coverage or hosted success from the
+foundation suite. The current private cluster is retained for synthetic tests.

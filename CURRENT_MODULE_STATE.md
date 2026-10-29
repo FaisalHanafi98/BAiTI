@@ -1,5 +1,18 @@
 # CURRENT_MODULE_STATE
 
+Current checkpoint — 29 October 2026: native PostgreSQL foundation verification
+passes 102 tests. Harness, mapping, permission-link, V29 and complaint-history
+repairs are committed; P03/P04 acceptance has explicit remaining gaps. P05,
+platform provisioning, full G-RLS, frontend and hosted CI are unfinished.
+Docker, hosting/VPS and deployment remain deferred. Continue with the isolated
+[supported-runtime upgrade](docs/adr/0002-supported-spring-baseline.md).
+See [current status](docs/ai-context/01_CURRENT_STATUS.md) and the
+[native run guide](docs/testing/NATIVE_POSTGRES.md) for evidence and limits.
+The owner authorises continuing checked local commits with SOP/Humanizer messages;
+keep PRs meaningful and obtain explicit authorisation before any push.
+
+The entries below are historical snapshots.
+
 > Living engineering state file. Update at every module boundary and at every session end.
 > Last updated: 08 July 2026 (P02 committed at 794a641 — compile-verified; Docker-gated DoD open)
 

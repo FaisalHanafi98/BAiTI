@@ -1,5 +1,28 @@
 # BAiTI — Current Status
 
+## Verified native foundation — 29 October 2026
+
+The complete native PostgreSQL 16.15 suite passes **57 unit/architecture +
+45 integration tests**, with no failures, errors or skips. Source commits
+`3c78d92`, `cb2399d`, `e2bb68c`, `aa126eb` and `2602fc4` cover the actor
+correction, native harness, permission persistence, V29 and history protection.
+See [the acceptance mapping](06_TESTING_EVIDENCE/2026-10-27_native_harness.md),
+[structured audit](../audits/foundation-2026-10-29/VERIFICATION.json) and
+[session record](02_SESSION_HISTORY/2026-10-29_foundation_checkpoint.md).
+
+The owner authorises continuing local commits after the shared SOP, Humanizer
+and relevant checks. Group related commits into meaningful PRs. No push or PR
+has occurred; explicit publication authorisation remains required. Earlier
+unrelated local research/file-organisation work is preserved.
+
+P03/P04 acceptance still has explicit gaps. Test-only tenancy is not P05;
+platform provisioning, complete constraint/enum coverage, all I1–I9, changed-line
+coverage and hosted CI remain open. The next bounded step is the isolated
+[supported-runtime upgrade](../adr/0002-supported-spring-baseline.md) before
+production tenancy/authentication. Docker, hosting/VPS and deployment stay deferred.
+
+The sections below are historical checkpoints and do not override this result.
+
 > **Last Updated**: 2026-08-24 (P04 completed and committed at `9e6e22d`, `2b5cd7c` — compile & Spotless GREEN across 55 Java classes).
 > **Updated By**: Antigravity AI (Reviewed manually by Faisal)
 > **Evidence Basis**: Direct repository inspection, `cmd /c mvnw.cmd spotless:apply test-compile` (BUILD SUCCESS in 11.7s), and Git commit log.
