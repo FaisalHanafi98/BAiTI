@@ -77,7 +77,7 @@ Structure per `meeting/04_REACT_REFRESHER.md` §11 (canonical): `api/` (axios cl
 
 | Layer | Mechanism | Fails how |
 |---|---|---|
-| 1 · Identity | `tenantId` claim inside signed JWT; `TenantContextFilter` rejects (401) any mismatch between claim and slug/subdomain resolution | Forged/mismatched context never reaches services |
+| 1 · Identity | `tenantId` claim inside signed JWT; `JwtAuthenticationFilter` rejects (401) any mismatch between claim and slug/subdomain resolution | Forged/mismatched context never reaches services |
 | 2 · Application | Hibernate 7 `@TenantId` inherited from `TenantScopedBaseEntity` + `CurrentTenantIdentifierResolver` reading `TenantContext` | Intended managed-entity scoping; production paths still require the complete isolation suite |
 | 3 · Database | PostgreSQL RLS policy on every domain table: `USING (tenant_id = current_setting('app.current_tenant', true)::uuid)` | Native SQL, JDBC, or a layer-2 bug still cannot cross tenants |
 
@@ -124,7 +124,7 @@ The separate P05 super-admin endpoints (`/api/admin/**`) remain unimplemented. T
 ## 7. Security Architecture
 
 ### 7.1 AuthN flow
-Stateless JWT per `meeting/03_SPRINGBOOT_REFRESHER.md` §6: CSRF off, sessions STATELESS, `JwtAuthenticationFilter` before username/password filter. Access token 15 min HS256 (`userId`,`tenantId`,`roles`,`permissions`,`jti`); secret ≥ 256-bit from env, rotation procedure documented in runbook.
+Stateless JWT per `meeting/03_SPRINGBOOT_REFRESHER.md` §6: CSRF off, sessions STATELESS, `JwtAuthenticationFilter` before username/password filter. Access token 15 min HS256 (`userId`,`tenantId`,`roles`,`permissions`,`jti`); secret is the Base64 encoding of at least 32 random bytes from JWT_SECRET, without a main-profile default. Rotation procedure remains a runbook task. The implemented access boundary checks issuer/audience/token purpose, required UUID claims, HS256 signature and strict expiration; no session/form/basic fallback. Password login and refresh issuance remain unfinished. Native tests use a separate random in-memory key, never a production default.
 
 ### 7.2 Refresh tokens — rotation with reuse detection
 `refresh_tokens` table (hashed token, family_id, user, tenant, expires_at, rotated_at, revoked_at). Refresh ⇒ old row marked rotated, new row same family. **Presenting a rotated token revokes the family** (stolen-token replay defence, FR-AUTH-03). Logout/deactivation revokes all user rows. Cleanup job purges expired rows.

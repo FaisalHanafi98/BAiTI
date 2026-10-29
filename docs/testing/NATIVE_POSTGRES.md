@@ -173,3 +173,14 @@ cleanup and physical connection reuse. A bounded owner pool performs only the
 current global active-slug lookup; primary JPA/JDBC stays on baiti_app. See
 [the slice record](../ai-context/06_TESTING_EVIDENCE/2026-10-29_tenant_context.md).
 Real JWT login, refresh rotation, RBAC, actor auditing and full I1–I9 remain open.
+
+## Signed access-token checkpoint — 29 October 2026
+
+The access-token boundary passes 238 tests (119 unit/architecture + 119 integration),
+zero failures/errors/skips. Main startup requires JWT_SECRET as Base64 of at least
+32 random bytes. NativePostgresTestSupport supplies an independently generated,
+per-process in-memory test key via dynamic properties. It never reads production
+key material or changes the seven-key native runner settings contract. No key or
+raw token is included in committed evidence. Login/refresh endpoints remain
+unfinished; [the access record](../ai-context/06_TESTING_EVIDENCE/2026-10-29_jwt_access.md)
+separates signed-principal tests from real user authentication.

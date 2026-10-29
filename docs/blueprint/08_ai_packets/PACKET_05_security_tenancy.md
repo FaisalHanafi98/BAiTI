@@ -66,3 +66,17 @@ Exit evidence: full `./mvnw verify` output + the I-suite listing filed to `docs/
 - [ ] G-RLS evidence filed; `docs/ai-context/01_CURRENT_STATUS.md` flips the milestone.
 - [ ] Login→me→refresh→logout demonstrated with curl transcript against dev profile + compose DB (two seeded tenants).
 - [ ] No secret material in repo; JWT secret consumed from env; commits sliced 5a–5e, each user-approved.
+
+### Slice 5b access-token checkpoint — 29 October 2026
+
+Given a correctly signed tenant access token and matching resolved active slug,
+a protected route succeeds without a session. Missing/foreign context and malformed,
+expired, unsigned, altered or wrong-key tokens return 401 before the route; a
+valid tenant token on the platform path returns 403. Required claims and exact
+15-minute expiry are checked. No default generated user or basic/form fallback.
+These cases pass in 238 native tests; see
+[access evidence](../../ai-context/06_TESTING_EVIDENCE/2026-10-29_jwt_access.md).
+This is part of 5b, not completion: password verification, opaque refresh rotation,
+family-reuse revocation, logout/me, rate limits, cookie CSRF and CORS remain next.
+CSRF is disabled only for the current bearer-only authenticated surface; any
+cookie refresh endpoint must add its explicit origin/header contract in that change.

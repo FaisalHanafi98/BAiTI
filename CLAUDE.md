@@ -2,7 +2,7 @@
 
 > LEVEL 2 under the root Development SOP (`../../CLAUDE.md`). Extends it; never contradicts it.
 > **Project**: BAiTI (formerly MyComunity) — multi-tenant community platform; first pilot is a landed RA.
-> **State (29 October 2026)**: P05 slice 5a passes 208 native tests; real authentication and full G-RLS are unfinished. Resume from `docs/ai-context/01_CURRENT_STATUS.md` and `docs/testing/NATIVE_POSTGRES.md`. ADRs 0002/0003 record the runtime and bounded global SQL policies. Proceed with P05 authentication; features remain gated by complete I1–I9.
+> **State (29 October 2026)**: tenant context and the access-token boundary pass 238 native tests; login/refresh and full G-RLS are unfinished. Resume from `docs/ai-context/01_CURRENT_STATUS.md` and `docs/testing/NATIVE_POSTGRES.md`. ADRs 0002/0003 record the runtime and bounded global SQL policies. Proceed with P05 login/refresh; features remain gated by complete I1–I9.
 
 ## Source of truth, in order
 

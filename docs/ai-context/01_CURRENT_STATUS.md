@@ -1,5 +1,28 @@
 # BAiTI — Current Status
 
+## P05 access-token boundary verified — 29 October 2026
+
+Active branch `feat/jwt-authentication`, based on tenant-context commit `91d6f61`,
+in the existing `backend/.local/persistence-acceptance` worktree. Full native
+verification passes **119 unit/architecture + 119 integration tests**, with zero
+failures/errors/skips. See [access-token evidence](06_TESTING_EVIDENCE/2026-10-29_jwt_access.md)
+and [structured record](../audits/jwt-authentication-2026-10-29/VERIFICATION.json).
+
+HS256 access tokens carry tenant/user, roles/permissions, issuer, audience, token
+purpose and jti. Required claims, algorithm and signature are checked; expiration
+is strict at the 15-minute boundary. The stateless HTTP chain verifies bearer
+identity against the resolved community and denies tenant tokens on platform
+routes. Default generated-user/form/basic/session fallback is disabled. Main
+startup now requires a Base64 JWT_SECRET containing at least 32 decoded bytes;
+native tests generate a separate per-process in-memory test key.
+
+This is the access-token portion of 5b. No password-login, refresh, logout or me
+endpoint is implemented yet; tests issue synthetic signed principals directly.
+Next is the real tenant-aware login/refresh flow, rate limits and cookie/CSRF
+contract, followed by RBAC, actor auditing, onboarding, async propagation and
+full I1–I9. Full G-RLS, changed-line coverage and hosted CI remain open. No feature
+module, push, PR, Docker or hosting change. Local SOP/Humanizer commits continue.
+
 ## P05 slice 5a verified — 29 October 2026
 
 Active worktree: `backend/.local/persistence-acceptance` in the original checkout,
