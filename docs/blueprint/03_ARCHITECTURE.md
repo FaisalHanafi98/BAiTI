@@ -47,9 +47,9 @@ Per feature package: `Controller → Service → Repository → Entity` + `dto/`
 Rules (ArchUnit tests in CI — Packet 03):
 1. Controllers never touch repositories; controllers speak DTOs only, never entities.
 2. Cross-package calls go through `*Service` interfaces; repositories are package-private.
-3. Every `@Entity` under `my.baiti.(domain)` extends `TenantAwareBaseEntity` — except `Tenant` itself and `SuperAdmin`.
+3. Every tenant `@Entity` inherits tenant/audit fields from `TenantScopedBaseEntity`. Ordinary UUID-id entities extend its `TenantAwareBaseEntity` subclass. `RolePermission` uses the existing composite (role_id, permission_id) key and extends `TenantScopedBaseEntity` directly. `Tenant` and `SuperAdmin` remain global exceptions. This 29 October mapping repair adds no database columns.
 4. Only `my.baiti.security` may import JWT libraries; only `my.baiti.tenancy` may write `TenantContext`.
-5. No `java.time.LocalDateTime` in entities — `Instant`/`OffsetDateTime` (UTC) only; formatting is a frontend concern (NFR-I18N-01).
+5. Entity timestamps use `Instant`/`OffsetDateTime` (UTC), never `LocalDateTime`; legitimate calendar values such as billing month/due date remain `LocalDate`. Formatting is a frontend concern (NFR-I18N-01).
 
 `common` package: `TenantAwareBaseEntity` (id UUID, tenantId, createdAt, updatedAt, createdBy, updatedBy — JPA auditing), `ApiError` (RFC 7807 shape), global `@RestControllerAdvice`, pagination defaults.
 
