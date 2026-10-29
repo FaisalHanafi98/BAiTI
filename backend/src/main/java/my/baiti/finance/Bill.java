@@ -16,6 +16,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import my.baiti.common.TenantAwareBaseEntity;
 import my.baiti.property.Unit;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter
@@ -52,6 +54,7 @@ public class Bill extends TenantAwareBaseEntity {
   @Column(name = "amount", nullable = false, precision = 12, scale = 2)
   private BigDecimal amount;
 
+  @JdbcTypeCode(SqlTypes.CHAR)
   @Column(name = "currency", nullable = false, length = 3)
   private String currency = "MYR";
 

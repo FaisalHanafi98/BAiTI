@@ -44,3 +44,22 @@ Pushing; force-push; hard reset; editing applied migrations; hand-editing `front
 ## Session duties
 
 At session end (per `docs/ai-context/README.md`): update `docs/ai-context/01_CURRENT_STATUS.md`, add a `02_SESSION_HISTORY/` entry, file test evidence under `06_TESTING_EVIDENCE/` when tests ran.
+
+## Native execution amendment — 29 October 2026
+
+Direct owner direction supersedes Docker-only development prerequisites. Use
+native PostgreSQL 16 and the explicit target/role preflight in
+`docs/blueprint/06_TESTING_STRATEGY.md` section 3.6. The native harness and local
+runner are implemented; follow `docs/testing/NATIVE_POSTGRES.md`. Docker,
+Testcontainers, packaging, hosting/VPS and CD remain deferred to later P18.
+Foundation tests use a labelled test-only tenant fixture; they do not implement
+production P05 tenancy or close G-RLS. Full local I1–I9 still precedes features,
+and activated GitHub CI repeats those gates before merge. This amendment does
+not waive concrete commit-message approval or explicit push authorisation.
+
+**Owner commit direction — 29 October 2026:** for this continuing BAiTI work,
+the owner now authorises local commits after drafting each message with the
+shared SOP, applying Humanizer and completing the relevant checks. A separate
+message approval pause is no longer required. Group related commits into
+meaningful PRs with their necessary tests and documentation. Explicit push
+authorisation is still required.

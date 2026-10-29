@@ -7,6 +7,7 @@
 
 # --- Java / Maven ---
 target/
+backend/.local/
 *.class
 *.jar
 !.mvn/wrapper/maven-wrapper.jar

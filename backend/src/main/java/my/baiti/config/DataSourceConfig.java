@@ -22,8 +22,8 @@ import org.springframework.context.annotation.Primary;
  * NOT a bean here — Spring Boot's Flyway auto-configuration creates a dedicated connection from
  * {@code spring.flyway.url/user/password} (set in the profile YAML). When {@code spring.flyway.url}
  * is present, Flyway ignores the primary DataSource and uses the migrator credentials directly.
- * {@code baiti_migrator} owns the schema, so RLS does not bind it (this is why the two roles must
- * never collapse — a single-owner app role would silently void tenant isolation).
+ * {@code baiti_migrator} owns the schema and must never be the runtime pool user. FORCE RLS also
+ * binds that owner; platform operations still require explicit tested policies and privilege scope.
  *
  * <p>Env contract: {@code .env.example} / {@code docs/blueprint/03_ARCHITECTURE.md §8}.
  */

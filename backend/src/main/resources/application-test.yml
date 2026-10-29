@@ -1,5 +1,7 @@
-# Test profile: connection properties are supplied per-test via @DynamicPropertySource
-# (singleton PostgreSQL16 Testcontainer — see HealthIT). Only structural config lives here.
+# Explicit native test properties are registered only after target/role preflight.
+server:
+  address: 127.0.0.1
+
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver

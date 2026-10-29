@@ -3,29 +3,34 @@
 > **Blueprint document 6 of 9** | Produced: 2026-07-07
 > TDD is non-negotiable (CON-5): every behaviour starts as a failing test. This document defines what kinds of tests exist, what they must prove, and which of them are **release gates**. Evidence rules at §10 apply to every claim of "done".
 
+**Execution revision — 27 October 2026, direct owner instruction:** native
+PostgreSQL 16 is the current integration-test environment. Docker and
+Testcontainers execution are deferred to the later deployment stage. Section
+3.6 is the owning native-target contract; required assertions stay unchanged.
+
 ---
 
 ## 1. Philosophy & Pyramid
 
-Prefer **vertical-slice integration tests against real PostgreSQL** (Testcontainers) as the backbone — RLS, constraints, and transactions are the system's riskiest parts and none of them exist on mocks or H2. Unit tests cover pure logic (state machines, balance math, validators). E2E is thin and late.
+Prefer **vertical-slice integration tests against real PostgreSQL** (native PG16 now; Testcontainers parity later) as the backbone — RLS, constraints, and transactions are the system's riskiest parts and none of them exist on mocks or H2. Unit tests cover pure logic (state machines, balance math, validators). E2E is thin and late.
 
 ```
         Playwright E2E (post-MVP)        ~ dozens   · critical journeys only
       Frontend component (Vitest+RTL)    ~ hundreds · behaviour, not markup
-    Backend integration (Testcontainers) ~ hundreds · slice: HTTP→service→JPA→PG(RLS)
+    Backend integration (real PG16)      ~ hundreds · slice: HTTP→service→JPA→PG(RLS)
   Backend unit (JUnit5+Mockito)          ~ hundreds · domain rules, mappers, guards
   + ArchUnit (architecture as tests) · + contract (OpenAPI diff) · + migration test
 ```
 
-Speed budget: full backend `mvn verify` ≤ 5 min local (one shared PG container per module via singleton pattern); frontend suite ≤ 1 min. A slow suite is a defect — it kills the TDD loop.
+Speed budget: full backend `mvn verify` ≤ 5 min local (reuse a verified native test instance with isolated fixture/database lifecycle); frontend suite ≤ 1 min. These are targets, not measured results. Container lifecycle tuning is deferred.
 
 ## 2. Backend Unit Tests
 
 Scope: state-machine transition guards (complaint/maintenance/booking/bill), bill-balance arithmetic (BigDecimal edges: exact cover, overpay reject, partials), permission-evaluator logic, DTO validation annotations, approval-code generation, token-family logic. Mockito for collaborators; **never mock repositories in slice tests** — that's what §3 is for. Naming: `method_condition_expectedOutcome()`.
 
-## 3. Backend Integration Tests (Testcontainers — the backbone)
+## 3. Backend Integration Tests (real PostgreSQL — the backbone)
 
-Every feature packet ships slice tests: `MockMvc` (or `WebTestClient`) → real Spring context → real PG16 container → Flyway-migrated schema.
+Every feature packet ships slice tests: `MockMvc` (or `WebTestClient`) → real Spring context → real native PG16 → Flyway-migrated schema. Tests must share the same assertions when a later container mode is added.
 
 Mandatory baseline suites (referenced by packets):
 
@@ -38,6 +43,76 @@ Mandatory baseline suites (referenced by packets):
 **3.4 Auth suite** — login happy/wrong-password/inactive-user/suspended-tenant (all generic 401); refresh rotation; **reuse of rotated token revokes family**; logout revokes; rate limit returns 429.
 
 **3.5 Authorization matrix** — see §5.3.
+
+### 3.6 Native PostgreSQL execution contract — accepted 27 October 2026
+
+**Implementation status — 29 October:** native harness/preflight, HealthIT,
+MigrationIT and the local runner are implemented and exercised on private
+PostgreSQL 16.15 targets. No container is started. See
+[native run instructions](../testing/NATIVE_POSTGRES.md) and
+[current evidence](../ai-context/01_CURRENT_STATUS.md). Foundation JPA tests
+explicitly import a fixed test-only tenant resolver; production P05/G-RLS,
+business journeys and hosted CI remain separate unfinished work.
+
+**Target and lifecycle:**
+
+- Verify PostgreSQL **16**, the exact host/port and database, test ownership and
+  existing Flyway history. Prefer a dedicated native test instance. A shared
+  local server is acceptable only with explicitly test-owned databases and
+  compatible role ownership; PostgreSQL roles are cluster-wide. Do not alter
+  another project's roles/grants or reuse its database.
+- Keep the normal development database separate from disposable test databases.
+  Fresh migration cases need genuinely empty, owned targets; synthetic upgrade
+  and interruption cases need separate known fixtures/history. Reset/drop only
+  exact resources created/owned for that run, after identity checks. Preserve
+  unrelated sentinel objects and records. No broad clean/reset on a developer DB.
+- Provision/bootstrap the test target before Flyway. Use `baiti_migrator` for
+  ownership/migrations and non-owner `baiti_app` for runtime assertions; app must
+  be NOSUPERUSER/NOBYPASSRLS and must not inherit an effective owner/bypass path.
+  Privileged setup is confined to provisioning and labelled fixture setup; it
+  cannot substitute for application-role positive and negative controls.
+
+**Implemented native configuration contract:**
+
+| Setting | Required behavior |
+|---|---|
+| `BAITI_TEST_DB_MODE=native` | Explicit native selection; must not load/start a container. Container mode, if later added, is opt-in and uses the same assertions. |
+| `TEST_DB_URL` | Explicit dedicated test JDBC target, with no fallback to `DB_URL`, the dev DB or a default `postgres` database. |
+| `TEST_DB_APP_USER` / `TEST_DB_APP_PASSWORD` | Runtime test connection; validate intended app identity/privileges. |
+| `TEST_DB_MIGRATOR_USER` / `TEST_DB_MIGRATOR_PASSWORD` | Separate migration connection, never substituted into the application pool. |
+| `TEST_DB_OWNER_TOKEN` | Canonical UUID matching the dedicated DB comment `baiti-test:<UUID>`, checked through the shared-object catalog before migrations. A prefix alone is insufficient. |
+
+Credentials stay in the process environment/local ignored configuration or
+ephemeral CI setup, never source, command transcripts or artifacts. Missing
+settings, wrong version, unsafe identity or invalid role attributes fail the
+integration phase with an actionable error. A name/prefix or opt-in flag alone
+does not establish disposal ownership. No automatic Docker fallback, automatic
+dependency skip, H2 substitute or successful build that hides unrun ITs.
+
+**Required harness and execution evidence:**
+
+1. Prove native selection cannot initialize Testcontainers, including static
+   initialization; prove invalid/missing target settings cannot reach a dev DB.
+2. Wire the shared native harness into HealthIT, MigrationIT and repository/
+   isolation tests. Retain full `mvn verify` discovery, assertion coverage and
+   failure exit status. The container-specific health test must be adapted,
+   not simply excluded to make the build green.
+3. Execute fresh/upgrade checks as relevant, Hibernate validate and intended-role
+   round trips. With P05, execute every I-1–I-9 and the action matrix, including
+   actual pool/transaction/async behavior. Capture revision, versions, target
+   identity without credentials, test names/counts, failures/skips and cleanup.
+4. All I-1–I-9 must pass on real native PG16 before local feature work after P05. It is
+   **local G-RLS evidence**, not a GitHub CI result. Activated GitHub CI must
+   rerun the same migration/isolation/authz suites before merge; hosted UAT and
+   release keep their CI and target-environment gates. If the remote is not yet
+   activated, local development can continue after the local gate; no merge or
+   hosted/release pass is implied.
+
+GitHub CI may provision native PG16 directly on a runner, without Docker,
+service containers or `act`; prove the actual version, roles, dependencies and
+runner cleanup when implementing it. Do not assume a runner comes preconfigured,
+has free entitlement or needs no setup. CI job success and hosted deployment
+readiness are separate. No deployment pipeline is needed for local development.
 
 ## 4. Frontend Tests
 
@@ -61,11 +136,20 @@ The suite creates **two tenants (A, B)** through the real onboarding service, th
 
 Failure of any I-test **blocks merge and blocks release** — no exceptions, no skips (root SOP §4.4).
 
+It also blocks local feature work until the complete local gate in §3.6 passes.
+Changing native/container execution does not relax any I-test or role check.
+
 **5.3 Authorization matrix test**: parametrised over the access-control grid (02 §8): for every (endpoint × role) pair, expected 2xx/403/404. The grid lives as a test fixture table so adding an endpoint without classifying it fails the test (`unmapped endpoint` assertion via endpoint enumeration from the OpenAPI doc). Own-scope (`*_OWN`) endpoints additionally prove: Resident 1 cannot read Resident 2's records *within the same tenant*.
 
 ## 6. System & UAT Testing
 
-**System testing** (staging, per milestone): journey scripts J1–J5 (02 §5) executed end-to-end against a deployed build with two seeded tenants; evidence captured per the existing templates in `docs/ai-context/06_TESTING_EVIDENCE/browser_verification.md` (step/expected/actual tables — those templates are adopted as-is, including the Phase-5 and Phase-8 flow tables already defined there).
+**Local system testing now:** applicable journey scripts J1–J5 (02 §5) against
+the local application/native PG16 with two synthetic tenants; capture expected/
+actual results and failure cases. **Hosted system/UAT later, in P18:** repeat
+against the selected staging topology before release. Local acceptance is not
+staging, operational or stakeholder sign-off evidence. Use the current
+`docs/ai-context/06_TESTING_EVIDENCE/README.md` for evidence navigation; earlier
+archived templates are references rather than missing active prerequisites.
 
 **UAT plan** (pre-v1.0, with Anep + one friendly MC persona if available):
 - Coverage: per role × per module CRUD + each state machine walked to every terminal state + billing lifecycle with partial payment + cross-tenant spot checks from the UI.
@@ -76,6 +160,10 @@ Failure of any I-test **blocks merge and blocks release** — no exceptions, no 
 ## 7. Performance & Stress Testing (milestone M5, pre-go-live)
 
 Tool: **k6** against staging with seeded volume (2 tenants × 500 units × 12 months bills ≈ 12 k bills + payments).
+Hosting is deferred: early local profiling/load checks are development
+diagnostics; topology-specific staging benchmarks and release acceptance run
+in P18 after a target is selected. Do not install load tooling or provision a
+server just to revise this plan.
 - Load: 50 VU mixed read/write for 10 min ⇒ assert p95 < 200 ms reads / < 400 ms writes, 0 errors.
 - Stress: ramp to 200 VU ⇒ find the knee; document it; no crashes/leaks (heap stable).
 - Soak: 20 VU for 2 h ⇒ no connection-pool exhaustion, no memory creep.
@@ -86,7 +174,7 @@ Results filed in testing-evidence; regressions vs the recorded baseline > 20 % f
 
 | Check | When |
 |---|---|
-| OWASP Dependency-Check (backend) + `npm audit` (frontend) fail on high/critical | every CI run |
+| Authorized local dependency/security checks and individual primary advisory review; no dependency-inventory uploads through remote audit commands | CI/review as implemented, with actual scope/results recorded |
 | Isolation suite (§5) — the tenant-boundary pen-test in code | every CI run |
 | AuthZ matrix (§5.3) | every CI run |
 | Secret scan (git-secrets/gitleaks pre-commit + CI) | every commit |

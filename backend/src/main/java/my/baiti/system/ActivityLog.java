@@ -3,6 +3,7 @@ package my.baiti.system;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import java.net.InetAddress;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,5 +30,5 @@ public class ActivityLog extends TenantAwareBaseEntity {
   private String detail;
 
   @Column(name = "ip_address")
-  private String ipAddress;
+  private InetAddress ipAddress;
 }
