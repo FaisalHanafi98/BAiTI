@@ -2,7 +2,7 @@
 
 > LEVEL 2 under the root Development SOP (`../../CLAUDE.md`). Extends it; never contradicts it.
 > **Project**: BAiTI (formerly MyComunity) — multi-tenant community platform; first pilot is a landed RA.
-> **State (29 October 2026)**: native foundation verification passes 102 tests; P03/P04 acceptance still has explicit gaps, and P05/G-RLS is unfinished. Resume from `docs/ai-context/01_CURRENT_STATUS.md` and `docs/testing/NATIVE_POSTGRES.md`. The supported-runtime upgrade is scoped in `docs/adr/0002-supported-spring-baseline.md` before P05 and feature work.
+> **State (29 October 2026)**: supported-runtime verification passes 105 tests; P03/P04 acceptance still has explicit gaps, and P05/G-RLS is unfinished. Resume from `docs/ai-context/01_CURRENT_STATUS.md` and `docs/testing/NATIVE_POSTGRES.md`. ADR `0002-supported-spring-baseline.md` records the verified runtime change; finish remaining foundation acceptance and the explicit platform policy before P05 and feature work.
 
 ## Source of truth, in order
 
@@ -12,7 +12,7 @@
 
 ## Stack
 
-Spring Boot 3 / Java 17+ (Temurin 21 on this machine) / Maven 3.9 · native PostgreSQL 16 + RLS · Flyway · React 18 + TS + Vite · JUnit 5 · Vitest. Docker/Testcontainers execution and hosting/VPS are deferred by the owner (27 October 2026).
+Spring Boot 4.1.2 / Java 17 source (Temurin 21 runtime here) / Maven 3.9 · native PostgreSQL 16 + RLS · Flyway · planned React 18 + TS + Vite · JUnit Jupiter · planned Vitest. Docker/Testcontainers execution and hosting/VPS are deferred by the owner (27 October 2026).
 
 
 ## Non-negotiables

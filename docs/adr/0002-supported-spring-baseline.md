@@ -1,7 +1,8 @@
 # 0002 — Move the backend to a supported Spring baseline
 
-Date: 29 October 2026. Status: accepted for isolated implementation; the current
-foundation still runs Spring Boot 3.3.5 until the upgrade passes verification.
+Date: 29 October 2026. Status: implemented and locally verified on
+`chore/supported-spring-baseline`. The separate foundation branch retains its
+Spring Boot 3.3.5 checkpoint until the upgrade is integrated.
 
 ## Context and decision
 
@@ -52,3 +53,21 @@ inventory or running a remote vulnerability audit.
 Passing this upgrade will not close P05, the explicit platform-provisioning policy,
 exhaustive constraint checks, full G-RLS, hosted CI or release readiness. Those
 remain separate acceptance gates.
+
+## Local implementation result
+
+The 3.5.16/springdoc 2.10.0 bridge compiled before the 4.1.2/springdoc 3.2.0
+adaptation. The runtime-line assertion failed on the old baseline and passes on
+4.1.2. Modular Flyway/web/test dependencies, moved imports, explicit REST test
+configuration and the Jackson 3 test parser are updated. ArchUnit uses its core
+artifact with ordinary Jupiter tests; unused container dependencies are removed
+while Docker execution stays deferred.
+
+The complete native suite passed 58 unit/architecture plus 47 integration tests,
+zero failures/errors/skips, including authenticated OpenAPI generation and
+anonymous denial. A new empty PostgreSQL 16 target applied all 29 unchanged
+migrations with the upgraded Flyway. See the
+[runtime verification](../audits/runtime-upgrade-2026-10-29/VERIFICATION.json)
+for exact run/target evidence and remaining limits. Normal production-profile
+startup remains dependent on unfinished P05; a test-only tenant fixture does not
+establish production readiness.

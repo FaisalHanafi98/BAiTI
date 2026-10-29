@@ -4,11 +4,11 @@ Multi-tenant community management platform. The intended isolation design uses J
 
 **Status**: pre-code. The complete engineering blueprint lives at [`docs/blueprint/`](docs/blueprint/README.md) — start there. Implementation proceeds by executing the AI work packets in [`docs/blueprint/08_ai_packets/`](docs/blueprint/08_ai_packets/README.md), currently at **P02 (backend skeleton)**.
 
-**Status — 29 October 2026**: native PostgreSQL foundation verification passes 102 tests. Production tenancy, P05/G-RLS and the frontend remain unfinished. Docker/Testcontainers, hosting/VPS and deployment stay deferred. Start with [current evidence](docs/ai-context/01_CURRENT_STATUS.md), [native tests](docs/testing/NATIVE_POSTGRES.md) and the [supported-runtime upgrade](docs/adr/0002-supported-spring-baseline.md) before authentication work.
+**Status — 29 October 2026**: the supported Spring runtime passes 105 native tests. Production tenancy, P05/G-RLS and the frontend remain unfinished. Docker/Testcontainers, hosting/VPS and deployment stay deferred. Start with [current evidence](docs/ai-context/01_CURRENT_STATUS.md), [native tests](docs/testing/NATIVE_POSTGRES.md) and the [runtime decision](docs/adr/0002-supported-spring-baseline.md).
 
 ## Stack
 
-Spring Boot 3 · Java 17+ · Maven · PostgreSQL 16 (+RLS) · Flyway · React 18 · TypeScript · Vite · Tailwind · TanStack Query · JUnit 5 + Testcontainers · Vitest · GitHub Actions
+Spring Boot 4.1.2 · Java 17 source / Java 21 runtime · Maven · native PostgreSQL 16 (+RLS) · Flyway · JUnit Jupiter. React 18, TypeScript, Vite, Tailwind, TanStack Query and Vitest remain the planned frontend stack. Docker/Testcontainers parity and hosting are deferred; GitHub CI is not activated.
 
 ## Layout
 

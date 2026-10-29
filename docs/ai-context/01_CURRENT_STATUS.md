@@ -1,5 +1,26 @@
 # BAiTI — Current Status
 
+## Supported runtime verified — 29 October 2026
+
+Branch `chore/supported-spring-baseline` is an isolated local worktree based on
+foundation commit `1aec31c`. Boot 4.1.2 and springdoc 3.2.0 pass **58 unit/architecture
+and 47 integration tests**, with zero failures/errors/skips. The old runtime guard
+failed on Boot 3.3.5; the documented 3.5 bridge compiled before the 4.x adaptation.
+A new empty native PG16 database also applied all 29 existing migrations; its
+subsequent full fixture run passed the same 105 tests in 41.635 seconds.
+See [ADR 0002](../adr/0002-supported-spring-baseline.md),
+[runtime evidence](../audits/runtime-upgrade-2026-10-29/VERIFICATION.json) and
+[the session record](02_SESSION_HISTORY/2026-10-29_supported_runtime_upgrade.md).
+
+All SQL bytes remain unchanged. The inherited test-only tenant fixture does not
+implement production tenancy. Remaining P03/P04 constraint/enum cases, the explicit
+platform policy, P05, I1–I9, changed-line coverage, hosted CI and release remain open.
+The foundation branch and unrelated research/files are preserved. No push or PR
+has occurred. The owner authorises continuing local commits after SOP/Humanizer
+and checks; keep the runtime upgrade as its own meaningful PR after foundation.
+
+The earlier foundation checkpoint below is retained as dated baseline evidence.
+
 ## Verified native foundation — 29 October 2026
 
 The complete native PostgreSQL 16.15 suite passes **57 unit/architecture +

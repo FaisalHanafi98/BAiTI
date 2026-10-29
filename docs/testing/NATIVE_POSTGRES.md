@@ -115,3 +115,18 @@ The next runtime work is [ADR 0002](../adr/0002-supported-spring-baseline.md).
 Do not infer full P03/P04 acceptance, production tenant resolution, exhaustive
 constraint/enum coverage, I1–I9, changed-line coverage or hosted success from the
 foundation suite. The current private cluster is retained for synthetic tests.
+
+## Supported-runtime checkpoint — 29 October 2026
+
+On `chore/supported-spring-baseline`, Boot 4.1.2/springdoc 3.2.0 pass **105 tests**:
+58 unit/architecture and 47 integration cases, without failures/errors/skips.
+The extra cases verify the loaded Boot line and authenticated OpenAPI generation
+with anonymous denial. Existing role, schema, boundary and history checks remain
+in place. A separate empty native database applied all 29 unchanged migrations.
+See [the runtime audit](../audits/runtime-upgrade-2026-10-29/VERIFICATION.json).
+
+Private settings for this isolated worktree are supplied with `-SettingsPath`
+pointing to the original project's ignored runtime folder. The test runner still
+loads only the seven test keys and never provisions or resets a database.
+Production-profile startup and real JWT/context/onboarding depend on P05; the
+test fixture and authenticated mock user are not production authentication proof.
