@@ -1,0 +1,272 @@
+{
+  "date": "2026-10-29",
+  "baselineHead": "3c78d929e383ff4d9bf7c6f9cc14384c133a4aba",
+  "candidateParent": "e2bb68c671b80bd2d28a1a4c30888a43febcbd42",
+  "branch": "test/native-postgres-harness",
+  "environment": {
+    "os": "Windows 11",
+    "java": "Eclipse Adoptium 21.0.11",
+    "maven": "3.9.16",
+    "postgresql": "16.15",
+    "host": "127.0.0.1",
+    "port": 55432,
+    "database": "baiti_test_commit_20261029_2f918711",
+    "testMode": "native",
+    "appRole": "baiti_app",
+    "migratorRole": "baiti_migrator",
+    "ownershipMarkerChecked": true,
+    "credentialsExcluded": true
+  },
+  "orderedStages": [
+    {
+      "scope": "native",
+      "command": "Invoke-NativeTests.ps1 -SettingsPath <ignored private settings>",
+      "source": "Clean Git export plus ordered explicit scope files",
+      "unitTests": 46,
+      "integrationTests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "migrationVersion": 28,
+      "log": "docs\\audits\\foundation-2026-10-29\\32-commit-native-scope.log",
+      "logSha256": "1c00af3cf729f27e8201d85a50af89a51c7a70c43a14d31097c44cb8045b01cd"
+    },
+    {
+      "scope": "permission-persistence",
+      "command": "Invoke-NativeTests.ps1 -SettingsPath <ignored private settings>",
+      "source": "Clean Git export plus ordered explicit scope files",
+      "unitTests": 57,
+      "integrationTests": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "migrationVersion": 28,
+      "log": "docs\\audits\\foundation-2026-10-29\\33-commit-grants-scope.log",
+      "logSha256": "9f9c359e4df8bbf7cb20a5c7f13cfcce2ffb4f83ac72f648ba460d498ea7ca4a"
+    },
+    {
+      "scope": "tenant-setting-upgrade",
+      "command": "Invoke-NativeTests.ps1 -SettingsPath <ignored private settings>",
+      "source": "Clean Git export plus ordered explicit scope files",
+      "unitTests": 57,
+      "integrationTests": 38,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "migrationVersion": 29,
+      "log": "docs\\audits\\foundation-2026-10-29\\34-commit-context-scope.log",
+      "logSha256": "517da9affedd140aaa6399c4e173abf668c23f31605f40815987b29fa37be30e"
+    }
+  ],
+  "upgrade": {
+    "from": 28,
+    "to": 29,
+    "priorFixtureTenants": 2,
+    "fixtureTenantsPreserved": true,
+    "sentinel": "baiti_upgrade_sentinel.preserved_record",
+    "sentinelValuePreserved": true,
+    "sentinelIsSynthetic": true,
+    "existingTargetsReset": false
+  },
+  "preservation": {
+    "unchangedCount": 37,
+    "files": [
+      {
+        "path": "backend/src/main/resources/db/migration/.gitkeep",
+        "sha256": "acf096d7456a47da4d1950b5f5af85dd59da0fe49837d14e27100f71a0700f2b",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V1__baseline_extensions_and_grants.sql",
+        "sha256": "5242b593a52d07485a8b376ec7b11580dc4aaa547ffa52b21b87738280e21e86",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V10__units.sql",
+        "sha256": "98a48b3fe1c13a92215bfe0f633071868f50777877492b3735f2fcb079bd2a16",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V11__residents.sql",
+        "sha256": "753f366f547b36b1f1ec72387af9bc5bdf46b8cfff9c73bf481cb7ff32b1fa40",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V12__family_members.sql",
+        "sha256": "02c5f67b6cf1a1040cb95d3815ccbb417d919c8b8c0ddf373ff7a4c096b163b2",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V13__payment_methods.sql",
+        "sha256": "402f0bb364ff1585bca7afc12f76752b287ee02d7d720e763868b824fa5ecf39",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V14__bills.sql",
+        "sha256": "50cccfbd0a1f7414afccb87401888e6544b5a4dcbd1a34da334a912fb75d5137",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V15__payments.sql",
+        "sha256": "e59e83bafa7e7116e87960857a49e59fe7298baee718d62250cf1e42e9bc7beb",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V16__complaint_categories.sql",
+        "sha256": "3e1a5910b820ba8bd5e2fa28027fcc39f09836303402cddbe219f0fc7bc1c3e9",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V17__complaints.sql",
+        "sha256": "53b7b1f905b6356d67f3208aa34aa7156af74b5d28338be6dc4e99e394ffdd03",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V18__complaint_updates.sql",
+        "sha256": "753ed2f8116550363489f8a901c7ae26713e3556e788b89daa909c535e1f3d6e",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V19__maintenance_requests.sql",
+        "sha256": "23bf1c10c62e737bb370e69f725a130c47f2d47f1218dfa251be278d45565e38",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V2__tenants.sql",
+        "sha256": "482a9ef78899674d52eae7ca5fc8a2396b52fe713a14f145afdad8a2396b47a1",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V20__facilities.sql",
+        "sha256": "8392d300db12bff8851b1ad9c7b0b5930649f8f8c2a60b1d18fe2f1b7ea77b66",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V21__facility_bookings.sql",
+        "sha256": "96ab4691d14a7452083b04674181220e3de4bab30fb3a7a0be118b46708864e5",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V22__announcements.sql",
+        "sha256": "0c6741f8f81d64b8f936b0b0e8e2ef15d2885430730ccd07b0d0a5a43c940d53",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V23__events.sql",
+        "sha256": "a9a93a8baa833adf08b2e3e60242d17b7500891f7561970af94ed769e7df99e3",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V24__visitor_pre_registrations.sql",
+        "sha256": "b69f87501abebb6f6770839d7a949b84a1a40eb2763118dcf2a665c3ed36875b",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V25__visitors.sql",
+        "sha256": "38e11be7789e6611ae7a827185a5e9209f8bb9a4cc851baeb59f1299fecbfb21",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V26__notifications.sql",
+        "sha256": "804329211af20a2486a6a629150dba4211c1c6e5fe2a3c0da71db53396c47a33",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V27__activity_logs.sql",
+        "sha256": "48df62df4c540122730af20ddf9e9e024aa679f4e7aea787f3c7be384d0681ab",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V28__enable_rls.sql",
+        "sha256": "a1a24fd2d2e843468bfb42a57298d6a434122f20717304d40a2a6d709a01a214",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V3__super_admins.sql",
+        "sha256": "6ca024729e6938439a5fd5ceecde910d7bd59387feb21a84d77520db7f1aa7fa",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V4__permissions.sql",
+        "sha256": "648763f74380dba84d00284bbf56dc09e94ba2c377760b2e9dcffa8c18074ded",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V5__roles.sql",
+        "sha256": "f113629f3ad8af23571418ddcd1b7f14810d1ea6cf03450e98955823f49df983",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V6__roles_permissions.sql",
+        "sha256": "79c86d04e5e4ee42ec4698d73e24da42dd1a67003841044c6e88dbc30c2e7063",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V7__users.sql",
+        "sha256": "6bc4a2319bc6e2775d7bb153161c90121898df52317bff650c4953a205aa974b",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V8__refresh_tokens.sql",
+        "sha256": "a5b7c09300d3188724725337f1adeedcd3e4093cf7ff26fe6db288b23690a4a5",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V9__blocks.sql",
+        "sha256": "acba49864b036d6830a9f6564414c601e3226b0e65963091b87eddd97a517a39",
+        "unchanged": true
+      },
+      {
+        "path": "anep/Class Diagram.pdf",
+        "sha256": "f8ac2da1218d9c0a9a03dacc9e9db9ccea9e184fec6a275e5181fbe23134aa4e",
+        "unchanged": true
+      },
+      {
+        "path": "anep/erdiagram.pdf",
+        "sha256": "312e296d813f3ca4ae53038a50c2b132d2da6b2679115009da60b00746a40cd5",
+        "unchanged": true
+      },
+      {
+        "path": "anep/flowchart.pdf",
+        "sha256": "d92a0e5e2aebf3c785fc95c2e1060d3fde0d8b4e6fb95e44efe26cec0bcf53a8",
+        "unchanged": true
+      },
+      {
+        "path": "anep/sequeece.png",
+        "sha256": "9d806493ba7b340231dab239d19c6b371a9ecf317374fd76432f86d3b896b505",
+        "unchanged": true
+      },
+      {
+        "path": "anep/md file/classDiagram.md",
+        "sha256": "b001809685da63a0307c2494008d67743f22c7bebe9bb93b43a67216051197dc",
+        "unchanged": true
+      },
+      {
+        "path": "anep/md file/erDiagram.md",
+        "sha256": "dbce072138e886bb88ba6ea3410e461cc32bf5cef8eceea8c91f31a0ed90ed9f",
+        "unchanged": true
+      },
+      {
+        "path": "anep/md file/flowchart.md",
+        "sha256": "b57bd1bcbd6f3aeb13be6c74d2e259cb0ccc399e16f06b8e0fc51a9ce6a2abc5",
+        "unchanged": true
+      },
+      {
+        "path": "anep/md file/sequeence diagram.md",
+        "sha256": "96e10f8c54402ffe9218f3a3f840bf7ac54bbc4bd267ce1781ebc9ad02d05cc2",
+        "unchanged": true
+      }
+    ],
+    "v29Sha256": "b3d137b64db8ab56b04e7ec95941dfa2b74f862b061e9b560c011b2472f04a6f"
+  },
+  "limitations": [
+    "Test-only fixed tenant resolver is not production P05",
+    "Full I1-I9 G-RLS is not implemented",
+    "Platform owner remains bound by FORCE RLS; ordinary onboarding is unresolved",
+    "Only selected uniqueness/check invariants have direct behavior tests",
+    "Cross-tenant foreign-key constraints and complaint-history deletion behavior need characterization",
+    "Changed-line coverage and hosted CI are not activated",
+    "No push, PR or deployment"
+  ],
+  "runtimeLifecycle": "Private synthetic database and sentinel retained; local PostgreSQL cluster running"
+}

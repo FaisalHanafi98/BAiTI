@@ -27,7 +27,7 @@ class MigrationIT {
           """))
           .isEqualTo(26);
       assertThat(scalar(connection, "SELECT count(*) FROM flyway_schema_history WHERE success"))
-          .isEqualTo(28);
+          .isEqualTo(29);
     }
   }
 
@@ -65,6 +65,28 @@ class MigrationIT {
              AND NOT has_table_privilege(current_user, table_name, 'DELETE')
           """))
           .isEqualTo(2);
+    }
+  }
+
+  @Test
+  void tenantSettingReaderIsUnprivilegedAndHasARestrictedSearchPath() throws Exception {
+    try (var connection = config.openMigrationConnection()) {
+      assertThat(
+              scalar(
+                  connection,
+                  """
+          SELECT count(*) FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+           WHERE n.nspname = 'public' AND p.proname = 'baiti_current_tenant'
+             AND p.pronargs = 0 AND NOT p.prosecdef AND p.provolatile = 's'
+             AND p.prorettype = 'uuid'::regtype
+             AND p.proconfig @> ARRAY['search_path=pg_catalog']
+             AND pg_get_userbyid(p.proowner) = 'baiti_migrator'
+             AND has_function_privilege('baiti_app', p.oid, 'EXECUTE')
+             AND has_function_privilege('baiti_migrator', p.oid, 'EXECUTE')
+             AND NOT EXISTS (SELECT 1 FROM aclexplode(p.proacl) acl
+                             WHERE acl.grantee = 0 AND acl.privilege_type = 'EXECUTE')
+          """))
+          .isEqualTo(1);
     }
   }
 

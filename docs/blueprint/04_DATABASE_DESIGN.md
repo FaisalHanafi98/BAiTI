@@ -138,7 +138,7 @@ Base columns (§1.1–1.3) are implied on every table below and not repeated. `�
 
 ## 5. Row-Level Security (normative DDL pattern)
 
-Applied to all 24 tenant-scoped tables in the RLS migration (V28):
+Original pattern in immutable V28, applied to all 24 tenant-scoped tables:
 
 ```sql
 ALTER TABLE {t} ENABLE ROW LEVEL SECURITY;
@@ -148,10 +148,49 @@ CREATE POLICY tenant_isolation ON {t}
   WITH CHECK (tenant_id = current_setting('app.current_tenant', true)::uuid);
 ```
 
-- `current_setting(…, true)` returns NULL when the GUC is unset → predicate is not-true → **zero rows / insert rejected: fail closed** (FR-TEN-05).
+- `current_setting(…, true)` returns NULL for a never-set GUC, but RESET/empty/malformed settings exposed UUID-cast errors in real PG16 tests on 29 October. The effective V29 contract below replaces that direct cast without editing V28.
 - `WITH CHECK` blocks writing rows *into* another tenant, not just reading.
 - Runtime role `baiti_app` is `NOBYPASSRLS`; Flyway runs as `baiti_migrator` (03_ARCHITECTURE §6.2). Grants: `V1` sets `ALTER DEFAULT PRIVILEGES … GRANT SELECT,INSERT,UPDATE,DELETE ON TABLES TO baiti_app`, then the RLS migration **revokes** UPDATE/DELETE on `activity_logs` and `payments` (append-only enforcement in the grant layer too).
-- `tenants`: RLS enabled with a narrow self-row SELECT policy (§4.1). `super_admins`: RLS enabled, **no policy for `baiti_app` at all** — invisible to the runtime role; only the privileged onboarding/admin datasource (migrator role) touches it.
+- `tenants`: RLS enabled with a narrow self-row SELECT policy (§4.1). `super_admins`: RLS enabled/forced with **no policy for `baiti_app`**. The separate privileged onboarding/admin path requires its explicit reviewed policies: the migrator owner alone cannot bypass FORCE RLS, and V29 does not grant that path.
+
+**V29 forward repair — 29 October 2026, F0/F1:** `public.baiti_current_tenant()`
+returns the canonical setting as UUID, or NULL for absent, empty, wrong-length
+or invalid UUID text. It is STABLE, SECURITY INVOKER, with a pg_catalog-only
+search path and explicit execution grants to app/migrator. It does not confer
+owner privileges or resolve the separately open platform-provisioning policy.
+
+```sql
+CREATE OR REPLACE FUNCTION public.baiti_current_tenant()
+RETURNS UUID
+LANGUAGE plpgsql
+STABLE
+SECURITY INVOKER
+SET search_path = pg_catalog
+AS $function$
+DECLARE
+    tenant_setting TEXT;
+BEGIN
+    tenant_setting := current_setting('app.current_tenant', true);
+    IF tenant_setting IS NULL OR length(tenant_setting) <> 36 THEN
+        RETURN NULL;
+    END IF;
+    RETURN tenant_setting::UUID;
+EXCEPTION WHEN invalid_text_representation THEN
+    RETURN NULL;
+END;
+$function$;
+REVOKE ALL ON FUNCTION public.baiti_current_tenant() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.baiti_current_tenant() TO baiti_app, baiti_migrator;
+```
+
+V29 alters only the named 24 tenant_isolation policies to use
+`tenant_id = public.baiti_current_tenant()` in both USING and WITH CHECK, and
+tenant_self_select to use `id = public.baiti_current_tenant()`. The explicit
+table allowlist is the existing V28 list; unrelated tables are untouched.
+RLS/FORCE, table ownership, roles and append-only grants stay in force. NULL
+predicates read zero rows and reject inserts with SQL state 42501; a valid
+tenant still needs all application authorization/context checks. This narrow
+context repair is unrelated to the earlier Gemini conceptual V29 feature bundle.
 
 ## 6. Migration Sequence — corrected (supersedes plan §5.4 and §8)
 
@@ -174,6 +213,7 @@ Ordering rules that fixed the old defects: *(a)* every table exists before the R
 | V24–V25 | `visitor_pre_registrations` (V24), then `visitors` (V25) | pre-registrations first — `visitors.pre_registration_id` FKs it |
 | V26–V27 | notifications, activity_logs | system |
 | V28 | `V28__enable_rls.sql` | §5 pattern × 24 tables + tenants/super_admins policies + append-only grant revokes |
+| V29 | `V29__fail_closed_tenant_setting.sql` | Safe tenant-setting reader and corresponding policy expressions; no table/column or owner-bypass change |
 
 **Seeding**: no seed migrations. Dev data comes from `DevDataInitializer` (`@Profile("dev")`, idempotent by slug) which calls the real `TenantOnboardingService` to create **two synthetic tenants** (isolation testing needs ≥2; PDPA-safe fictional data per `docs/ai-context/04_DATABASE_STATE/seeders_status.md`). Why not SQL seeds: onboarding logic (role copies, admin user, must-change flag) lives in the service; a SQL twin would drift.
 
