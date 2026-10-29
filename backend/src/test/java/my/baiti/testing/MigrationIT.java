@@ -27,7 +27,7 @@ class MigrationIT {
           """))
           .isEqualTo(26);
       assertThat(scalar(connection, "SELECT count(*) FROM flyway_schema_history WHERE success"))
-          .isEqualTo(29);
+          .isEqualTo(30);
     }
   }
 
@@ -87,6 +87,44 @@ class MigrationIT {
                              WHERE acl.grantee = 0 AND acl.privilege_type = 'EXECUTE')
           """))
           .isEqualTo(1);
+    }
+  }
+
+  @Test
+  void platformPoliciesNameOnlyTheTrustedOwnerAndExcludeDelete() throws Exception {
+    try (var connection = config.openMigrationConnection()) {
+      assertThat(
+              scalar(
+                  connection,
+                  """
+          SELECT count(*) FROM pg_policies
+           WHERE schemaname = 'public'
+             AND tablename IN ('tenants', 'super_admins')
+             AND policyname IN ('platform_select', 'platform_insert', 'platform_update')
+             AND roles = ARRAY['baiti_migrator']::name[]
+             AND cmd IN ('SELECT', 'INSERT', 'UPDATE')
+             AND (qual = 'true' OR with_check = 'true')
+          """))
+          .isEqualTo(6);
+      assertThat(
+              scalar(
+                  connection,
+                  """
+          SELECT count(*) FROM pg_policies
+           WHERE schemaname = 'public'
+             AND tablename IN ('tenants', 'super_admins')
+             AND policyname LIKE 'platform_%' AND cmd IN ('ALL', 'DELETE')
+          """))
+          .isZero();
+      assertThat(
+              scalar(
+                  connection,
+                  """
+          SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+           WHERE n.nspname = 'public' AND c.relname IN ('tenants', 'super_admins')
+             AND c.relrowsecurity AND c.relforcerowsecurity
+          """))
+          .isEqualTo(2);
     }
   }
 

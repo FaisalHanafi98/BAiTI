@@ -13,9 +13,10 @@ import org.springframework.context.annotation.Primary;
  *
  * <h2>appDataSource (primary, {@code baiti_app})</h2>
  *
- * HikariCP runtime pool. {@code baiti_app} is a non-owner role with {@code NOBYPASSRLS} — this is
- * the only connection over which RLS policies bind. Built explicitly here so that P05 can wrap it
- * with {@code TenantAwareDataSource} (set/reset {@code app.current_tenant} on borrow/return, ED-5).
+ * HikariCP runtime pool. {@code baiti_app} is a non-owner role with {@code NOBYPASSRLS}. FORCE RLS
+ * also binds the ordinary owner; the separate platform path needs its explicit policies. P05 wraps
+ * this pool with {@code TenantAwareDataSource} (set/reset {@code app.current_tenant} on
+ * borrow/return, ED-5).
  *
  * <h2>Flyway datasource ({@code baiti_migrator})</h2>
  *

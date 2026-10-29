@@ -78,12 +78,14 @@ Structure per `meeting/04_REACT_REFRESHER.md` §11 (canonical): `api/` (axios cl
 | Layer | Mechanism | Fails how |
 |---|---|---|
 | 1 · Identity | `tenantId` claim inside signed JWT; `TenantContextFilter` rejects (401) any mismatch between claim and slug/subdomain resolution | Forged/mismatched context never reaches services |
-| 2 · Application | Hibernate 6 `@TenantId` on `TenantAwareBaseEntity.tenantId` + `CurrentTenantIdentifierResolver` reading `TenantContext` (ThreadLocal) — every JPA query auto-filtered, every insert auto-stamped | A forgotten WHERE clause is impossible for JPA paths |
+| 2 · Application | Hibernate 7 `@TenantId` inherited from `TenantScopedBaseEntity` + planned `CurrentTenantIdentifierResolver` reading `TenantContext` | Intended managed-entity scoping; production paths still require the complete isolation suite |
 | 3 · Database | PostgreSQL RLS policy on every domain table: `USING (tenant_id = current_setting('app.current_tenant', true)::uuid)` | Native SQL, JDBC, or a layer-2 bug still cannot cross tenants |
 
-### 6.2 [FIX] Two database roles — RLS does not bind table owners
+### 6.2 Two database roles under forced RLS
 
-PostgreSQL RLS **does not apply to the table's owner** (nor superusers) unless forced. Therefore:
+Ordinary owners normally bypass unforced RLS, but FORCE RLS binds them. Both
+application/migrator roles are non-superusers without BYPASSRLS. V30 grants only
+the intended owner actions on global tables; it does not bypass domain policies.
 
 ```sql
 -- provisioned by infra (docker-compose init / prod bootstrap), not by Flyway itself
@@ -113,7 +115,9 @@ Spring uses **two datasources by role**: Flyway runs as `baiti_migrator`; the Hi
 
 ### 6.5 Global (non-tenant) data and the super-admin path
 
-`tenants`, `super_admins`, `flyway_schema_history`, and role/permission **templates** are global tables — no tenant_id, no tenant-isolation policy. Super-admin endpoints (`/api/admin/**`) run with empty `TenantContext`; they may only touch global tables (ArchUnit: `my.baiti.tenancy.admin` may not import domain repositories). Tenant onboarding (UC-T1) writes tenant-scoped rows *before a tenant user exists*: the onboarding service runs its transaction on the **migrator-role datasource** deliberately and is the single annotated, code-reviewed exception (`@UsesPrivilegedDataSource`).
+`tenants`, `super_admins` and `flyway_schema_history` are global tables. Role/permission templates belong to the planned application catalog, not extra authored tables. V30 gives only `baiti_migrator` explicit global SELECT/INSERT/UPDATE policies on tenants/admins, with no DELETE policy; FORCE RLS remains enabled. The ordinary app pool cannot assume that role or read/change super-admin rows. The schema owner remains trusted for DDL; DML policies do not remove its ownership authority.
+
+The separate P05 super-admin endpoints (`/api/admin/**`) remain unimplemented. They will run with empty `TenantContext` behind their own principal/filter chain and may only touch global tables (ArchUnit: `my.baiti.tenancy.admin` may not import domain repositories). Tenant onboarding (UC-T1) writes tenant-scoped rows *before a tenant user exists*: it deliberately uses the **migrator-role datasource** as the single annotated, reviewed exception (`@UsesPrivilegedDataSource`) and must still bind the new tenant for domain-table RLS. The SQL policy tests do not prove that service transaction or caller authorisation.
 
 ## 7. Security Architecture
 

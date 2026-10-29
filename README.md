@@ -4,7 +4,7 @@ Multi-tenant community management platform. The intended isolation design uses J
 
 **Status**: pre-code. The complete engineering blueprint lives at [`docs/blueprint/`](docs/blueprint/README.md) — start there. Implementation proceeds by executing the AI work packets in [`docs/blueprint/08_ai_packets/`](docs/blueprint/08_ai_packets/README.md), currently at **P02 (backend skeleton)**.
 
-**Status — 29 October 2026**: the supported Spring runtime passes 105 native tests. Production tenancy, P05/G-RLS and the frontend remain unfinished. Docker/Testcontainers, hosting/VPS and deployment stay deferred. Start with [current evidence](docs/ai-context/01_CURRENT_STATUS.md), [native tests](docs/testing/NATIVE_POSTGRES.md) and the [runtime decision](docs/adr/0002-supported-spring-baseline.md).
+**Status — 29 October 2026**: the supported Spring runtime and bounded platform SQL policies pass 111 native tests. Production tenancy, P05/G-RLS and the frontend remain unfinished. Docker/Testcontainers, hosting/VPS and deployment stay deferred. Start with [current evidence](docs/ai-context/01_CURRENT_STATUS.md), [native tests](docs/testing/NATIVE_POSTGRES.md), the [runtime decision](docs/adr/0002-supported-spring-baseline.md) and [platform policy](docs/adr/0003-explicit-platform-table-policies.md).
 
 ## Stack
 

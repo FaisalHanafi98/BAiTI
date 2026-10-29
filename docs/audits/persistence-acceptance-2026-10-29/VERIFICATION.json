@@ -1,0 +1,122 @@
+{
+  "date": "2026-10-29",
+  "baseCommit": "781a401",
+  "branch": "test/persistence-acceptance",
+  "decision": "docs/adr/0003-explicit-platform-table-policies.md",
+  "database": {
+    "postgresql": "16.15",
+    "host": "127.0.0.1",
+    "port": 55432,
+    "upgrade": "baiti_test_acceptance_20261029_d9a1d543",
+    "fresh": "baiti_test_acceptance_fresh_20261029_465b41b9",
+    "upgradeFrom": 29,
+    "currentVersion": 30,
+    "freshPublicTablesBefore": 0,
+    "roleOwnershipPreflight": true,
+    "credentialsExcluded": true,
+    "existingTargetsReset": false
+  },
+  "policy": {
+    "tables": [
+      "tenants",
+      "super_admins"
+    ],
+    "role": "baiti_migrator",
+    "actions": [
+      "SELECT",
+      "INSERT",
+      "UPDATE"
+    ],
+    "count": 6,
+    "deleteAdded": false,
+    "allAdded": false,
+    "appAdded": false,
+    "forceRlsRetained": true,
+    "domainPoliciesUnchanged": true,
+    "roleAttributesUnchanged": true,
+    "ownerDdlAuthorityRetained": true
+  },
+  "stages": [
+    {
+      "log": "docs\\audits\\persistence-acceptance-2026-10-29\\02-platform-provisioning-red.log",
+      "sha256": "a5e29c07920e113e23e6f2637c55a5aab7267499fcf289d95de1aa97e96e2153",
+      "unitTests": 58,
+      "integrationTests": 6,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "expectedSuccess": false
+    },
+    {
+      "log": "docs\\audits\\persistence-acceptance-2026-10-29\\04-platform-policy-green.log",
+      "sha256": "2c70cf93912aa89d336bd96ecfd5a3a59bfeef91b2a8fa9a2a001cdfb63cf826",
+      "unitTests": 58,
+      "integrationTests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "expectedSuccess": true
+    },
+    {
+      "log": "docs\\audits\\persistence-acceptance-2026-10-29\\06-platform-boundaries-full.log",
+      "sha256": "b3a554a7596d51c46baae2f051c2b0672fae4a9eddb5c2a8b94e7f018d4be350",
+      "unitTests": 58,
+      "integrationTests": 53,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "expectedSuccess": true
+    },
+    {
+      "log": "docs\\audits\\persistence-acceptance-2026-10-29\\07-platform-fresh-migrations.log",
+      "sha256": "82cd035e08478b697beafc499062b583c8543675099106fa5ff97d5a34fedde2",
+      "unitTests": 58,
+      "integrationTests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "expectedSuccess": true
+    },
+    {
+      "log": "docs\\audits\\persistence-acceptance-2026-10-29\\08-platform-fresh-full.log",
+      "sha256": "eadf141dc1dcee3ae62ac29f4854f9b7ed246cc66c3ae8107b88f3ac84b9f6fa",
+      "unitTests": 58,
+      "integrationTests": 53,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "expectedSuccess": true
+    }
+  ],
+  "final": {
+    "unitTests": 58,
+    "integrationTests": 53,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 45.464
+  },
+  "canaries": {
+    "platformFixture": "backend/src/test/resources/fixtures/foundation-platform.sql",
+    "provisionedThrough": "baiti_migrator",
+    "syntheticOnly": true,
+    "appReadUpdateDeleteDenied": true,
+    "appSetRoleDenied": true,
+    "ownerDomainIsolationRetained": true,
+    "perTestWritesRolledBack": true,
+    "sharedNamedFixturesRetained": true
+  },
+  "sql": {
+    "unchangedCount": 29,
+    "baselineManifest": "docs/audits/runtime-upgrade-2026-10-29/VERIFICATION.json",
+    "baselineManifestSha256": "1ad59323a7db88cbc9be221e1f2d9f472a7f448e121c1f6d35fc159122122c58",
+    "v30Sha256": "42afbe84aa04997095069ac58c00342ea0f9a8b19af995fef2f0d565b0f01336"
+  },
+  "limits": [
+    "No production platform principal, pool or onboarding transaction implemented",
+    "Remaining P03/P04 uniqueness/enum and privileged JPA acceptance stays open",
+    "Production tenant context, JWT and full I1-I9 G-RLS are unimplemented",
+    "DML DELETE denial does not remove trusted owner DDL authority",
+    "No changed-line coverage, hosted CI, push, PR, Docker or deployment"
+  ]
+}
