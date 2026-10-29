@@ -60,6 +60,8 @@ public class Complaint extends TenantAwareBaseEntity {
   @Column(name = "submitted_at", nullable = false)
   private Instant submittedAt = Instant.now();
 
-  @OneToMany(mappedBy = "complaint", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(
+      mappedBy = "complaint",
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   private List<ComplaintUpdate> updates = new ArrayList<>();
 }

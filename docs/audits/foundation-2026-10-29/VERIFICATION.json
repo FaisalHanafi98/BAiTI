@@ -264,9 +264,47 @@
     "Full I1-I9 G-RLS is not implemented",
     "Platform owner remains bound by FORCE RLS; ordinary onboarding is unresolved",
     "Only selected uniqueness/check invariants have direct behavior tests",
-    "Cross-tenant foreign-key constraints and complaint-history deletion behavior need characterization",
     "Changed-line coverage and hosted CI are not activated",
-    "No push, PR or deployment"
+    "No push, PR or deployment",
+    "Cross-tenant foreign-key constraints and full raw complaint-history immutability remain open",
+    "Complaint parent/collection deletion risks are repaired; platform provisioning remains explicitly unresolved"
   ],
-  "runtimeLifecycle": "Private synthetic database and sentinel retained; local PostgreSQL cluster running"
+  "runtimeLifecycle": "Private synthetic database and sentinel retained; local PostgreSQL cluster running",
+  "historyAndPlatformCharacterization": {
+    "baseCommit": "aa126eb",
+    "red": {
+      "log": "docs/audits/foundation-2026-10-29/36-history-preservation-red.log",
+      "integrationTests": 19,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "observed": "Parent cascade deletion and collection orphan removal erased synthetic history"
+    },
+    "formattingAttempt": {
+      "log": "docs/audits/foundation-2026-10-29/37-history-preservation-green-full.log",
+      "outcome": "Spotless rejected annotation layout before test execution; corrected before rerun"
+    },
+    "green": {
+      "log": "docs/audits/foundation-2026-10-29/38-history-preservation-green-full.log",
+      "unitTests": 57,
+      "integrationTests": 45,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 45.73
+    },
+    "assertions": [
+      "Parent with history cannot be deleted; SQLSTATE 23503",
+      "Collection clearing retains the history row",
+      "New complaint still cascades history insertion",
+      "Current app and ordinary migrator cannot provision global rows; SQLSTATE 42501"
+    ],
+    "databaseChanges": "None",
+    "fullAppendOnlyComplaintPolicyProven": false
+  },
+  "staticChecks": {
+    "legacySqlTypoMatches": 0,
+    "explicitEagerFetchMatches": 0,
+    "scope": "Migration typo search and entity fetch-source inspection; not runtime lazy-loading proof"
+  }
 }

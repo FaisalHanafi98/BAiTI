@@ -286,6 +286,48 @@ class AggregateRepositoryIT extends NativePostgresTestSupport {
   }
 
   @Test
+  void complaintWithHistoryCannotBeDeletedThroughJpaCascade() {
+    var complaint = complaintWithHistory();
+    UUID complaintId = complaint.getId();
+    entities.clear();
+
+    assertDatabaseFailure(
+        () -> {
+          entities.remove(entities.find(Complaint.class, complaintId));
+          entities.flush();
+        },
+        "23503");
+  }
+
+  @Test
+  void removingAHistoryEntryFromTheCollectionDoesNotDeleteItsRecord() {
+    var complaint = complaintWithHistory();
+    UUID complaintId = complaint.getId();
+    UUID updateId = complaint.getUpdates().get(0).getId();
+    entities.clear();
+
+    entities.find(Complaint.class, complaintId).getUpdates().clear();
+    entities.flush();
+    entities.clear();
+
+    var retained = entities.find(ComplaintUpdate.class, updateId);
+    assertThat(retained).isNotNull();
+    assertThat(retained.getComplaint().getId()).isEqualTo(complaintId);
+  }
+
+  @Test
+  void aNewComplaintCanPersistItsHistoryEntry() {
+    var complaint = complaintWithHistory();
+    UUID updateId = complaint.getUpdates().get(0).getId();
+    entities.clear();
+
+    var restored = entities.find(ComplaintUpdate.class, updateId);
+    assertThat(restored).isNotNull();
+    assertThat(restored.getUser().getId()).isEqualTo(graph.user.getId());
+    assertThat(restored.getMessage()).isEqualTo("Synthetic retained history");
+  }
+
+  @Test
   void eventWithoutAnExplicitCreatorIsRejectedBeforeProductionAuditingExists() {
     assertDatabaseFailure(
         () -> {
@@ -311,6 +353,27 @@ class AggregateRepositoryIT extends NativePostgresTestSupport {
     event.setStartDate(Instant.parse("2026-10-29T01:00:00Z"));
     event.setEndDate(Instant.parse("2026-10-29T02:00:00Z"));
     return event;
+  }
+
+  private Complaint complaintWithHistory() {
+    var category = new ComplaintCategory();
+    category.setName("F0_" + UUID.randomUUID());
+    store(category);
+    var complaint = new Complaint();
+    complaint.setResident(graph.resident);
+    complaint.setUnit(graph.unit);
+    complaint.setCategory(category);
+    complaint.setTitle("Synthetic history preservation complaint");
+    complaint.setDescription("Foundation deletion regression fixture");
+    var update = new ComplaintUpdate();
+    update.setComplaint(complaint);
+    update.setUser(graph.user);
+    update.setStatus(Complaint.Status.OPEN);
+    update.setMessage("Synthetic retained history");
+    complaint.getUpdates().add(update);
+    store(complaint);
+    entities.flush();
+    return complaint;
   }
 
   private <T extends TenantAwareBaseEntity> T store(T entity) {
