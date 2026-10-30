@@ -1,5 +1,42 @@
 # BAiTI — Current Status
 
+## P05 authentication workflows verified — 30 October 2026
+
+Branch `feat/jwt-authentication`, following access-token commit `a3f1e68`, in
+`backend/.local/persistence-acceptance` under the original checkout. Full native
+verification passes **140 unit/architecture + 136 integration tests**, zero
+failures/errors/skips, in 51.630 seconds. See
+[workflow evidence](06_TESTING_EVIDENCE/2026-10-30_authentication_workflows.md) and
+[structured record](../audits/jwt-authentication-2026-10-29/AUTH_FLOW.json).
+
+POST login/refresh/logout and GET me now use real native DB users, bcrypt and the
+signed tenant identity. Refresh tokens are 256-bit opaque values with SHA-256
+hashes stored in PostgreSQL. Rotation locks the row; replay revocation commits
+before 401, including the concurrent replay case. Logout revokes every refresh
+family for that user. Access tokens retain their signed expiry; logout does not
+add a bearer-token denylist. Only login/refresh are anonymous routes.
+
+Cookie refresh requires an exact allowed Origin and X-BAiTI-Refresh: true. The
+cookie is Secure/HttpOnly/SameSite=Strict, host-only, path /api/auth/refresh.
+Body fallback accepts an explicit token without an ambient cookie; replacement
+is returned in Set-Cookie. CORS uses an explicit credentialled allowlist. Login
+limits apply per IP and per (tenant,email); refresh has a separate IP budget.
+The local cache is bounded, and auth bodies are capped at 8 KB before parsing.
+Application auth errors now use the blueprint's RFC 7807 contract without echoing
+credential values. Token TTL configuration supports shorter whole-second values
+within the published 15-minute access / 7-day refresh limits.
+
+Next: P05 5c RBAC/catalogue and actor auditing, followed by super-admin onboarding,
+auth audit/async propagation and complete I1–I9. This native MockMvc/DB evidence
+does not close G-RLS or establish browser/curl dev journeys, changed-line coverage,
+hosted CI, production key operations or release readiness. Docker/hosting stay
+deferred. An overnight native-server outage was diagnosed at preflight; the
+existing owned cluster was restarted without resetting data, then reruns passed.
+
+GitHub was checked read-only on 30 October: it still contains only the owner's
+initial commit 16d2621. Local commits are not published; no remote is configured.
+Explicit push authorisation remains required. Earlier sections are dated checkpoints.
+
 ## P05 access-token boundary verified — 29 October 2026
 
 Active branch `feat/jwt-authentication`, based on tenant-context commit `91d6f61`,

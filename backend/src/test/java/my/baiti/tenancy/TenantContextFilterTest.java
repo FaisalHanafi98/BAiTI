@@ -62,7 +62,8 @@ class TenantContextFilterTest {
           throw new AssertionError("Application must not be called");
         });
     assertThat(response.getStatus()).isEqualTo(401);
-    assertThat(response.getContentAsString()).isEqualTo("{\"message\":\"Authentication failed\"}");
+    assertThat(response.getContentType()).startsWith("application/problem+json");
+    assertThat(response.getContentAsString()).contains("\"detail\":\"Authentication failed\"");
     assertThat(TenantContext.current()).isEmpty();
   }
 

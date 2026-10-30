@@ -31,8 +31,15 @@ public final class JwtService {
   private final NimbusJwtEncoder encoder;
   private final NimbusJwtDecoder decoder;
   private final Clock clock;
+  private final Duration accessLifetime;
 
   public JwtService(String base64Secret, Clock clock) {
+    this(base64Secret, clock, ACCESS_LIFETIME);
+  }
+
+  public JwtService(String base64Secret, Clock clock, Duration accessLifetime) {
+    new TokenLifetimes(accessLifetime, Duration.ofDays(7));
+    this.accessLifetime = accessLifetime;
     byte[] secret;
     try {
       secret = Base64.getDecoder().decode(base64Secret);
@@ -68,7 +75,7 @@ public final class JwtService {
             .audience(List.of(AUDIENCE))
             .issuedAt(now)
             .notBefore(now)
-            .expiresAt(now.plus(ACCESS_LIFETIME))
+            .expiresAt(now.plus(accessLifetime))
             .id(UUID.randomUUID().toString())
             .claim("token_use", "tenant_access")
             .claim("userId", principal.userId().toString())

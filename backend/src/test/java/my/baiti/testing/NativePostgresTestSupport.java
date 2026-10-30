@@ -24,6 +24,12 @@ public abstract class NativePostgresTestSupport {
     var config = NativePostgresConfig.from(System.getenv());
     NativePostgresPreflight.verify(config);
     config.register(registry);
+    registry.add("baiti.security.login-per-minute", () -> "5");
+    registry.add("baiti.security.refresh-per-minute", () -> "30");
+    registry.add("baiti.security.tokens.access", () -> "15m");
+    registry.add("baiti.security.tokens.refresh", () -> "7d");
     registry.add("baiti.security.jwt.secret", NativePostgresTestSupport::jwtTestSecret);
+    registry.add(
+        "baiti.security.allowed-origins", () -> "https://synthetic-client.example.invalid");
   }
 }

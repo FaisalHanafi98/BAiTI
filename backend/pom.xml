@@ -94,7 +94,11 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- bucket4j (rate limiting) deferred to P05 with the auth module -->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j_jdk17-core</artifactId>
+            <version>8.21.0</version>
+        </dependency>
 
         <!-- Test -->
         <dependency>

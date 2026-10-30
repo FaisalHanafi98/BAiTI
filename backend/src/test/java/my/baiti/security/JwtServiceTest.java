@@ -18,6 +18,19 @@ class JwtServiceTest {
   private static final Instant NOW = Instant.parse("2026-10-29T12:00:00Z");
 
   @Test
+  void configuredShorterLifetimeExpiresAtItsOwnBoundary() {
+    String key = randomSecret();
+    var issuer =
+        new JwtService(key, Clock.fixed(NOW, ZoneOffset.UTC), java.time.Duration.ofMinutes(5));
+    var token =
+        issuer.issue(
+            new TenantPrincipal(
+                UUID.randomUUID(), UUID.randomUUID(), Set.of("Admin"), Set.of("BILL_MANAGE")));
+    var later = new JwtService(key, Clock.fixed(NOW.plusSeconds(300), ZoneOffset.UTC));
+    assertThatThrownBy(() -> later.verify(token)).isInstanceOf(BadCredentialsException.class);
+  }
+
+  @Test
   void signedAccessTokenRestoresItsTenantUserAndAuthorities() {
     var service = new JwtService(randomSecret(), Clock.fixed(NOW, ZoneOffset.UTC));
     var principal =

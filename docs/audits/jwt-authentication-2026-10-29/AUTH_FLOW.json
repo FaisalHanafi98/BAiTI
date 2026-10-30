@@ -1,0 +1,134 @@
+{
+  "started": "2026-10-29",
+  "verified": "2026-10-30",
+  "branch": "feat/jwt-authentication",
+  "baseCommit": "a3f1e68",
+  "scope": "P05 native authentication workflows",
+  "final": {
+    "unitTests": 140,
+    "integrationTests": 136,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 51.63
+  },
+  "database": {
+    "postgresql": "16.15",
+    "target": "baiti_test_p04_20261029_bb8f567e",
+    "historyVersion": 31,
+    "runtimeRole": "baiti_app",
+    "schemaOrRolesChanged": false,
+    "existingTargetsReset": false,
+    "nativeClusterRestartedAfterStoppedStatus": true
+  },
+  "contracts": {
+    "endpoints": [
+      "POST /api/auth/login",
+      "POST /api/auth/refresh",
+      "POST /api/auth/logout",
+      "GET /api/auth/me"
+    ],
+    "refreshBits": 256,
+    "storedRefresh": "SHA-256 hash only",
+    "replayRevocation": "independent committed transaction before 401",
+    "concurrentRotation": "one winner, replay revokes replacement",
+    "cookie": "Secure HttpOnly SameSite=Strict host-only Path=/api/auth/refresh",
+    "cookieCsrf": "explicit allowed Origin plus X-BAiTI-Refresh: true",
+    "applicationErrors": "RFC 7807",
+    "bodyMaxBytes": 8192,
+    "bcryptMaxBytes": 72,
+    "loginPerMinute": 5,
+    "refreshIpPerMinute": 30,
+    "rateCacheMaxKeys": 20000,
+    "rateCacheIdleMinutes": 5,
+    "ttlMaximumAccessMinutes": 15,
+    "ttlMaximumRefreshDays": 7
+  },
+  "stages": [
+    {
+      "log": "12-login-red.log",
+      "sha256": "cf8f3cc4ed0db64be576434a08683fb1f2eaf159f62fd6cc70552cc7cb744a7e"
+    },
+    {
+      "log": "14-login-focused-green.log",
+      "sha256": "506f811d017bce3cb57660c134d228cdf28230fab03645f1c838c42205fd58d2"
+    },
+    {
+      "log": "16-refresh-red.log",
+      "sha256": "2d84784039d63634104f2f875948e4c77a7033da61cfea0bb47461789ff7d40a"
+    },
+    {
+      "log": "19-refresh-focused.log",
+      "sha256": "ce093cdf13aa7e15dc6182ef28ddec6813584c84b8fde033dfd5514ffe969198"
+    },
+    {
+      "log": "21-auth-rate-red.log",
+      "sha256": "540dbfa9c605a343a1d1e7ec5c791cb5a357bb28479c65c49f9343a85e9b863c"
+    },
+    {
+      "log": "24-auth-flow-rate-green.log",
+      "sha256": "524515d71cd4bf6aed7513e43c8d11144cf93e71fa06814bebb2b0f24ebc826a"
+    },
+    {
+      "log": "25-auth-flow-restored-native.log",
+      "sha256": "4cd8e437b0bb1ab49d5ef27dba303b5271c2a8c0933edf4c5648d9c12ebdf785"
+    },
+    {
+      "log": "27-auth-body-limit-red.log",
+      "sha256": "4cd99c96257a86f1971c86c758cb3e2edd2c214a025ab187f710493280177243"
+    },
+    {
+      "log": "28-problem-contract-red.log",
+      "sha256": "7e4657925d42c5ecc221dd9a057387dbbfb04bfdadc0a1a9bd0fb4951d09b943"
+    },
+    {
+      "log": "31-configured-lifetime-red.log",
+      "sha256": "8df927efa190ddc7f600a42d4256e29b279eeb48c3dd41abdfb0230d84dbc156"
+    },
+    {
+      "log": "33-auth-flow-full.log",
+      "sha256": "c51149f38fcb839270fdc4170c60e958918365224c678370fc053319f19c5724"
+    },
+    {
+      "log": "35-auth-final-full.log",
+      "sha256": "0fd2daa1ca4333899bf10bcef91336ebb5d9dd0c949fd5ba24ddd890e88766cc"
+    }
+  ],
+  "failureClassification": {
+    "login": "expected 200, got 401 before endpoint",
+    "refresh": "expected rotation 200, got 401 before endpoint",
+    "rate": "sixth attempt expected 429, got 401 before limiter",
+    "nativeOutage": "12 preflight errors, SQLSTATE 08001; pg_ctl confirmed stopped, existing cluster restarted, reruns passed",
+    "body": "expected 413, got 200 before parser bound",
+    "problem": "temporary application/json failed required problem+json",
+    "lifetime": "new configurable-lifetime API compilation failed before implementation"
+  },
+  "securityReview": {
+    "mode": "author scoped review using backend and security-review guides",
+    "verdict": "No blocking findings in reviewed public-authentication scope",
+    "covered": [
+      "real app-role password/identity queries",
+      "refresh hashing and independent replay revocation",
+      "concurrent rotation and foreign/expired/inactive denial",
+      "explicit cookie origin/header and CORS checks",
+      "IP/account throttling and bounded cache/input",
+      "shared RFC 7807 errors and validation redaction",
+      "no default main signing key or raw refresh JSON"
+    ]
+  },
+  "limits": [
+    "MockMvc/native DB evidence; normal dev curl/browser journey not demonstrated",
+    "Logout revokes refresh credentials; signed access tokens keep their bounded expiry",
+    "Single-process rate cache, no distributed/load or release evidence",
+    "CORS protocol rejection precedes application problem responses",
+    "RBAC/catalogue, actor/auth audit wiring, onboarding, async and full I1-I9 remain open",
+    "No changed-line coverage, hosted CI, push, PR, Docker or hosting claim"
+  ],
+  "publication": {
+    "checked": "2026-10-30",
+    "githubCommits": 1,
+    "githubInitial": "16d262180fb3710c14a32bbac5b48707c7592ba4",
+    "remoteConfigured": false,
+    "pushPerformed": false
+  }
+}

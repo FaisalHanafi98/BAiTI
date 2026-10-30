@@ -124,7 +124,7 @@ The separate P05 super-admin endpoints (`/api/admin/**`) remain unimplemented. T
 ## 7. Security Architecture
 
 ### 7.1 AuthN flow
-Stateless JWT per `meeting/03_SPRINGBOOT_REFRESHER.md` §6: CSRF off, sessions STATELESS, `JwtAuthenticationFilter` before username/password filter. Access token 15 min HS256 (`userId`,`tenantId`,`roles`,`permissions`,`jti`); secret is the Base64 encoding of at least 32 random bytes from JWT_SECRET, without a main-profile default. Rotation procedure remains a runbook task. The implemented access boundary checks issuer/audience/token purpose, required UUID claims, HS256 signature and strict expiration; no session/form/basic fallback. Password login and refresh issuance remain unfinished. Native tests use a separate random in-memory key, never a production default.
+Stateless JWT per `meeting/03_SPRINGBOOT_REFRESHER.md` §6: CSRF off, sessions STATELESS, `JwtAuthenticationFilter` before username/password filter. Access token 15 min HS256 (`userId`,`tenantId`,`roles`,`permissions`,`jti`); secret is the Base64 encoding of at least 32 random bytes from JWT_SECRET, without a main-profile default. Rotation procedure remains a runbook task. The implemented access boundary checks issuer/audience/token purpose, required UUID claims, HS256 signature and strict expiration; no session/form/basic fallback. Password login and rotating opaque refresh issuance are implemented locally. Login/refresh are public credential endpoints; me/logout require the signed tenant principal. Refresh replay commits family revocation before returning 401, and logout revokes all user refresh families. Existing access tokens remain valid until their signed expiry, bounded to 15 minutes. Native tests use a separate random in-memory key, never a production default.
 
 ### 7.2 Refresh tokens — rotation with reuse detection
 `refresh_tokens` table (hashed token, family_id, user, tenant, expires_at, rotated_at, revoked_at). Refresh ⇒ old row marked rotated, new row same family. **Presenting a rotated token revokes the family** (stolen-token replay defence, FR-AUTH-03). Logout/deactivation revokes all user rows. Cleanup job purges expired rows.
@@ -133,7 +133,7 @@ Stateless JWT per `meeting/03_SPRINGBOOT_REFRESHER.md` §6: CSRF off, sessions S
 Role → permissions resolved at login into JWT claims; `@PreAuthorize("hasAuthority('BILL_MANAGE')")` per endpoint from the matrix (02_SYSTEM_ANALYSIS §8). Own-record scoping (`*_OWN`) is a mandatory service-layer predicate (resident ↔ resource join) — tested per endpoint. Changing a role's permissions takes effect on next token issue (≤15 min lag accepted at v1.0; documented).
 
 ### 7.4 Token storage in the browser **[decision]**
-Access token: **memory only** (non-persisted Zustand). Refresh token: **httpOnly Secure SameSite=Strict cookie** scoped to `/api/auth/refresh`; page load performs silent refresh to bootstrap. Why: localStorage tokens are one XSS from account takeover; this design caps exposure at 15 min. The refresh endpoint also accepts the token in the body (future mobile). CORS: explicit origin allowlist + credentials, dev `http://localhost:5173`.
+Access token: **memory only** (non-persisted Zustand). Refresh token: **httpOnly Secure SameSite=Strict cookie** scoped to `/api/auth/refresh`; page load performs silent refresh to bootstrap. Why: localStorage tokens are one XSS from account takeover; this design caps exposure at 15 min. The refresh endpoint also accepts the token in the body (future mobile). CORS: explicit origin allowlist + credentials, dev `http://localhost:5173`. Cookie refresh also requires an exact allowed Origin and X-BAiTI-Refresh: true; body fallback requires the explicit token without an ambient cookie. This origin/header contract closes the cookie-specific CSRF gap while the bearer surface stays stateless. A replacement token is returned in the protected Set-Cookie header, not browser JSON.
 
 ### 7.5 Super-admin isolation
 Separate `super_admins` table (D6): no tenant_id, distinct principal type, `/api/admin/**` security chain requires it. A tenant Admin can never escalate platform-wide; tenant user compromise cannot reach cross-tenant surface.
@@ -143,7 +143,7 @@ Bean Validation on every DTO; Zod mirrors client-side. File uploads: size/type a
 
 ## 8. Configuration Management
 
-Profiles: `dev` (compose DB, header resolver, seeds V900+), `test` (Testcontainers), `prod` (env-only secrets, subdomain resolver). `ddl-auto: validate` always — Flyway owns schema.
+Profiles: `dev` (owned native DB, header resolver; application seeding pending P05e), `test` (explicit native PG16 preflight and synthetic fixtures), `prod` (env-only secrets, configured subdomain resolver; hosting target undecided). Container parity is deferred to P18. Test security fixtures are pinned in dynamic properties and never become main-profile secret defaults. `ddl-auto: validate` always — Flyway owns schema.
 
 **Environment variable inventory** (contract for `.env.example`, Packet 02):
 

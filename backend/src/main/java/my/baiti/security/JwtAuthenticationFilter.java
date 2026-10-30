@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
+import my.baiti.common.ApiError;
 import my.baiti.tenancy.TenantContext;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,7 +38,7 @@ public final class JwtAuthenticationFilter extends OncePerRequestFilter {
       var principal = jwt.verify(headers.get(0).substring(7));
       String path = request.getRequestURI().substring(request.getContextPath().length());
       if (path.equals("/api/admin") || path.startsWith("/api/admin/")) {
-        reject(response, HttpServletResponse.SC_FORBIDDEN);
+        reject(request, response, HttpServletResponse.SC_FORBIDDEN);
         return;
       }
       if (!TenantContext.current().filter(principal.tenantId()::equals).isPresent()) {
@@ -53,23 +54,18 @@ public final class JwtAuthenticationFilter extends OncePerRequestFilter {
       SecurityContextHolder.setContext(context);
       chain.doFilter(request, response);
     } catch (BadCredentialsException invalid) {
-      reject(response, HttpServletResponse.SC_UNAUTHORIZED);
+      reject(request, response, HttpServletResponse.SC_UNAUTHORIZED);
     } finally {
       SecurityContextHolder.clearContext();
     }
   }
 
-  public static void reject(HttpServletResponse response, int status) throws IOException {
-    response.setStatus(status);
-    response.setContentType("application/json");
-    if (status == HttpServletResponse.SC_UNAUTHORIZED) {
-      response.setHeader("WWW-Authenticate", "Bearer");
-    }
-    response
-        .getWriter()
-        .write(
-            status == HttpServletResponse.SC_UNAUTHORIZED
-                ? "{\"message\":\"Authentication failed\"}"
-                : "{\"message\":\"Access denied\"}");
+  public static void reject(HttpServletRequest request, HttpServletResponse response, int status)
+      throws IOException {
+    ApiError.write(
+        request,
+        response,
+        status,
+        status == HttpServletResponse.SC_UNAUTHORIZED ? "Authentication failed" : "Access denied");
   }
 }
