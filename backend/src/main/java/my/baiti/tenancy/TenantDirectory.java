@@ -1,5 +1,6 @@
 package my.baiti.tenancy;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import my.baiti.tenancy.admin.UsesPrivilegedDataSource;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @UsesPrivilegedDataSource
-public class TenantDirectory implements TenantLookup {
+public class TenantDirectory implements TenantLookup, TenantCatalog {
 
   private final JdbcTemplate jdbc;
 
@@ -26,5 +27,11 @@ public class TenantDirectory implements TenantLookup {
             slug)
         .stream()
         .findFirst();
+  }
+
+  @Override
+  public List<UUID> listTenantIds() {
+    return jdbc.query(
+        "SELECT id FROM tenants ORDER BY id", (row, index) -> row.getObject(1, UUID.class));
   }
 }

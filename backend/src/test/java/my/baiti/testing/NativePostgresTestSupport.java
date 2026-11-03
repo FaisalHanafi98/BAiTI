@@ -24,6 +24,7 @@ public abstract class NativePostgresTestSupport {
     var config = NativePostgresConfig.from(System.getenv());
     NativePostgresPreflight.verify(config);
     config.register(registry);
+    registry.add("baiti.security.permission-sync.enabled", () -> "false");
     registry.add("baiti.security.login-per-minute", () -> "5");
     registry.add("baiti.security.refresh-per-minute", () -> "30");
     registry.add("baiti.security.tokens.access", () -> "15m");

@@ -19,6 +19,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 class TenantDirectoryIT extends NativePostgresTestSupport {
 
   @Autowired private TenantLookup lookup;
+  @Autowired private TenantCatalog catalog;
   @Autowired private JdbcTemplate app;
 
   @Autowired
@@ -28,6 +29,25 @@ class TenantDirectoryIT extends NativePostgresTestSupport {
   @Autowired
   @Qualifier("platformConnectionPool")
   private HikariDataSource platformPool;
+
+  @Test
+  void catalogueDiscoveryIncludesSuspendedTenantsWithoutExposingAnAppRoleListing() {
+    new TransactionTemplate(new DataSourceTransactionManager(platformPool))
+        .executeWithoutResult(
+            status -> {
+              status.setRollbackOnly();
+              var suspended = UUID.randomUUID();
+              platform.update(
+                  "INSERT INTO tenants (id, slug, name, status) VALUES (?, ?, ?, 'SUSPENDED')",
+                  suspended,
+                  "catalog-" + suspended,
+                  "Synthetic catalogue discovery");
+              assertThat(catalog.listTenantIds())
+                  .contains(UUID.fromString("ad8cdb3d-885a-4f0d-b678-2331ce582805"), suspended);
+              assertThat(app.queryForObject("SELECT count(*) FROM tenants", Integer.class))
+                  .isZero();
+            });
+  }
 
   @Test
   void directoryResolvesOnlyActiveCommunitiesThroughTheExplicitOwnerPool() {

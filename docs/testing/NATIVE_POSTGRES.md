@@ -4,6 +4,19 @@ Current: 29 October 2026. Docker, hosting/VPS and deployment remain deferred.
 The [normative test contract](../blueprint/06_TESTING_STRATEGY.md#36-native-postgresql-execution-contract--accepted-27-october-2026)
 owns assertions. This page explains the implemented local harness and runner.
 
+4 November checkpoint: [302 native tests](../ai-context/06_TESTING_EVIDENCE/2026-11-04_permissions.md)
+cover the permission catalogue/sync, named method authorities and actor stamps.
+NativePostgresTestSupport disables automatic startup catalogue sync so each
+fixture controls its rows. Tests invoke the real synchroniser explicitly; the
+seven-key process-settings contract is unchanged. No migration/role change.
+
+Restricted process/network contexts may report no PostgreSQL server even when
+the existing owned host cluster is running. On 4 November a sandboxed status
+reported stopped and its start attempt timed out, while elevated status found
+the existing PID 36176. Check status in the execution context used for approved
+DB tests before attempting another start. Never initialise or reset the data
+directory to repair a visibility/permission problem.
+
 ## Test target
 
 A private PostgreSQL 16.15 runtime was prepared under `backend/.local/postgres16/`

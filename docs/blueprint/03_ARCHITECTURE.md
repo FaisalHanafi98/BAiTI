@@ -132,6 +132,17 @@ Stateless JWT per `meeting/03_SPRINGBOOT_REFRESHER.md` §6: CSRF off, sessions S
 ### 7.3 AuthZ
 Role → permissions resolved at login into JWT claims; `@PreAuthorize("hasAuthority('BILL_MANAGE')")` per endpoint from the matrix (02_SYSTEM_ANALYSIS §8). Own-record scoping (`*_OWN`) is a mandatory service-layer predicate (resident ↔ resource join) — tested per endpoint. Changing a role's permissions takes effect on next token issue (≤15 min lag accepted at v1.0; documented).
 
+Catalogue sync is scoped to one tenant and one transaction, serialised with a
+transaction-level advisory lock. Create missing catalogue entries/default roles;
+new roles receive current template grants. An existing system role receives only
+the template grants for newly created catalogue codes. Never restore a removed
+grant for an already-known code, change a custom role or infer permission from
+the Admin role name alone. Existing-code template changes need a separate
+deliberate reconciliation. Startup tenant discovery uses the bounded owner
+directory, while each scoped sync writes through the ordinary app pool. Tests
+disable automatic discovery and exercise synchronisation explicitly against their
+owned fixture boundaries; they do not modify shared foundation defaults at boot.
+
 ### 7.4 Token storage in the browser **[decision]**
 Access token: **memory only** (non-persisted Zustand). Refresh token: **httpOnly Secure SameSite=Strict cookie** scoped to `/api/auth/refresh`; page load performs silent refresh to bootstrap. Why: localStorage tokens are one XSS from account takeover; this design caps exposure at 15 min. The refresh endpoint also accepts the token in the body (future mobile). CORS: explicit origin allowlist + credentials, dev `http://localhost:5173`. Cookie refresh also requires an exact allowed Origin and X-BAiTI-Refresh: true; body fallback requires the explicit token without an ambient cookie. This origin/header contract closes the cookie-specific CSRF gap while the bearer surface stays stateless. A replacement token is returned in the protected Set-Cookie header, not browser JSON.
 

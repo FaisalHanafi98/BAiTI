@@ -1,5 +1,71 @@
 # BAiTI — Current Status
 
+## Permissions foundation verified — 4 November 2026
+
+Continuing implementation is authorised by the owner after the planning intake.
+Branch `igumi`, based on `4ce314b`, in `backend/.local/github-publication`. Full
+native verification passed **150 unit/architecture + 152 integration tests**,
+zero failures/errors/skips; Maven reported 1 minute 6 seconds. See
+[evidence](06_TESTING_EVIDENCE/2026-11-04_permissions.md) and the
+[session record](02_SESSION_HISTORY/2026-11-04_p05_permissions.md).
+
+The 42-code tenant catalogue and four default-role maps match the access-grid
+fixture. Per-tenant sync uses the ordinary app role and a transaction-level
+advisory lock, creates missing rows and preserves existing-code revocations and
+custom roles. Startup discovers tenant IDs through the bounded owner directory,
+then binds/clears each scoped app transaction. Test bootstrap disables automatic
+sync and exercises it explicitly with rollback or fixture-owned UUID cleanup.
+The seven environment keys and V1–V31 are unchanged.
+
+Method security now denies an Admin principal without the named authority. The
+HTTP matrix exercises 168 allow/deny combinations on a labelled test-only probe;
+application mapping/OpenAPI enumeration requires every actual endpoint to be
+classified. Future business endpoints still need their own permission/own-scope
+tests. JpaConfig now supplies the authenticated matching-tenant user to actor
+auditing; native persistence retains the creator and records a different editor.
+Activity-log events and async propagation are not implemented by those stamps.
+
+The earlier sandbox status reported no PG process and a bounded start attempt
+timed out. Elevated status found the existing owned cluster at PID 36176; native
+tests reused it. No database reset, role change, migration edit or successful
+new cluster start is claimed. No app/production DB was used.
+
+Next: resident ownership predicates/404 handling, then the separate super-admin
+plane, atomic onboarding, auth audit/async propagation and complete I1–I9. Full
+P05/G-RLS, dev browser/curl journeys, changed-line coverage and hosted/release
+gates remain open. Local SOP/Humanizer commits are authorised; this continuation
+does not authorise a new push. Keep only main/igumi/anep. Docker/hosting remain
+deferred. Earlier sections are dated checkpoints.
+
+## Workflow intake and P05c acceptance map — 4 November 2026
+
+Planning checkpoint on `igumi`, HEAD `4ce314b`; the worktree was clean at intake.
+The three local refs main/igumi/anep are aligned; live GitHub was not queried.
+The new project workflow is mapped into the existing
+[P05c work order](../blueprint/08_ai_packets/PACKET_05_security_tenancy.md#planning-baseline-and-acceptance-map--4-november-2026),
+with source-present, missing and unresolved requirements distinguished. See the
+[session record](02_SESSION_HISTORY/2026-11-04_workflow_baseline.md).
+
+Next implementation is the permission catalogue/default-role contract fixture,
+then scoped synchronisation, method/own-scope permissions and actor auditing.
+Startup sync must preserve Admin-edited grants; the SRS seeds defaults at tenant
+creation. Current actor auditing still returns an empty AuditorAware, and no
+catalogue/sync/method-security implementation was found in the inspected source.
+Platform onboarding, async propagation and complete I1–I9/G-RLS remain open.
+
+The private PG16 server is stopped. The existing settings path and runner are
+present; credentials, DB target ownership and role flags were not read/queried.
+Java 21.0.11 and Maven 3.9.16 are available. No test run, DB connection, restart,
+schema execution or application change occurred. The 276-test result remains
+dated 3 November. No frontend directory exists in this checkout.
+
+BT-M01 procurement, BT-A1 document retrieval and BT-A2 dues/reserve planning
+remain proposed follow-ups after their actual prerequisites and RA contracts.
+The new handoff does not replace the core pilot roadmap. Original-checkout
+planning stays in place; its 84 local changes were left untouched. Today's
+changes are uncommitted planning documentation only, with no new push or branch.
+Docker, hosting/VPS and deployment remain deferred.
+
 ## Three-branch workflow — 3 November 2026
 
 The owner replaced the five-branch review stack with exactly three branches:

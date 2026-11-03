@@ -95,6 +95,14 @@ Priorities: **M** = Must (v1.0) · **S** = Should (v1.x) · **C** = Could (later
 | FR-RBAC-04 | Residents shall only read their own records (own bills, own complaints, own bookings, own visitors); "own-record" scoping is a service-layer rule on top of tenant scoping. | M |
 | FR-RBAC-05 | Admin shall manage users in their tenant: create, deactivate, assign role. Deactivated users cannot authenticate and their refresh tokens are revoked. | M |
 
+**Catalogue reconciliation — 4 November 2026:** default templates initialise
+new tenant roles. Startup may add missing catalogue codes and their default
+grants to existing system roles when those codes are newly introduced; it must
+not restore an absent grant for an already-known code or modify custom roles.
+An absent default role is initialised from the current template. Template changes
+for existing codes do not silently override Admin-edited assignments. This keeps
+FR-RBAC-02's tenant customisation meaningful across restarts and releases.
+
 ### 4.4 Property (FR-PROP) — Must
 
 | ID | Requirement | Pri |

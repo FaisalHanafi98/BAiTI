@@ -2,7 +2,7 @@
 
 > LEVEL 2 under the root Development SOP (`../../CLAUDE.md`). Extends it; never contradicts it.
 > **Project**: BAiTI (formerly MyComunity) — multi-tenant community platform; first pilot is a landed RA.
-> **State (3 November 2026)**: the implementation passed 276 native tests today. The owner replaced the review stack with three aligned branches: production `main`, author `igumi` and author `anep`. Both original Git histories are preserved. RBAC, onboarding and full G-RLS remain unfinished. Resume from `docs/ai-context/01_CURRENT_STATUS.md` and `docs/testing/NATIVE_POSTGRES.md`. Proceed with P05 RBAC and actor auditing; features remain gated by complete I1–I9.
+> **State (4 November 2026)**: the permissions foundation passed 302 native tests today. Catalogue/default sync, named method authorities and matching-tenant actor stamps are implemented on `igumi`. Own-record guards, onboarding, async audits and full G-RLS remain unfinished. Keep production `main` and author branches `igumi`/`anep`; author work can now diverge from the shared baseline. Resume from `docs/ai-context/01_CURRENT_STATUS.md` and `docs/testing/NATIVE_POSTGRES.md`; features remain gated by complete I1–I9.
 
 ## Source of truth, in order
 

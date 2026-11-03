@@ -27,6 +27,12 @@
 
 Count reconciliation: 23 PDF tables (the "22" in older docs was a miscount) + `tenants` + `refresh_tokens` + `super_admins` (decision D6) = 26. **Role/permission templates are code, not tables** — a `PermissionCatalog` enum + default role-grant map in `my.baiti.people`, copied into tenant-scoped rows at onboarding by `TenantOnboardingService`, and idempotently synced per tenant at startup when a release adds permissions. Why: the catalog must match `@PreAuthorize` string constants anyway — keeping it in code makes drift a compile error, and it eliminates three global tables plus their RLS exceptions.
 
+Sync preserves tenant customisation (FR-RBAC-02): existing roles receive defaults
+only for newly introduced catalogue codes and only when marked as system roles.
+Missing default roles are initialised from templates; existing-code grant changes
+or revocations remain untouched. Per-tenant sync is transactional and serialised.
+This 4 November application-policy clarification changes no table or migration.
+
 ## 3. ERD (corrected, compact)
 
 ```mermaid

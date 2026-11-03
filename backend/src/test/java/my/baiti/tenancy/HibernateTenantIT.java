@@ -5,11 +5,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import jakarta.persistence.EntityManager;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import my.baiti.config.DataSourceConfig;
 import my.baiti.config.JpaConfig;
 import my.baiti.property.Block;
 import my.baiti.property.BlockRepository;
+import my.baiti.security.TenantPrincipal;
 import my.baiti.testing.NativePostgresTestSupport;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
@@ -38,7 +43,43 @@ class HibernateTenantIT extends NativePostgresTestSupport {
 
   @AfterEach
   void clearContext() {
+    SecurityContextHolder.clearContext();
     TenantContext.clear();
+  }
+
+  @Test
+  void persistedCreationAndUpdateRetainTheCorrectAuthenticatedActors() {
+    var tenant = UUID.fromString("ad8cdb3d-885a-4f0d-b678-2331ce582805");
+    var creator = UUID.randomUUID();
+    var editor = UUID.randomUUID();
+    TenantContext.set(tenant);
+    new TransactionTemplate(transactionManager)
+        .executeWithoutResult(
+            status -> {
+              status.setRollbackOnly();
+              authenticate(creator, tenant);
+              var block = new Block();
+              block.setName("Synthetic audited block " + UUID.randomUUID());
+              var id = blocks.saveAndFlush(block).getId();
+              entityManager.clear();
+              var saved = blocks.findById(id).orElseThrow();
+              assertThat(saved.getCreatedBy()).isEqualTo(creator);
+              assertThat(saved.getUpdatedBy()).isEqualTo(creator);
+              authenticate(editor, tenant);
+              saved.setName("Synthetic updated block " + id);
+              blocks.saveAndFlush(saved);
+              entityManager.clear();
+              var updated = blocks.findById(id).orElseThrow();
+              assertThat(updated.getCreatedBy()).isEqualTo(creator);
+              assertThat(updated.getUpdatedBy()).isEqualTo(editor);
+            });
+  }
+
+  private static void authenticate(UUID user, UUID tenant) {
+    SecurityContextHolder.getContext()
+        .setAuthentication(
+            UsernamePasswordAuthenticationToken.authenticated(
+                new TenantPrincipal(user, tenant, Set.of("Admin"), Set.of()), null, List.of()));
   }
 
   @ParameterizedTest

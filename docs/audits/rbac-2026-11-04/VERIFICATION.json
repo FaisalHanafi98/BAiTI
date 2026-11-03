@@ -1,0 +1,152 @@
+{
+  "date": "2026-11-04",
+  "branch": "igumi",
+  "baseCommit": "4ce314b",
+  "scope": "P05c permission catalogue, scoped sync, method authorities and actor stamps",
+  "fullRun": {
+    "unit": 150,
+    "integration": 152,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "exitCode": 0,
+    "reportedMavenTime": "01:06 min",
+    "log": "23-permission-full-suite.log"
+  },
+  "permissionCodes": 42,
+  "defaultRoles": [
+    "Admin",
+    "Manager",
+    "Resident",
+    "Guard"
+  ],
+  "httpPermissionDecisions": 168,
+  "classifiedProductionEndpoints": 4,
+  "defaultSync": "New roles get defaults; existing system roles only get default grants for new catalogue codes; existing-code revocations and custom roles are preserved",
+  "database": {
+    "mode": "Owned native PostgreSQL 16.15 synthetic target",
+    "settings": "Existing ignored P04 settings; seven-key runner unchanged",
+    "runtimeRole": "baiti_app",
+    "migratorRole": "baiti_migrator",
+    "sourceMigrations": "V1-V31 unchanged",
+    "reset": false,
+    "rolesChanged": false,
+    "schemaChanged": false,
+    "existingHostPid": 36176,
+    "restrictedStatus": "Sandbox status reported no server and bounded start attempt timed out; elevated status found existing host cluster, which was reused"
+  },
+  "fixtureBoundary": "Rollback except committed concurrency and foreign-tenant permission fixtures; those remove only their newly created UUIDs",
+  "redStages": {
+    "catalogue": "Missing PermissionCatalog API at test compilation",
+    "defaults": "Missing DefaultRoleGrants API at test compilation",
+    "actor": "Expected user UUID, auditor was empty",
+    "methodSecurity": "Expected 403, got 200",
+    "sync": "Missing PermissionSyncService API at test compilation",
+    "startup": "Missing PermissionSyncStartup API at test compilation",
+    "expandedSetup": "One discovery fixture exceeded V2 slug length; shortened fixture, constraint unchanged"
+  },
+  "stages": [
+    {
+      "log": "01-catalogue-red.log",
+      "sha256": "f65f7b90377ac81f962d887816aa3d41eff99e2a969d654b3071fe83358d3954"
+    },
+    {
+      "log": "02-catalogue-green.log",
+      "sha256": "09b6e77c7675f72fbf6579ea11e16367cdbb9eda6bb4b9f155603090b8a96a09"
+    },
+    {
+      "log": "03-default-grants-red.log",
+      "sha256": "0754f8ccff8f9d52ac32993ffa90eadabb8121b90676d75bfe20531b6a92ef00"
+    },
+    {
+      "log": "04-default-grants-green.log",
+      "sha256": "e2b90e69bf1b7b1c88ea9738cd279d9fefb4f05106f1fb7e7dbd863d71677b02"
+    },
+    {
+      "log": "05-actor-red.log",
+      "sha256": "24258b9e915996e8e67c270cbc9453de858beca2a2ad5f7465edd45aad6fa8d3"
+    },
+    {
+      "log": "06-actor-green.log",
+      "sha256": "227239001f16ad3597d99a57b642867918675f67631201ba85f80e7d64237c6f"
+    },
+    {
+      "log": "07-format.log",
+      "sha256": "17291121512273707d106767d369be22aef3b6e3623523d2b1a183f332b0f710"
+    },
+    {
+      "log": "08-actor-native.log",
+      "sha256": "e99151360c03efab2132a98270974172753d41b06ae3ff91438e627d177be18a"
+    },
+    {
+      "log": "09-method-format.log",
+      "sha256": "d35a19909d56e3338f0993d0792b11c8ab64367e6448eda82e3fd9f0b2e985a3"
+    },
+    {
+      "log": "10-method-security-red.log",
+      "sha256": "5ea09f5732938b3fc82bc6b3b8f9665c9fd34fbce24adbaf7191ec0bdf4a7075"
+    },
+    {
+      "log": "11-method-format.log",
+      "sha256": "7ad96d337da4c06b38bffbc255dc8676842f60917c624e5f38e46d30eaf49cb7"
+    },
+    {
+      "log": "12-method-security-green.log",
+      "sha256": "4fae53fceabf4cf4581e987210dd6c12bf2c83790e07bc88004ae7ed53165896"
+    },
+    {
+      "log": "13-sync-red.log",
+      "sha256": "43d92bcaf97c1ce35da65d3647bd5c91c43d7cff7a3dce99258eb54cd253365e"
+    },
+    {
+      "log": "14-sync-format.log",
+      "sha256": "bf35ca6a10ce7650467da4c0544d479992ef65b4fdbcab19abde641fa289ae64"
+    },
+    {
+      "log": "15-sync-green.log",
+      "sha256": "baf33c5c44d0ba0985ca0a54c1c6e57c0d9dcc25630edb282a93a91ec0be6647"
+    },
+    {
+      "log": "16-acceptance-compile.log",
+      "sha256": "2d993999e4ea6aaad886eb49e553b46381e5fdc293686cd426802c16660cc297"
+    },
+    {
+      "log": "17-startup-red.log",
+      "sha256": "4cac1e8d6927cc4de893ec1001260a68a26334b9316c854983333791e20ef83b"
+    },
+    {
+      "log": "18-startup-green.log",
+      "sha256": "27febe2b229e0645168fc0755cd4687595ecc55b92ec718e4f7c2e9b46002b4c"
+    },
+    {
+      "log": "19-rbac-acceptance-compile.log",
+      "sha256": "8c14b1c8f32eb1d1828186e223764a0c37fb26ee57acdc68b01eaedb0e3f2357"
+    },
+    {
+      "log": "20-rbac-native-acceptance.log",
+      "sha256": "f53798c3bbc2ba1c7d2761ab5882173eb5efa17292d34bc0bce138d7f81057dc"
+    },
+    {
+      "log": "21-discovery-fixture-format.log",
+      "sha256": "f7c8598e082cbacacf95005e7684c8f6a71609e87a3b131a04bdd5dc58c9503a"
+    },
+    {
+      "log": "22-discovery-fixture-green.log",
+      "sha256": "c7124b21606c6ec5475f6fb2cd9eb6263792e0799098e5583b1e18634fab5a99"
+    },
+    {
+      "log": "23-permission-full-suite.log",
+      "sha256": "86a188a4cfe46b8f9f3fad6325e1fca094c011da55971743cebcbb01738fa257"
+    }
+  ],
+  "review": {
+    "mode": "Author source/security review with canonical guides",
+    "independentReview": false
+  },
+  "limits": [
+    "Test-only probe is not a product endpoint; future routes need their own authz and ownership cases",
+    "Resident own-scope, platform onboarding, async auth/activity audits and full I1-I9 remain open",
+    "No dev browser/curl, changed-line coverage, hosted CI, release or deployment proof",
+    "No new push, PR, branch, Docker, hosting or VPS action"
+  ]
+}

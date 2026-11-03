@@ -1,5 +1,30 @@
 # Docs vs Code Alignment Matrix
 
+## Scoped current review — 4 November 2026
+
+Continuation after owner implementation direction: catalogue/default sync,
+method-authority enforcement and actor stamps are now implemented and verified
+in [302 native tests](../06_TESTING_EVIDENCE/2026-11-04_permissions.md). The
+initial inspection table below remains a historical planning baseline. Own-scope,
+onboarding, async activity audits and full G-RLS remain open.
+
+The May matrix below is historical and is superseded for the reviewed foundation
+by [current status](../01_CURRENT_STATUS.md) and the
+[P05c acceptance map](../../blueprint/08_ai_packets/PACKET_05_security_tenancy.md#planning-baseline-and-acceptance-map--4-november-2026).
+This is source inspection at `igumi` / `4ce314b`, not a test run or a complete
+domain-alignment audit.
+
+| Topic | Current observation | Classification / action |
+|---|---|---|
+| Source-of-truth/archive navigation | `00_PROJECT_SOURCE_OF_TRUTH.md` and the AI-context README retain May pre-code/old-path statements; the README names a nonexistent standalone deviation-register file | STALE DOC. Use current status, blueprint and schema §9. Preserve historical content; no broad rewrite in this planning slice. |
+| Runtime, migrations and authentication | POM declares Boot 4.1.2/Java source 17; V1–V31 and context/JWT/login/refresh source exist | May "no code" rows are superseded. The 276-test record is dated 3 November; no fresh runtime pass claimed. |
+| Permissions and actors | Role/grant entities and JWT permission projection exist; catalogue/sync/method enforcement missing in inspected source; JpaConfig auditor is empty | PARTIAL. Execute the bounded P05c work order before onboarding and full G-RLS. Preserve existing authentication. |
+| Default-grant startup wording | Packet describes startup default sync; FR-RBAC-02 seeds on tenant creation and permits Admin edits | CONTRACT RECONCILIATION REQUIRED before startup writes: distinguish initial/new permissions from intentionally revoked grants. |
+| Landed-RA and new module proposals | Owner-confirmed RA pilot/readiness plans are in the original dirty checkout; new procurement/search/reserve guides are planning handoffs | Proposed scope does not silently replace the blueprint or complete P08–P12. Accept affected domain/permission/schema contracts first. |
+| Branches, frontend and hosting | Local main/igumi/anep refs align; frontend directory absent; Docker/hosting deferred | Keep the three-branch workflow. Live GitHub and hosted CI were not rechecked. |
+
+## Historical matrix — May 2026
+
 > **Last Updated**: 2026-05-10
 > **Evidence Basis**: File inspection of `Anep's Project/` folder + `.orchestrator/sessions/`
 

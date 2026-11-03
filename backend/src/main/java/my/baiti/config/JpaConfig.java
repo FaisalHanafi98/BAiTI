@@ -1,7 +1,7 @@
 package my.baiti.config;
 
-import java.util.Optional;
 import java.util.UUID;
+import my.baiti.security.TenantActorAuditor;
 import my.baiti.tenancy.TenantIdentifierResolver;
 import org.springframework.boot.hibernate.autoconfigure.HibernatePropertiesCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +24,6 @@ public class JpaConfig {
 
   @Bean
   public AuditorAware<UUID> auditorProvider() {
-    // Stub until P05 SecurityContext wiring
-    return () -> Optional.empty();
+    return new TenantActorAuditor();
   }
 }

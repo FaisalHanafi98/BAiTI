@@ -1,0 +1,5 @@
+method,path,access
+POST,/api/auth/login,public-credentials
+POST,/api/auth/refresh,public-credentials
+POST,/api/auth/logout,tenant-identity
+GET,/api/auth/me,tenant-identity
