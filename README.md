@@ -1,5 +1,7 @@
 # BAiTI
 
+A neighbourhood and resident commercial management system.
+
 Multi-tenant community management platform. The intended isolation design uses JWT tenant claims, application tenant filtering and PostgreSQL row-level security; runtime isolation is not yet proved. The first pilot is a landed RA, combining RA management with later neighborhood commerce.
 
 **Status**: pre-code. The complete engineering blueprint lives at [`docs/blueprint/`](docs/blueprint/README.md) — start there. Implementation proceeds by executing the AI work packets in [`docs/blueprint/08_ai_packets/`](docs/blueprint/08_ai_packets/README.md), currently at **P02 (backend skeleton)**.
