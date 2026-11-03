@@ -1,6 +1,6 @@
 # P02 — Backend Skeleton
 
-**Objective**: A Spring Boot 3 / Java 17 Maven project under `backend/` that boots, exposes health, runs one green Testcontainers test, and carries all quality tooling — before any business code exists.
+**Objective**: A Spring Boot 4.1.2 / Java 17-source Maven project under `backend/` that boots, exposes health, runs the native PostgreSQL tests and carries the configured quality tooling before business code. ADR 0002 updates the runtime baseline; Docker/Testcontainers execution remains deferred by the owner.
 
 **Scope**
 - In: Maven project, profiles, dual-datasource configuration shell, quality plugins, health test.

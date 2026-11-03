@@ -3,7 +3,6 @@ package my.baiti.testing;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 import java.math.BigDecimal;
@@ -45,10 +44,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import tools.jackson.databind.json.JsonMapper;
 
 @DataJpaTest(showSql = false)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -248,7 +248,12 @@ class AggregateRepositoryIT extends NativePostgresTestSupport {
       } else if (restored instanceof ComplaintUpdate update) {
         assertThat(update.getUser().getId()).isEqualTo(graph.user.getId());
       } else if (restored instanceof ActivityLog audit) {
-        assertThat(new ObjectMapper().readTree(audit.getDetail()).path("fixture").asBoolean())
+        assertThat(
+                JsonMapper.builder()
+                    .build()
+                    .readTree(audit.getDetail())
+                    .path("fixture")
+                    .asBoolean())
             .isTrue();
         assertThat(audit.getIpAddress()).isEqualTo(InetAddress.getByName("192.0.2.17"));
       }

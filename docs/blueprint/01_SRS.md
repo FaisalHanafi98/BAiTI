@@ -213,7 +213,7 @@ Priorities: **M** = Must (v1.0) · **S** = Should (v1.x) · **C** = Could (later
 
 | ID | Constraint |
 |---|---|
-| CON-1 | Stack is fixed: Spring Boot 3.x / Java 17 / Maven / PostgreSQL 16 / Flyway / React 18 / TypeScript / Vite / Tailwind (decision record: `meeting/02_STACK_RATIONALE.md`). |
+| CON-1 | Stack: Spring Boot 4.1.2 / Java 17 source / Maven / native PostgreSQL 16 / Flyway / planned React 18 / TypeScript / Vite / Tailwind. ADR `0002-supported-spring-baseline.md` supersedes the old Boot 3.x version pin after the supported-version review; the architecture and dual-role/isolation requirements remain binding. |
 | CON-2 | Development on Windows 11; dev database via Docker Compose only (no host PostgreSQL install). |
 | CON-3 | Two part-time developers (~6 h/week each); roadmap must be sliced into evening-sized tasks. |
 | CON-4 | Git workflow: user reviews every commit message before commit; no push without explicit instruction; no direct commits to `main`/`dev` once the repo exists. |

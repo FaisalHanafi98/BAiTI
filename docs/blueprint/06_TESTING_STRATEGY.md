@@ -18,7 +18,7 @@ Prefer **vertical-slice integration tests against real PostgreSQL** (native PG16
         Playwright E2E (post-MVP)        ~ dozens   · critical journeys only
       Frontend component (Vitest+RTL)    ~ hundreds · behaviour, not markup
     Backend integration (real PG16)      ~ hundreds · slice: HTTP→service→JPA→PG(RLS)
-  Backend unit (JUnit5+Mockito)          ~ hundreds · domain rules, mappers, guards
+      Backend unit (JUnit Jupiter+Mockito)   ~ hundreds · domain rules, mappers, guards
   + ArchUnit (architecture as tests) · + contract (OpenAPI diff) · + migration test
 ```
 

@@ -13,7 +13,7 @@
 
 ```
 baiti/  (monorepo)
-├── backend/        Spring Boot 3.x · Java 17 · Maven · package root my.baiti
+├── backend/        Spring Boot 4.1.2 · Java 17 source · Maven · package root my.baiti
 ├── frontend/       React 18 · TypeScript · Vite · Tailwind
 ├── infra/          docker-compose (postgres:16 + pgadmin) · Dockerfiles
 ├── docs/           blueprint/ · adr/ · ai-context/ · audits/ · specs/ · plans/
@@ -24,7 +24,7 @@ baiti/  (monorepo)
 
 | Concern | Choice | One-line why (full rationale: `meeting/02_STACK_RATIONALE.md`) |
 |---|---|---|
-| Backend | Spring Boot 3.x / Java 17 / Maven | Type safety across 25 relational tables; Spring Security maturity; hireability |
+| Backend | Spring Boot 4.1.2 / Java 17 source / Maven | Supported runtime selected by ADR 0002; native foundation has 26 relations |
 | DB | PostgreSQL 16 | **RLS is the reason** — DB-enforced tenant isolation; NUMERIC for money; UUID native |
 | Migrations | Flyway | SQL-first, append-only history, Testcontainers-verifiable |
 | ORM | Spring Data JPA / Hibernate 6 | `@TenantId` discriminator support (layer 2 of isolation) |
@@ -35,7 +35,7 @@ baiti/  (monorepo)
 | Forms | React Hook Form + Zod | schema = validation = TS type |
 | Styling | Tailwind + Headless UI | speed + accessible primitives |
 | API contract | springdoc-openapi → `openapi-typescript` | backend is the single source of API truth |
-| Tests | JUnit 5 + Mockito + Testcontainers · Vitest + RTL · Playwright (post-MVP) | real-Postgres integration tests; RLS is untestable on H2 |
+| Tests | Managed JUnit Jupiter + Mockito + native PG16 · planned Vitest/RTL/Playwright | Real PostgreSQL assertions; Testcontainers parity is deferred; RLS is untestable on H2 |
 | CI/CD | GitHub Actions · Docker | free tier, branch protection |
 
 **Deliberately excluded** (revisit only with a written ADR): microservices, Kubernetes, GraphQL, Redux, message brokers, Firebase, MongoDB, Next.js/SSR.

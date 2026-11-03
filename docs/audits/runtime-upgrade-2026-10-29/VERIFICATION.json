@@ -1,0 +1,263 @@
+{
+  "date": "2026-10-29",
+  "baseFoundationCommit": "1aec31c",
+  "branch": "chore/supported-spring-baseline",
+  "decision": "docs/adr/0002-supported-spring-baseline.md",
+  "loadedRuntime": {
+    "springBoot": "4.1.2",
+    "springdoc": "3.2.0",
+    "hibernate": "7.4.13.Final",
+    "javaSource": 17,
+    "javaRuntime": "21.0.11",
+    "maven": "3.9.16",
+    "postgresql": "16.15"
+  },
+  "targets": {
+    "existing": "baiti_test_commit_20261029_2f918711",
+    "fresh": "baiti_test_runtime_20261029_855af26e",
+    "host": "127.0.0.1",
+    "port": 55432,
+    "freshPublicTablesBefore": 0,
+    "appRole": "baiti_app",
+    "migratorRole": "baiti_migrator",
+    "ownershipVerified": true,
+    "privateSettingsExcluded": true,
+    "existingTargetsReset": false
+  },
+  "stages": [
+    {
+      "kind": "expected-runtime-guard-failure",
+      "log": "docs\\audits\\runtime-upgrade-2026-10-29\\01-runtime-baseline-red.log",
+      "sha256": "ce8946cc61aa6b2c59c995f72199e0dc69fe49937e675b55ba33508246baafa5",
+      "expectedSuccess": false,
+      "unitTests": null,
+      "integrationTests": null
+    },
+    {
+      "kind": "3.5.16 bridge compilation only",
+      "log": "docs\\audits\\runtime-upgrade-2026-10-29\\02-bridge-compile.log",
+      "sha256": "c6bb82732eb77e9e45aff905892342ef4bd29cc760af1818933fae51f6dfeae8",
+      "expectedSuccess": true,
+      "unitTests": null,
+      "integrationTests": null
+    },
+    {
+      "kind": "4.1.2 compilation only",
+      "log": "docs\\audits\\runtime-upgrade-2026-10-29\\03-boot4-compile.log",
+      "sha256": "c7cce4bbba61915ee3a45cad585b01cb825aab8fcafdfd754c3517ef46114bcd",
+      "expectedSuccess": true,
+      "unitTests": null,
+      "integrationTests": null
+    },
+    {
+      "kind": "existing V29 target",
+      "log": "docs\\audits\\runtime-upgrade-2026-10-29\\04-supported-runtime-full-verify.log",
+      "sha256": "90a87c93d0386e9aa75b019ad3b5df8c7419616cb48ad36efcf39cff29caf894",
+      "expectedSuccess": true,
+      "unitTests": 58,
+      "integrationTests": 45
+    },
+    {
+      "kind": "API documentation test compilation only",
+      "log": "docs\\audits\\runtime-upgrade-2026-10-29\\05-api-docs-compile.log",
+      "sha256": "0d09bb6a14c2c851c322d3a32fa32af3fa31980638b94cba6d781728705f5653",
+      "expectedSuccess": true,
+      "unitTests": null,
+      "integrationTests": null
+    },
+    {
+      "kind": "existing V29 target with API docs cases",
+      "log": "docs\\audits\\runtime-upgrade-2026-10-29\\06-supported-runtime-final-verify.log",
+      "sha256": "38dbe61ddb1e14c2315427919e10e0ec9cc9c070aa05d37069701a8ce08bfb52",
+      "expectedSuccess": true,
+      "unitTests": 58,
+      "integrationTests": 47
+    },
+    {
+      "kind": "empty public schema; V1-V29 fresh install",
+      "log": "docs\\audits\\runtime-upgrade-2026-10-29\\07-runtime-fresh-migrations.log",
+      "sha256": "44ef2a2e30ef923338a7d5a905a0fd99e61e1372b490a507756d9945675cb95a",
+      "expectedSuccess": true,
+      "unitTests": 58,
+      "integrationTests": 4
+    },
+    {
+      "kind": "fresh target with explicit synthetic fixtures",
+      "log": "docs\\audits\\runtime-upgrade-2026-10-29\\08-fresh-runtime-full-verify.log",
+      "sha256": "32bbb02f508536f268ea782563a9386a13ea951a417ce35a1792d445a0ed1cc8",
+      "expectedSuccess": true,
+      "unitTests": 58,
+      "integrationTests": 47
+    }
+  ],
+  "final": {
+    "command": "Invoke-NativeTests.ps1 -SettingsPath <ignored fresh-target settings>",
+    "unitTests": 58,
+    "integrationTests": 47,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 41.635,
+    "freshMigrationsApplied": 29
+  },
+  "sql": {
+    "unchangedCount": 29,
+    "files": [
+      {
+        "path": "backend/src/main/resources/db/migration/V1__baseline_extensions_and_grants.sql",
+        "sha256": "5242b593a52d07485a8b376ec7b11580dc4aaa547ffa52b21b87738280e21e86",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V10__units.sql",
+        "sha256": "98a48b3fe1c13a92215bfe0f633071868f50777877492b3735f2fcb079bd2a16",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V11__residents.sql",
+        "sha256": "753f366f547b36b1f1ec72387af9bc5bdf46b8cfff9c73bf481cb7ff32b1fa40",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V12__family_members.sql",
+        "sha256": "02c5f67b6cf1a1040cb95d3815ccbb417d919c8b8c0ddf373ff7a4c096b163b2",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V13__payment_methods.sql",
+        "sha256": "402f0bb364ff1585bca7afc12f76752b287ee02d7d720e763868b824fa5ecf39",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V14__bills.sql",
+        "sha256": "50cccfbd0a1f7414afccb87401888e6544b5a4dcbd1a34da334a912fb75d5137",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V15__payments.sql",
+        "sha256": "e59e83bafa7e7116e87960857a49e59fe7298baee718d62250cf1e42e9bc7beb",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V16__complaint_categories.sql",
+        "sha256": "3e1a5910b820ba8bd5e2fa28027fcc39f09836303402cddbe219f0fc7bc1c3e9",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V17__complaints.sql",
+        "sha256": "53b7b1f905b6356d67f3208aa34aa7156af74b5d28338be6dc4e99e394ffdd03",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V18__complaint_updates.sql",
+        "sha256": "753ed2f8116550363489f8a901c7ae26713e3556e788b89daa909c535e1f3d6e",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V19__maintenance_requests.sql",
+        "sha256": "23bf1c10c62e737bb370e69f725a130c47f2d47f1218dfa251be278d45565e38",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V2__tenants.sql",
+        "sha256": "482a9ef78899674d52eae7ca5fc8a2396b52fe713a14f145afdad8a2396b47a1",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V20__facilities.sql",
+        "sha256": "8392d300db12bff8851b1ad9c7b0b5930649f8f8c2a60b1d18fe2f1b7ea77b66",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V21__facility_bookings.sql",
+        "sha256": "96ab4691d14a7452083b04674181220e3de4bab30fb3a7a0be118b46708864e5",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V22__announcements.sql",
+        "sha256": "0c6741f8f81d64b8f936b0b0e8e2ef15d2885430730ccd07b0d0a5a43c940d53",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V23__events.sql",
+        "sha256": "a9a93a8baa833adf08b2e3e60242d17b7500891f7561970af94ed769e7df99e3",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V24__visitor_pre_registrations.sql",
+        "sha256": "b69f87501abebb6f6770839d7a949b84a1a40eb2763118dcf2a665c3ed36875b",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V25__visitors.sql",
+        "sha256": "38e11be7789e6611ae7a827185a5e9209f8bb9a4cc851baeb59f1299fecbfb21",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V26__notifications.sql",
+        "sha256": "804329211af20a2486a6a629150dba4211c1c6e5fe2a3c0da71db53396c47a33",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V27__activity_logs.sql",
+        "sha256": "48df62df4c540122730af20ddf9e9e024aa679f4e7aea787f3c7be384d0681ab",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V28__enable_rls.sql",
+        "sha256": "a1a24fd2d2e843468bfb42a57298d6a434122f20717304d40a2a6d709a01a214",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V3__super_admins.sql",
+        "sha256": "6ca024729e6938439a5fd5ceecde910d7bd59387feb21a84d77520db7f1aa7fa",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V4__permissions.sql",
+        "sha256": "648763f74380dba84d00284bbf56dc09e94ba2c377760b2e9dcffa8c18074ded",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V5__roles.sql",
+        "sha256": "f113629f3ad8af23571418ddcd1b7f14810d1ea6cf03450e98955823f49df983",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V6__roles_permissions.sql",
+        "sha256": "79c86d04e5e4ee42ec4698d73e24da42dd1a67003841044c6e88dbc30c2e7063",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V7__users.sql",
+        "sha256": "6bc4a2319bc6e2775d7bb153161c90121898df52317bff650c4953a205aa974b",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V8__refresh_tokens.sql",
+        "sha256": "a5b7c09300d3188724725337f1adeedcd3e4093cf7ff26fe6db288b23690a4a5",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V9__blocks.sql",
+        "sha256": "acba49864b036d6830a9f6564414c601e3226b0e65963091b87eddd97a517a39",
+        "unchanged": true
+      },
+      {
+        "path": "backend/src/main/resources/db/migration/V29__fail_closed_tenant_setting.sql",
+        "sha256": "b3d137b64db8ab56b04e7ec95941dfa2b74f862b061e9b560c011b2472f04a6f",
+        "unchanged": true
+      }
+    ]
+  },
+  "verificationLimits": [
+    "Foundation tenant resolver remains test-only",
+    "Mock authenticated docs user is not production JWT proof",
+    "Normal production-profile startup depends on unfinished P05",
+    "Remaining P03/P04 constraint and enum cases stay open",
+    "Explicit global platform policy and onboarding remain unimplemented",
+    "Complete G-RLS I1-I9 and changed-line coverage are not activated",
+    "No hosted CI, push, PR, Docker or deployment"
+  ],
+  "runtimeLifecycle": "Native synthetic targets retained; original private PostgreSQL cluster running"
+}
