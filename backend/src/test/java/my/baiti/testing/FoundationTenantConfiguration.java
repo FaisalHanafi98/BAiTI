@@ -5,6 +5,8 @@ import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.springframework.boot.hibernate.autoconfigure.HibernatePropertiesCustomizer;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 @TestConfiguration(proxyBeanMethods = false)
 public class FoundationTenantConfiguration {
@@ -12,6 +14,7 @@ public class FoundationTenantConfiguration {
   public static final UUID TENANT = UUID.fromString("ad8cdb3d-885a-4f0d-b678-2331ce582805");
 
   @Bean
+  @Order(Ordered.LOWEST_PRECEDENCE)
   HibernatePropertiesCustomizer foundationTenantIdentifier() {
     return properties ->
         properties.put(

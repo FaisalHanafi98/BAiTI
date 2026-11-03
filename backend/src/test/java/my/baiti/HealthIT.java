@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import javax.sql.DataSource;
+import my.baiti.tenancy.TenantContext;
 import my.baiti.testing.FoundationTenantConfiguration;
 import my.baiti.testing.NativePostgresTestSupport;
 import org.junit.jupiter.api.Test;
@@ -72,5 +73,20 @@ class HealthIT extends NativePostgresTestSupport {
   void apiDocumentationRemainsProtectedFromAnonymousRequests() throws Exception {
     var response = mvc.perform(get("/v3/api-docs")).andReturn().getResponse();
     assertThat(response.getStatus()).isIn(401, 403);
+  }
+
+  @Test
+  @WithMockUser(username = "synthetic-documentation-reviewer")
+  void unknownTenantCannotReachAnAuthenticatedRoute() throws Exception {
+    mvc.perform(get("/v3/api-docs").header("X-Tenant-Slug", "synthetic-unknown-community"))
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  @WithMockUser(username = "synthetic-documentation-reviewer")
+  void activeTenantReachesAuthenticatedRouteAndContextIsCleared() throws Exception {
+    mvc.perform(get("/v3/api-docs").header("X-Tenant-Slug", "baiti-foundation-a"))
+        .andExpect(status().isOk());
+    assertThat(TenantContext.current()).isEmpty();
   }
 }

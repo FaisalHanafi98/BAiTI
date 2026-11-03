@@ -1,5 +1,28 @@
 # BAiTI — Current Status
 
+## P05 slice 5a verified — 29 October 2026
+
+Active worktree: `backend/.local/persistence-acceptance` in the original checkout,
+branch `feat/tenant-context`, based on persistence commit `c4ffbac`. Native PG16
+verification passes **95 unit/architecture + 113 integration tests** with zero
+failures/errors/skips. See [slice evidence](06_TESTING_EVIDENCE/2026-10-29_tenant_context.md)
+and [structured audit](../audits/tenant-context-2026-10-29/VERIFICATION.json).
+
+Production TenantContext now feeds the primary app datasource and Hibernate.
+A one-connection pool proves A/B binding and cleanup, including unfinished and
+aborted transactions. Binding/reset/rollback failures are tested to evict the
+connection. Header resolution (dev/test), configured subdomains (prod) and
+request-finally cleanup are implemented. Global slug lookup uses an explicit
+annotated owner-role pool; ordinary JPA/JDBC remain on baiti_app. No super-admin
+HTTP access or onboarding is inferred from that lookup seam.
+
+Next: P05 slice 5b, real JWT authentication and rotating refresh tokens. The
+current security chain still requires authenticated users but uses the skeleton
+baseline; mock-user checks are not real-login evidence. JWT tenant matching,
+RBAC, actor auditing, I8/I9 and complete G-RLS remain open, as do changed-line
+coverage and hosted CI. Do not start feature modules. Docker/hosting remain
+deferred. Local SOP/Humanizer commits are authorised; push is not.
+
 ## Persistence acceptance verified — 29 October 2026
 
 P03/P04 local persistence acceptance now passes **59 unit/architecture + 100

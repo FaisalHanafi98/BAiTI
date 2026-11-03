@@ -19,7 +19,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import my.baiti.common.TenantScopedBaseEntity;
+import my.baiti.tenancy.TenantContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -29,6 +31,29 @@ class ArchitectureTest {
       new ClassFileImporter()
           .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
           .importPackages("my.baiti");
+
+  @Test
+  void onlyTenancyMayWriteTheTenantContext() {
+    noClasses()
+        .that()
+        .resideOutsideOfPackage("my.baiti.tenancy..")
+        .should()
+        .callMethod(TenantContext.class, "set", UUID.class)
+        .check(MAIN);
+    noClasses()
+        .that()
+        .resideOutsideOfPackage("my.baiti.tenancy..")
+        .should()
+        .callMethod(TenantContext.class, "clear")
+        .check(MAIN);
+    noClasses()
+        .that()
+        .resideInAPackage("my.baiti.tenancy.admin..")
+        .should()
+        .dependOnClassesThat()
+        .areAssignableTo(JpaRepository.class)
+        .check(MAIN);
+  }
 
   @Test
   void tenantEntitiesInheritTenantAndAuditFields() {
