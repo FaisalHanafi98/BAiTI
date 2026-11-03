@@ -2,7 +2,7 @@
 
 > LEVEL 2 under the root Development SOP (`../../CLAUDE.md`). Extends it; never contradicts it.
 > **Project**: BAiTI (formerly MyComunity) — multi-tenant community platform; first pilot is a landed RA.
-> **State (29 October 2026)**: supported-runtime verification passes 105 tests; P03/P04 acceptance still has explicit gaps, and P05/G-RLS is unfinished. Resume from `docs/ai-context/01_CURRENT_STATUS.md` and `docs/testing/NATIVE_POSTGRES.md`. ADR `0002-supported-spring-baseline.md` records the verified runtime change; finish remaining foundation acceptance and the explicit platform policy before P05 and feature work.
+> **State (29 October 2026)**: local P03/P04 persistence acceptance passes 159 tests on fresh and upgraded native databases; P05/G-RLS is unfinished. Resume from `docs/ai-context/01_CURRENT_STATUS.md` and `docs/testing/NATIVE_POSTGRES.md`. ADRs 0002/0003 record the runtime and bounded global SQL policies. Proceed with P05 tenant context; features remain gated by complete I1–I9.
 
 ## Source of truth, in order
 

@@ -130,3 +130,35 @@ pointing to the original project's ignored runtime folder. The test runner still
 loads only the seven test keys and never provisions or resets a database.
 Production-profile startup and real JWT/context/onboarding depend on P05; the
 test fixture and authenticated mock user are not production authentication proof.
+
+## Platform-policy checkpoint — 29 October 2026
+
+V30 supplies the explicit trusted-owner global policies from
+[ADR 0003](../adr/0003-explicit-platform-table-policies.md). The suite passes
+111 tests on upgraded and fresh targets: 58 unit/architecture and 53 integration,
+without failures/errors/skips. All V1–V29 source hashes are preserved.
+
+After verified migration of a new owned test database, explicitly apply both
+`fixtures/foundation-tenants.sql` and `fixtures/foundation-platform.sql` from
+`backend/src/test/resources/` through the intended `baiti_migrator` connection.
+These are named synthetic fixtures; the platform hash is a non-login placeholder.
+ON CONFLICT does not overwrite existing rows. Tests verify the canary identity,
+and all ordinary test mutations roll back. The runner itself still does not
+provision, clean or reset fixtures. Keep credentials in the private settings.
+
+The platform canary proves the app's global read/update/delete denials against
+an existing row. SET ROLE escalation and owner domain-scope/reset checks are
+also exercised. The owner has DML SELECT/INSERT/UPDATE on the two global tables,
+with no DELETE policy; its trusted DDL ownership is unchanged. These checks do
+not implement the separate P05 HTTP principal, privileged pool or onboarding.
+See [the policy audit](../audits/persistence-acceptance-2026-10-29/VERIFICATION.json).
+
+## Persistence acceptance checkpoint — 29 October 2026
+
+The final P03/P04 local suite passes 159 tests (59 unit/architecture and 100
+integration), without failures/errors/skips, on upgraded V30→V31 and fresh
+V1–V31 targets. Fresh migrations were tested before explicit fixture provisioning.
+See [the acceptance mapping](../ai-context/06_TESTING_EVIDENCE/2026-10-29_persistence_acceptance.md)
+and [structured evidence](../audits/persistence-acceptance-2026-10-29/P04_ACCEPTANCE.json).
+The older checkpoints above retain their original scope and counts. P05's
+production tenant context, authentication and onboarding remain unfinished.

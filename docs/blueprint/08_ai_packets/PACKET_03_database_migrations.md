@@ -1,5 +1,12 @@
 # P03 — Database Migrations V1–V28
 
+Current execution amendment — 29 October 2026: V1–V28 remain the immutable
+baseline. Approved forward repairs V29/V30/V31 and their effective policy contracts
+are in database blueprint section 5. Native `testing/MigrationIT` now verifies
+31 history entries, 26 relations, forced domain isolation and the six bounded
+global owner policies, plus complete FK leading-index coverage. Explicit named synthetic fixtures are test setup, not
+production seed migrations or onboarding proof.
+
 **Objective**: The complete BAiTI schema — 26 relations, constraints, indexes, RLS — applied by Flyway and proven by a migration test. The single DDL source is `04_DATABASE_DESIGN.md`; this packet is a transcription task, not a design task.
 
 **Scope**

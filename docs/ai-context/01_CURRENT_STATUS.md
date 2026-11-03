@@ -1,5 +1,50 @@
 # BAiTI — Current Status
 
+## Persistence acceptance verified — 29 October 2026
+
+P03/P04 local persistence acceptance now passes **59 unit/architecture + 100
+integration tests**, with zero failures, errors or skips, on both a V30→V31
+upgrade and a separate fresh V1–V31 database. V31 adds the six missing FK indexes
+identified by the failing catalog regression. V1–V30 bytes remain unchanged.
+See [the acceptance record](../audits/persistence-acceptance-2026-10-29/P04_ACCEPTANCE.json)
+and [acceptance mapping](06_TESTING_EVIDENCE/2026-10-29_persistence_acceptance.md).
+
+All 15 authored business unique indexes, the role-grant composite key, all 16
+entity enum fields and the lazy-association contract have explicit checks.
+Tenant cases use baiti_app; global JPA cases use a labelled test-only owner pool.
+Timestamp auditing is exercised, while actor auditing remains the explicit P05
+stub. Constraint tests do not establish service transition permissions.
+
+Next: P05 slice 5a, production tenant propagation and pool return cleanup, followed
+by authentication, RBAC, platform onboarding and complete I1–I9. G-RLS,
+changed-line coverage, hosted CI and deployment remain open. Docker/hosting stay
+deferred. Local commits remain authorised after SOP/Humanizer and checks;
+publishing is not authorised. Earlier sections are dated checkpoints.
+
+## Platform SQL boundary verified — 29 October 2026
+
+Active branch `test/persistence-acceptance`, based on runtime commit `781a401`.
+V30 implements the bounded global owner policies from
+[ADR 0003](../adr/0003-explicit-platform-table-policies.md). The full suite passes
+**58 unit/architecture and 53 integration tests**, with no failures/errors/skips,
+on both a V29→V30 fixture and a separate empty V1–V30 target. All prior SQL hashes
+are unchanged. See [policy evidence](../audits/persistence-acceptance-2026-10-29/VERIFICATION.json)
+and [session history](02_SESSION_HISTORY/2026-10-29_platform_policy.md).
+
+The migrator can select/insert/update global tenants/admins without becoming
+superuser or BYPASSRLS; DELETE remains denied. Existing-row canaries prove app
+global denial and role-escalation denial. Domain RLS still binds both roles.
+The test fixtures are synthetic and explicitly provisioned through the intended
+owner. This SQL path does not implement P05's HTTP caller/privileged-pool boundary
+or its complete onboarding transaction.
+
+Next: finish remaining P03/P04 uniqueness/enum and privileged entity-mapping
+acceptance before production tenancy/authentication. Full G-RLS, changed-line
+coverage, hosted CI and release remain open. Continuing local commits follow
+SOP/Humanizer and checks; no push or PR is authorised or performed.
+
+Earlier runtime/foundation sections below are dated checkpoints.
+
 ## Supported runtime verified — 29 October 2026
 
 Branch `chore/supported-spring-baseline` is an isolated local worktree based on

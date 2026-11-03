@@ -1,5 +1,15 @@
 # Database Migration Status
 
+## Verified native checkpoint — 29 October 2026
+
+V1–V31 applied successfully on a fresh owned PostgreSQL 16.15 target. An existing
+V30 synthetic target upgraded to V31 and passed the same 159-test suite. The six
+V31 indexes repair the authored FK-index requirement; V1–V30 are unchanged.
+See [structured acceptance evidence](../../audits/persistence-acceptance-2026-10-29/P04_ACCEPTANCE.json).
+Credentials, ownership tokens and raw logs remain ignored. Existing targets
+were retained. Production database/hosting and P05 onboarding remain unverified.
+The older planning inventory below is historical and does not describe this runtime.
+
 > **Last Updated**: 2026-05-10
 > **Evidence Basis**: Planning docs only — no database exists yet
 

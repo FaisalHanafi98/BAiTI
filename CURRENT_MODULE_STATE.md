@@ -1,13 +1,14 @@
 # CURRENT_MODULE_STATE
 
 Current checkpoint — 29 October 2026: supported Spring runtime verification
-passes 105 native tests. Harness, mapping, permission-link, V29 and complaint-history
+passes 111 native tests, including V30's bounded global owner policies. Harness,
+mapping, permission-link, V29 and complaint-history
 repairs are committed; P03/P04 acceptance has explicit remaining gaps. P05,
-platform provisioning, full G-RLS, frontend and hosted CI are unfinished.
+production platform provisioning, full G-RLS, frontend and hosted CI are unfinished.
 Docker, hosting/VPS and deployment remain deferred. The isolated
 [supported-runtime upgrade](docs/adr/0002-supported-spring-baseline.md) passes
-local verification. Complete the remaining foundation acceptance cases and
-explicit platform policy before P05.
+local verification. The explicit global SQL policy is also verified; complete
+the remaining constraint/enum and privileged mapping cases before P05.
 See [current status](docs/ai-context/01_CURRENT_STATUS.md) and the
 [native run guide](docs/testing/NATIVE_POSTGRES.md) for evidence and limits.
 The owner authorises continuing checked local commits with SOP/Humanizer messages;

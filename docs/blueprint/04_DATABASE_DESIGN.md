@@ -151,13 +151,13 @@ CREATE POLICY tenant_isolation ON {t}
 - `current_setting(…, true)` returns NULL for a never-set GUC, but RESET/empty/malformed settings exposed UUID-cast errors in real PG16 tests on 29 October. The effective V29 contract below replaces that direct cast without editing V28.
 - `WITH CHECK` blocks writing rows *into* another tenant, not just reading.
 - Runtime role `baiti_app` is `NOBYPASSRLS`; Flyway runs as `baiti_migrator` (03_ARCHITECTURE §6.2). Grants: `V1` sets `ALTER DEFAULT PRIVILEGES … GRANT SELECT,INSERT,UPDATE,DELETE ON TABLES TO baiti_app`, then the RLS migration **revokes** UPDATE/DELETE on `activity_logs` and `payments` (append-only enforcement in the grant layer too).
-- `tenants`: RLS enabled with a narrow self-row SELECT policy (§4.1). `super_admins`: RLS enabled/forced with **no policy for `baiti_app`**. The separate privileged onboarding/admin path requires its explicit reviewed policies: the migrator owner alone cannot bypass FORCE RLS, and V29 does not grant that path.
+- `tenants`: RLS enabled with a narrow app self-row SELECT policy (§4.1). `super_admins`: RLS enabled/forced with **no policy for `baiti_app`**. FORCE RLS binds the ordinary migrator too; V30 below explicitly provides its bounded global data access. V29 alone did not provide that path.
 
 **V29 forward repair — 29 October 2026, F0/F1:** `public.baiti_current_tenant()`
 returns the canonical setting as UUID, or NULL for absent, empty, wrong-length
 or invalid UUID text. It is STABLE, SECURITY INVOKER, with a pg_catalog-only
 search path and explicit execution grants to app/migrator. It does not confer
-owner privileges or resolve the separately open platform-provisioning policy.
+owner privileges or provide platform access; see the separate V30 contract.
 
 ```sql
 CREATE OR REPLACE FUNCTION public.baiti_current_tenant()
@@ -192,6 +192,27 @@ predicates read zero rows and reject inserts with SQL state 42501; a valid
 tenant still needs all application authorization/context checks. This narrow
 context repair is unrelated to the earlier Gemini conceptual V29 feature bundle.
 
+**V30 platform policies — 29 October 2026, ADR 0003:** FORCE RLS continues to
+bind `baiti_migrator`. The intended separate platform datasource gets six
+explicit policies: on each of `tenants` and `super_admins`, `platform_select`
+is FOR SELECT TO baiti_migrator USING (true), `platform_insert` is FOR INSERT
+TO baiti_migrator WITH CHECK (true), and `platform_update` is FOR UPDATE TO
+baiti_migrator USING (true) WITH CHECK (true). There is no platform DELETE or
+FOR ALL policy and no new PUBLIC/app policy. Tenant self-read and all 24 domain
+policies are unchanged. This enables the trusted owner's intended data path;
+it neither removes that owner's existing DDL authority nor implements the
+separate P05 platform authentication/service boundary. No runtime pool may use
+the migrator identity.
+
+**V31 foreign-key indexes — 29 October 2026:** the P03 catalog regression found
+six missing indexes under section 1.10. Add unconditional leading-column indexes
+for `announcements(posted_by)`, `complaints(unit_id)`, `events(created_by)`,
+`facility_bookings(approved_by)`, `maintenance_requests(requested_by)` and
+`visitors(pre_registration_id)`. No column, FK, policy, grant or existing index
+definition changes. The regression accepts an existing valid unconditional
+index whose leading key columns cover the FK, including a suitable existing
+unique/primary index; it does not claim benchmarked query performance.
+
 ## 6. Migration Sequence — corrected (supersedes plan §5.4 and §8)
 
 Ordering rules that fixed the old defects: *(a)* every table exists before the RLS migration; *(b)* FK targets always earlier; *(c)* people before property is not required (audit stamps are not FKs — §1.3); *(d)* seeds are not migrations.
@@ -214,6 +235,8 @@ Ordering rules that fixed the old defects: *(a)* every table exists before the R
 | V26–V27 | notifications, activity_logs | system |
 | V28 | `V28__enable_rls.sql` | §5 pattern × 24 tables + tenants/super_admins policies + append-only grant revokes |
 | V29 | `V29__fail_closed_tenant_setting.sql` | Safe tenant-setting reader and corresponding policy expressions; no table/column or owner-bypass change |
+| V30 | `V30__explicit_platform_table_policies.sql` | Role-specific global SELECT/INSERT/UPDATE for the intended platform path; no DELETE, app/global or domain-policy expansion |
+| V31 | `V31__index_remaining_foreign_keys.sql` | Six missing FK indexes required by §1.10; no data, constraints, policies or grants changed |
 
 **Seeding**: no seed migrations. Dev data comes from `DevDataInitializer` (`@Profile("dev")`, idempotent by slug) which calls the real `TenantOnboardingService` to create **two synthetic tenants** (isolation testing needs ≥2; PDPA-safe fictional data per `docs/ai-context/04_DATABASE_STATE/seeders_status.md`). Why not SQL seeds: onboarding logic (role copies, admin user, must-change flag) lives in the service; a SQL twin would drift.
 
