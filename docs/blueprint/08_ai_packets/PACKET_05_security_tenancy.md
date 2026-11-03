@@ -66,3 +66,44 @@ Exit evidence: full `./mvnw verify` output + the I-suite listing filed to `docs/
 - [ ] G-RLS evidence filed; `docs/ai-context/01_CURRENT_STATUS.md` flips the milestone.
 - [ ] Login→me→refresh→logout demonstrated with curl transcript against dev profile + compose DB (two seeded tenants).
 - [ ] No secret material in repo; JWT secret consumed from env; commits sliced 5a–5e, each user-approved.
+
+### Slice 5b access-token checkpoint — 29 October 2026
+
+Given a correctly signed tenant access token and matching resolved active slug,
+a protected route succeeds without a session. Missing/foreign context and malformed,
+expired, unsigned, altered or wrong-key tokens return 401 before the route; a
+valid tenant token on the platform path returns 403. Required claims and exact
+15-minute expiry are checked. No default generated user or basic/form fallback.
+These cases pass in 238 native tests; see
+[access evidence](../../ai-context/06_TESTING_EVIDENCE/2026-10-29_jwt_access.md).
+This is part of 5b, not completion: password verification, opaque refresh rotation,
+family-reuse revocation, logout/me, rate limits, cookie CSRF and CORS remain next.
+CSRF is disabled only for the current bearer-only authenticated surface; any
+cookie refresh endpoint must add its explicit origin/header contract in that change.
+
+### Slice 5b workflow checkpoint — 30 October 2026
+
+Given an active community/user and valid bcrypt password, login issues access and
+an HttpOnly refresh cookie; only its SHA-256 hash is stored. Wrong password,
+unknown user/slug, inactive user and suspended community return identical generic
+401 bodies. Rotation preserves the family and locks the token row; presenting a
+rotated token commits family revocation before 401. Concurrent refresh has one
+winner and revokes that replacement when the losing replay is detected. Logout
+revokes every user refresh family; me/logout require bearer authentication.
+
+Cookie refresh requires allowed Origin plus X-BAiTI-Refresh: true. Body fallback
+uses an explicit token without a cookie. CORS is explicit with credentials;
+unsupported origins are rejected at the CORS protocol layer. Application auth
+errors use RFC 7807. Login IP/account limits, a separate refresh IP budget, bounded
+local cache, 8 KB auth-body cap and the bcrypt 72-byte limit are exercised.
+Configurable whole-second lifetimes cannot exceed the published v1 limits of
+15 minutes / 7 days; increasing those limits needs a documented contract change.
+Only login/refresh are anonymous, refining the packet's broad /api/auth/**
+shorthand to preserve FR-AUTH access requirements. Native execution replaces
+compose under the accepted owner amendment.
+
+Full local evidence: 276 tests, no failures/errors/skips. See
+[workflow record](../../ai-context/06_TESTING_EVIDENCE/2026-10-30_authentication_workflows.md).
+P05 as a whole remains open: RBAC/catalogue, actor/auth audit wiring, privileged
+onboarding, async propagation, full I1–I9, changed-line coverage and actual dev
+curl/browser journeys still require their own evidence. No hosted CI or publication.

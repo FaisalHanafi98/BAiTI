@@ -8,12 +8,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-/**
- * Emits one DEBUG line at startup proving the runtime pool connects as {@code baiti_app} (the
- * non-owner, NOBYPASSRLS role that RLS binds to). Supports the P02 DoD: "the log line proves the
- * runtime pool user is baiti_app". Also surfaces the tenant context setting, which is empty until
- * P05 wires {@code TenantAwareDataSource}.
- */
+/** Logs runtime identity/context; native boundary tests separately verify role attributes. */
 @Component
 public class StartupDiagnostics implements ApplicationRunner {
 
@@ -31,8 +26,8 @@ public class StartupDiagnostics implements ApplicationRunner {
     String tenantContext =
         jdbc.queryForObject("SELECT current_setting('app.current_tenant', true)", String.class);
     log.debug(
-        "BAiTI startup diagnostics — pool current_user={} (NOBYPASSRLS, RLS binds here);"
-            + " app.current_tenant={} (empty until P05 TenantAwareDataSource)",
+        "BAiTI startup diagnostics — pool current_user={};"
+            + " app.current_tenant={} (empty at startup)",
         currentUser,
         tenantContext == null ? "<unset>" : tenantContext);
   }

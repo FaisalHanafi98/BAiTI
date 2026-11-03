@@ -1,0 +1,81 @@
+{
+  "date": "2026-10-29",
+  "baseCommit": "91d6f61",
+  "branch": "feat/jwt-authentication",
+  "scope": "P05 5b access-token boundary only",
+  "database": {
+    "target": "baiti_test_p04_20261029_bb8f567e",
+    "postgresql": "16.15",
+    "version": 31,
+    "schemaChanged": false
+  },
+  "final": {
+    "unitTests": 119,
+    "integrationTests": 119,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "mavenElapsed": "01:03 min"
+  },
+  "loadedJwtLibraries": [
+    "spring-security-oauth2-jose-7.1.2.jar",
+    "nimbus-jose-jwt-10.9.1.jar"
+  ],
+  "stages": [
+    {
+      "log": "01-jwt-api-red.log",
+      "sha256": "6a39411be256c209c33120d694ba92fcdb5cd863282d0123e6163b7af9635ced"
+    },
+    {
+      "log": "02-jwt-green.log",
+      "sha256": "e9f656ed3499332ec2848899b9e3570ae38c160374054c34309a36c2fbcc84a9"
+    },
+    {
+      "log": "03-expiry-boundary.log",
+      "sha256": "2d2bd71deee5ed459cd07f93145207a7196b54c32d24d89a92978948e04719ec"
+    },
+    {
+      "log": "04-expiry-green.log",
+      "sha256": "66b0cd9fd9cbb547db891105fdace35ba072838b2f3499f025ab12caaa9d9566"
+    },
+    {
+      "log": "06-jwt-request-red.log",
+      "sha256": "18ef68369a164bc13e4a02d2ac317852d4118243cf5d7ef5749dad214d3a2ee4"
+    },
+    {
+      "log": "08-jwt-filter-focused.log",
+      "sha256": "a97138fbcc2cce853432b96967eda4525fba751dc5807ad1656555fb901a4a09"
+    },
+    {
+      "log": "10-jwt-full.log",
+      "sha256": "fdfc44fbc5f6a233519afa07ec370224d70d8321fefe23acf131f6cde7f842ef"
+    }
+  ],
+  "regressions": [
+    "Unimplemented token API compilation",
+    "Exact 15-minute expiry initially accepted and then rejected",
+    "Valid bearer token initially returned 403, now 200 with matching tenant"
+  ],
+  "testsIssueSyntheticPrincipalsDirectly": true,
+  "secretCommitted": false,
+  "testKey": "per-process random in-memory fixture",
+  "securityReview": {
+    "mode": "author scoped security review",
+    "verdict": "No blocking findings in reviewed access-token scope",
+    "checked": [
+      "fixed HS256",
+      "issuer/audience/purpose and required claims",
+      "signature and exact expiry",
+      "bounded token/authority input",
+      "tenant match and context cleanup",
+      "stateless requests and disabled legacy fallback",
+      "valid tenant token denied on platform routes"
+    ]
+  },
+  "limits": [
+    "No real password login, refresh rotation, logout/me, rate limits or cookie/CORS path yet",
+    "Actor auditing, RBAC, onboarding and complete I1-I9 remain open",
+    "No production key lifecycle or changed-line coverage/hosted CI claim",
+    "No push, PR, Docker or deployment"
+  ]
+}

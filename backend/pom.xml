@@ -50,6 +50,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+        </dependency>
 
         <!-- Data / JPA / migrations -->
         <dependency>
@@ -90,7 +94,11 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- bucket4j (rate limiting) deferred to P05 with the auth module -->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j_jdk17-core</artifactId>
+            <version>8.21.0</version>
+        </dependency>
 
         <!-- Test -->
         <dependency>

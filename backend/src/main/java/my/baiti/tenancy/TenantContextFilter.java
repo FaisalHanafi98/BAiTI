@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import my.baiti.common.ApiError;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 public final class TenantContextFilter extends OncePerRequestFilter {
@@ -28,9 +29,8 @@ public final class TenantContextFilter extends OncePerRequestFilter {
         try {
           resolver.resolve(request).ifPresent(TenantContext::set);
         } catch (TenantResolutionException failure) {
-          response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-          response.setContentType("application/json");
-          response.getWriter().write("{\"message\":\"Authentication failed\"}");
+          ApiError.write(
+              request, response, HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed");
           return;
         }
       }

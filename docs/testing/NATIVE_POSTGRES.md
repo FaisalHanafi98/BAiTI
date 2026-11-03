@@ -173,3 +173,31 @@ cleanup and physical connection reuse. A bounded owner pool performs only the
 current global active-slug lookup; primary JPA/JDBC stays on baiti_app. See
 [the slice record](../ai-context/06_TESTING_EVIDENCE/2026-10-29_tenant_context.md).
 Real JWT login, refresh rotation, RBAC, actor auditing and full I1–I9 remain open.
+
+## Signed access-token checkpoint — 29 October 2026
+
+The access-token boundary passes 238 tests (119 unit/architecture + 119 integration),
+zero failures/errors/skips. Main startup requires JWT_SECRET as Base64 of at least
+32 random bytes. NativePostgresTestSupport supplies an independently generated,
+per-process in-memory test key via dynamic properties. It never reads production
+key material or changes the seven-key native runner settings contract. No key or
+raw token is included in committed evidence. Login/refresh endpoints remain
+unfinished; [the access record](../ai-context/06_TESTING_EVIDENCE/2026-10-29_jwt_access.md)
+separates signed-principal tests from real user authentication.
+
+## Authentication workflow checkpoint — 30 October 2026
+
+Full verification passes 276 tests (140 unit/architecture + 136 integration), zero
+failures/errors/skips. AuthenticationFixture inserts only newly generated synthetic
+user/role/permission IDs through baiti_app and removes those exact IDs afterward;
+shared tenants/platform canaries are retained. The suspended-tenant case changes
+its fixture only inside a rolled-back owner transaction. Native security settings
+pin test origins, limits and token TTLs independently of normal dev environment.
+Main startup requires JWT_SECRET and explicit CORS_ALLOWED_ORIGINS. See
+[workflow evidence](../ai-context/06_TESTING_EVIDENCE/2026-10-30_authentication_workflows.md).
+
+The ordinary dev DB/seeding and browser/curl journey remain P05e work. MockMvc
+with real PG16 proves the tested server path, not TLS/browser cookie usability.
+After an overnight gap, preflight found the private server stopped; pg_ctl
+restarted only the existing loopback cluster, preserving databases and history.
+No initdb, clean/reset, role mutation, system service or global PATH change.

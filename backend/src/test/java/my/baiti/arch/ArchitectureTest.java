@@ -122,7 +122,11 @@ class ArchitectureTest {
         .resideOutsideOfPackage("my.baiti.security..")
         .should()
         .dependOnClassesThat()
-        .resideInAnyPackage("io.jsonwebtoken..", "com.auth0.jwt..")
+        .resideInAnyPackage(
+            "io.jsonwebtoken..",
+            "com.auth0.jwt..",
+            "com.nimbusds..",
+            "org.springframework.security.oauth2.jwt..")
         .check(MAIN);
   }
 
