@@ -1,5 +1,35 @@
 # BAiTI — Current Status
 
+## Published review stack — 3 November 2026
+
+The owner explicitly requested pushing the existing commits. Origin now points
+to `https://github.com/FaisalHanafi98/BAiTI.git`. All 23 original local commits
+through `19a7dce` and the owner's initial `16d2621` remain reachable in the
+published stack. No history was rewritten and no force-push occurred.
+
+Continue in `backend/.local/github-publication` under the original project,
+branch `publish/jwt-authentication`, tracking the same branch on origin. This
+registered worktree supersedes `backend/.local/persistence-acceptance` as the
+continuation checkout. Earlier worktrees and the original checkout's uncommitted
+research/file-organisation changes are preserved.
+
+Five draft PRs cover foundation → runtime → persistence → tenant context →
+authentication. Their bases form a stack; review and merge in that order with
+merge commits. Main still contains the owner's initial commit until those PRs
+are merged. See the [publication record](02_SESSION_HISTORY/2026-11-03_github_publication.md).
+
+Today's full native run passed **140 unit/architecture + 136 integration tests**,
+zero failures/errors/skips; Maven reported 1 minute 23 seconds. The backend,
+migration, tool and infra trees match `19a7dce`. The existing private PG16 cluster
+was restarted without resetting databases or altering roles. See
+[verification evidence](06_TESTING_EVIDENCE/2026-11-03_publication.md).
+
+Next remains P05c RBAC/catalogue and actor auditing, then super-admin onboarding,
+auth audit/async propagation and the complete I1–I9 gate. Draft publication does
+not close G-RLS, changed-line coverage, browser journeys, hosted CI or release
+readiness. Docker, hosting/VPS and deployment stay deferred. The entries below
+are dated checkpoints and do not override this publication state.
+
 ## P05 authentication workflows verified — 30 October 2026
 
 Branch `feat/jwt-authentication`, following access-token commit `a3f1e68`, in

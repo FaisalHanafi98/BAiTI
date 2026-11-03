@@ -2,7 +2,7 @@
 
 > LEVEL 2 under the root Development SOP (`../../CLAUDE.md`). Extends it; never contradicts it.
 > **Project**: BAiTI (formerly MyComunity) — multi-tenant community platform; first pilot is a landed RA.
-> **State (30 October 2026)**: native authentication workflows pass 276 tests; RBAC, onboarding and full G-RLS remain unfinished. Resume from `docs/ai-context/01_CURRENT_STATUS.md` and `docs/testing/NATIVE_POSTGRES.md`. ADRs 0002/0003 record the runtime and bounded global SQL policies. Proceed with P05 RBAC and actor auditing; features remain gated by complete I1–I9.
+> **State (3 November 2026)**: the published authentication stack passed 276 native tests today. Five stacked draft PRs preserve both original Git histories; main is not merged. RBAC, onboarding and full G-RLS remain unfinished. Resume from `docs/ai-context/01_CURRENT_STATUS.md` and `docs/testing/NATIVE_POSTGRES.md`. Proceed with P05 RBAC and actor auditing; features remain gated by complete I1–I9.
 
 ## Source of truth, in order
 
@@ -31,7 +31,7 @@ Spring Boot 4.1.2 / Java 17 source (Temurin 21 runtime here) / Maven 3.9 · nati
 1. Stage specific paths (never `git add -A`).
 2. Draft the message → present to Faisal → he edits/approves → then commit.
 3. Message format: [shared workspace commit SOP](../../standards/COMMIT_MESSAGES.md). Use its shared template and truthful review status; the approval step above still applies.
-4. **Never push** without an explicit "push" instruction. GitHub repository `github.com/FaisalHanafi98/BAiTI` is currently public; the local remote and independent GitHub history are not yet reconciled.
+4. **Never push** without an explicit "push" instruction. The owner authorised publication on 3 November 2026. Public repository `github.com/FaisalHanafi98/BAiTI` is configured as origin; draft PRs #1–#5 preserve both original histories. The publication record is in `docs/ai-context/02_SESSION_HISTORY/2026-11-03_github_publication.md`.
 5. No direct commits to `main`/`dev` once branches/protection exist; feature branches + PRs.
 
 ## Allowed commands
@@ -40,7 +40,7 @@ Spring Boot 4.1.2 / Java 17 source (Temurin 21 runtime here) / Maven 3.9 · nati
 
 ## Forbidden
 
-Pushing; force-push; hard reset; editing applied migrations; hand-editing `frontend/src/api/types.gen.ts`; committing `.env`/secrets/real personal data (PDPA); `--dangerously-skip-permissions`; weakening isolation/authz tests to pass a build; creating artifacts under the old "MyComunity" name.
+Unauthorised pushes; force-push; hard reset; editing applied migrations; hand-editing `frontend/src/api/types.gen.ts`; committing `.env`/secrets/real personal data (PDPA); `--dangerously-skip-permissions`; weakening isolation/authz tests to pass a build; creating artifacts under the old "MyComunity" name.
 
 ## Session duties
 

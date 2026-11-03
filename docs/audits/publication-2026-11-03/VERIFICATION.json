@@ -1,0 +1,78 @@
+{
+  "date": "2026-11-03",
+  "scope": "Owner-authorised publication of existing committed BAiTI implementation",
+  "remote": "https://github.com/FaisalHanafi98/BAiTI.git",
+  "githubInitial": "16d262180fb3710c14a32bbac5b48707c7592ba4",
+  "originalLocalHead": "19a7dcef0a2776b551ccc10fa4c454c01a0c0c80",
+  "originalLocalCommits": 23,
+  "testedPublicationHead": "2dfaff1ff6bc3fddca934d48513a51b6d7b9cb25",
+  "historyRewritten": false,
+  "forcePush": false,
+  "pushMode": "atomic with five explicit review refs",
+  "pullRequests": [
+    {
+      "head": "publish/native-postgres-foundation",
+      "base": "main",
+      "url": "https://github.com/FaisalHanafi98/BAiTI/pull/1",
+      "title": "Bootstrap the backend and native PostgreSQL foundation"
+    },
+    {
+      "head": "publish/supported-spring-baseline",
+      "base": "publish/native-postgres-foundation",
+      "url": "https://github.com/FaisalHanafi98/BAiTI/pull/2",
+      "title": "Move the backend to Spring Boot 4.1.2"
+    },
+    {
+      "head": "publish/persistence-acceptance",
+      "base": "publish/supported-spring-baseline",
+      "url": "https://github.com/FaisalHanafi98/BAiTI/pull/3",
+      "title": "Complete native persistence checks and explicit platform policies"
+    },
+    {
+      "head": "publish/tenant-context",
+      "base": "publish/persistence-acceptance",
+      "url": "https://github.com/FaisalHanafi98/BAiTI/pull/4",
+      "title": "Bind tenant context to requests and pooled database connections"
+    },
+    {
+      "head": "publish/jwt-authentication",
+      "base": "publish/tenant-context",
+      "url": "https://github.com/FaisalHanafi98/BAiTI/pull/5",
+      "title": "Add tenant-bound login and rotating refresh tokens"
+    }
+  ],
+  "mainChanged": false,
+  "tests": {
+    "unit": 140,
+    "integration": 136,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "exitCode": 0,
+    "mavenReportedTime": "01:23 min",
+    "rawLog": "01-native-verify.log",
+    "rawLogSha256": "b339feb52f200de9c1cf03b0e9b26b20f172938b20769ced4d7b84fc3253fb16",
+    "settings": "Existing ignored synthetic P04 target; seven-key native runner contract",
+    "databaseReset": false,
+    "rolesChanged": false,
+    "existingClusterRestarted": true
+  },
+  "historyScan": {
+    "date": "2026-11-03",
+    "scope": "All blobs reachable from local implementation HEAD and origin/main",
+    "commits": 24,
+    "blobsScanned": 386,
+    "highSignalMatches": [],
+    "unreviewedOversize": [],
+    "forbiddenTrackedPaths": [],
+    "limits": "Canonical high-signal patterns; not a general vulnerability audit or encrypted-secret detector."
+  },
+  "implementationUnchangedFrom": "19a7dce (backend, migrations, tools and infra)",
+  "limits": [
+    "PR-specific historical fresh/upgrade results were not rerun separately today",
+    "RBAC, auditing, onboarding, async and complete I1-I9 remain unfinished",
+    "No browser/curl, changed-line coverage, hosted CI, release or deployment proof",
+    "No Docker, hosting or VPS setup",
+    "Uncommitted original-checkout research/file organisation remains local"
+  ]
+}

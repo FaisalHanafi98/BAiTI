@@ -6,7 +6,7 @@ Multi-tenant community management platform. The intended isolation design uses J
 
 **Blueprint**: The complete engineering blueprint lives at [`docs/blueprint/`](docs/blueprint/README.md) — start there. Implementation proceeds by executing the AI work packets in [`docs/blueprint/08_ai_packets/`](docs/blueprint/08_ai_packets/README.md).
 
-**Status — 30 October 2026**: persistence, tenancy and login/refresh workflows pass 276 native tests. RBAC, onboarding, complete G-RLS and the frontend remain unfinished. Docker/Testcontainers, hosting/VPS and deployment stay deferred. Start with [current evidence](docs/ai-context/01_CURRENT_STATUS.md), [native tests](docs/testing/NATIVE_POSTGRES.md), the [runtime decision](docs/adr/0002-supported-spring-baseline.md) and [platform policy](docs/adr/0003-explicit-platform-table-policies.md).
+**Status — 3 November 2026**: the complete publication stack passed 276 native tests today and is published in [five draft PRs](docs/ai-context/02_SESSION_HISTORY/2026-11-03_github_publication.md). RBAC, onboarding, complete G-RLS and the frontend remain unfinished. Docker/Testcontainers, hosting/VPS and deployment stay deferred. Start with [current evidence](docs/ai-context/01_CURRENT_STATUS.md), [native tests](docs/testing/NATIVE_POSTGRES.md), the [runtime decision](docs/adr/0002-supported-spring-baseline.md) and [platform policy](docs/adr/0003-explicit-platform-table-policies.md).
 
 ## Stack
 
