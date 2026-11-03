@@ -2,7 +2,7 @@
 
 > LEVEL 2 under the root Development SOP (`../../CLAUDE.md`). Extends it; never contradicts it.
 > **Project**: BAiTI (formerly MyComunity) — multi-tenant community platform; first pilot is a landed RA.
-> **State (3 November 2026)**: the published authentication stack passed 276 native tests today. Five stacked draft PRs preserve both original Git histories; main is not merged. RBAC, onboarding and full G-RLS remain unfinished. Resume from `docs/ai-context/01_CURRENT_STATUS.md` and `docs/testing/NATIVE_POSTGRES.md`. Proceed with P05 RBAC and actor auditing; features remain gated by complete I1–I9.
+> **State (3 November 2026)**: the implementation passed 276 native tests today. The owner replaced the review stack with three aligned branches: production `main`, author `igumi` and author `anep`. Both original Git histories are preserved. RBAC, onboarding and full G-RLS remain unfinished. Resume from `docs/ai-context/01_CURRENT_STATUS.md` and `docs/testing/NATIVE_POSTGRES.md`. Proceed with P05 RBAC and actor auditing; features remain gated by complete I1–I9.
 
 ## Source of truth, in order
 
@@ -31,8 +31,8 @@ Spring Boot 4.1.2 / Java 17 source (Temurin 21 runtime here) / Maven 3.9 · nati
 1. Stage specific paths (never `git add -A`).
 2. Draft the message → present to Faisal → he edits/approves → then commit.
 3. Message format: [shared workspace commit SOP](../../standards/COMMIT_MESSAGES.md). Use its shared template and truthful review status; the approval step above still applies.
-4. **Never push** without an explicit "push" instruction. The owner authorised publication on 3 November 2026. Public repository `github.com/FaisalHanafi98/BAiTI` is configured as origin; draft PRs #1–#5 preserve both original histories. The publication record is in `docs/ai-context/02_SESSION_HISTORY/2026-11-03_github_publication.md`.
-5. No direct commits to `main`/`dev` once branches/protection exist; feature branches + PRs.
+4. **Never push** without an explicit "push" instruction. The owner authorised publication and branch consolidation on 3 November 2026. Public repository `github.com/FaisalHanafi98/BAiTI` is configured as origin. Follow `docs/ai-context/02_SESSION_HISTORY/2026-11-03_three_branch_workflow.md`; the earlier five-PR stack is superseded.
+5. Keep exactly three branches: `main` is the production branch, `igumi` is Faisal's author branch and `anep` is the stakeholder's author branch. Develop on the relevant author branch and open meaningful PRs to `main`. Do not create extra feature, test or publication branches unless the owner requests them. The owner explicitly authorised the initial alignment of all three branches; future work can diverge normally without overwriting the other author's changes.
 
 ## Allowed commands
 

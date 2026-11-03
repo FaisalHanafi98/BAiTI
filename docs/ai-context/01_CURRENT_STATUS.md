@@ -1,5 +1,31 @@
 # BAiTI — Current Status
 
+## Three-branch workflow — 3 November 2026
+
+The owner replaced the five-branch review stack with exactly three branches:
+`main` for production, `igumi` for Faisal and `anep` for the stakeholder. All three
+share the current implementation as their starting point. Both original Git
+histories and all 23 original local commits remain reachable. Draft PRs #1–#5
+are closed; their branches are obsolete. See the
+[owner-approved workflow](02_SESSION_HISTORY/2026-11-03_three_branch_workflow.md).
+
+Continue in `backend/.local/github-publication` on `igumi`, tracking origin/igumi.
+Use the appropriate author branch for future work and meaningful PRs to main;
+do not create additional branches without owner direction. Initial alignment
+does not authorise overwriting later work on either author's branch.
+
+The original checkout and older test/runtime worktrees remain detached at their
+existing commits. Their files are retained; the original checkout's 84 local
+changes were verified unchanged during detachment. No reset or worktree removal
+was used. Only obsolete branch references are removed.
+
+This consolidation changes Git references and documentation. Backend, migration,
+tool and infra files remain those tested earlier today: 276 tests, zero failures,
+errors or skips. No test rerun is claimed for these documentation-only changes.
+The production branch name does not close P05/G-RLS or establish deployment.
+Next remains P05c RBAC/catalogue and actor auditing; Docker, hosting/VPS and
+deployment stay deferred. Earlier sections are historical checkpoints.
+
 ## Published review stack — 3 November 2026
 
 The owner explicitly requested pushing the existing commits. Origin now points

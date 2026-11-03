@@ -1,5 +1,9 @@
 # GitHub publication — 3 November 2026
 
+Superseded later the same day by the owner's
+[three-branch workflow](2026-11-03_three_branch_workflow.md). PRs #1–#5 are closed.
+The stack below records the first publication, not the current branching model.
+
 The owner requested pushing the existing BAiTI commits before further development.
 GitHub main contained only initial commit `16d2621`, while the local authentication
 branch held 23 commits through `19a7dce`. The histories had independent roots.
