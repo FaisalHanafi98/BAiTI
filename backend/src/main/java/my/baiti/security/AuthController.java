@@ -9,6 +9,8 @@ import jakarta.validation.constraints.Size;
 import java.util.Arrays;
 import java.util.List;
 import my.baiti.people.UserIdentity;
+import my.baiti.system.TenantActivity.Action;
+import my.baiti.system.TenantActivityPublisher;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -30,16 +32,31 @@ public class AuthController {
   private final AuthService auth;
   private final OriginPolicy origins;
   private final TokenLifetimes lifetimes;
+  private final TenantActivityPublisher audit;
 
-  public AuthController(AuthService auth, OriginPolicy origins, TokenLifetimes lifetimes) {
+  public AuthController(
+      AuthService auth,
+      OriginPolicy origins,
+      TokenLifetimes lifetimes,
+      TenantActivityPublisher audit) {
     this.auth = auth;
     this.origins = origins;
     this.lifetimes = lifetimes;
+    this.audit = audit;
   }
 
   @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-    return issued(auth.login(request.email(), request.password()));
+  public ResponseEntity<AuthResponse> login(
+      @Valid @RequestBody LoginRequest request, HttpServletRequest servletRequest) {
+    AuthService.LoginResult result;
+    try {
+      result = auth.login(request.email(), request.password());
+    } catch (BadCredentialsException invalid) {
+      audit.record(Action.LOGIN_FAILED, null, servletRequest.getRemoteAddr());
+      throw invalid;
+    }
+    audit.record(Action.LOGIN_SUCCESS, result.user().userId(), servletRequest.getRemoteAddr());
+    return issued(result);
   }
 
   @PostMapping("/refresh")
@@ -65,7 +82,9 @@ public class AuthController {
     } else {
       token = body == null ? null : body.token();
     }
-    return issued(auth.refresh(token));
+    var result = auth.refresh(token);
+    audit.record(Action.TOKEN_REFRESHED, result.user().userId(), request.getRemoteAddr());
+    return issued(result);
   }
 
   @GetMapping("/me")
@@ -74,8 +93,10 @@ public class AuthController {
   }
 
   @PostMapping("/logout")
-  public ResponseEntity<Void> logout(@AuthenticationPrincipal TenantPrincipal principal) {
+  public ResponseEntity<Void> logout(
+      @AuthenticationPrincipal TenantPrincipal principal, HttpServletRequest request) {
     auth.logout(principal);
+    audit.record(Action.LOGOUT, principal.userId(), request.getRemoteAddr());
     return ResponseEntity.noContent()
         .cacheControl(CacheControl.noStore())
         .header(HttpHeaders.SET_COOKIE, refreshCookie("", java.time.Duration.ZERO).toString())
@@ -85,8 +106,10 @@ public class AuthController {
   @PostMapping(value = "/password", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> changeInitialPassword(
       @AuthenticationPrincipal TenantPrincipal principal,
-      @Valid @RequestBody PasswordChangeRequest request) {
+      @Valid @RequestBody PasswordChangeRequest request,
+      HttpServletRequest servletRequest) {
     auth.changeInitialPassword(principal, request.currentPassword(), request.newPassword());
+    audit.record(Action.PASSWORD_CHANGED, principal.userId(), servletRequest.getRemoteAddr());
     return ResponseEntity.noContent()
         .cacheControl(CacheControl.noStore())
         .header(HttpHeaders.SET_COOKIE, refreshCookie("", java.time.Duration.ZERO).toString())

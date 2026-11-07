@@ -1,5 +1,16 @@
 # BAiTI — Current Status
 
+## Asynchronous authentication audit verified — 8 November 2026
+
+Successful sign-in, rejected credentials for resolved tenants, refresh,
+logout and initial password replacement emit tenant activity events. The
+worker restores the originating tenant before inserting through the app
+pool and clears its scope afterwards. The full native run passed 151
+unit/architecture and 162 integration tests. See
+[verification](06_TESTING_EVIDENCE/2026-11-08_auth_audit.md).
+
+Continue with the combined I1–I9 suite and local development seeds.
+
 ## First-use credentials verified — 8 November 2026
 
 The first admin signs in with a restricted tenant token and replaces the
