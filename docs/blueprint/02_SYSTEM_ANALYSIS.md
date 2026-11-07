@@ -105,7 +105,7 @@ sequenceDiagram
   participant SA as Super Admin
   participant API as POST /api/admin/tenants
   participant TX as one @Transactional boundary
-  SA->>API: {slug, name, adminEmail, adminName}
+  SA->>API: {slug, name, adminEmail, adminName, initialPassword}
   API->>TX: begin
   TX->>TX: 1. insert tenants row (slug unique — idempotency guard)
   TX->>TX: 2. copy role templates → roles (4 rows, tenant-scoped)
@@ -116,6 +116,11 @@ sequenceDiagram
   API-->>SA: 201 {tenantId, adminUserId}
 ```
 Duplicate slug ⇒ 409, nothing written. **Note**: this transaction runs in the super-admin context, which operates outside normal tenant RLS scoping — see 03_ARCHITECTURE §6.5.
+
+The platform operator supplies the initial password with 12–72 characters and
+at most 72 UTF-8 bytes. The service stores its bcrypt hash and sets the first
+admin's password-change flag. The creation response carries the two IDs. The
+operator handles the initial credential handoff outside this endpoint.
 
 ### 4.2 Login & tenant resolution (UC-A1)
 

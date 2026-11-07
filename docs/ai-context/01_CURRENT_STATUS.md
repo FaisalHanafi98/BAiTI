@@ -1,5 +1,16 @@
 # BAiTI — Current Status
 
+## Platform access and onboarding verified — 8 November 2026
+
+P05d adds separate platform sign-in, protected tenant listing and atomic tenant
+creation. The operator supplies the initial password. Creation hashes it, sets
+the first admin's change flag and records `TENANT_CREATED`. The full native
+suite passed 151 unit/architecture and 160 integration tests with zero failures,
+errors or skips. See [verification](06_TESTING_EVIDENCE/2026-11-08_platform_onboarding.md).
+
+Continue with first-use password enforcement, asynchronous tenant audit,
+development seeds and the complete I1–I9 gate.
+
 ## Resident ownership verified — 8 November 2026
 
 P05c ownership checks use the signed tenant principal and app-role resident

@@ -119,7 +119,14 @@ Spring uses **two datasources by role**: Flyway runs as `baiti_migrator`; the Hi
 
 P05 slice 5a implements an annotated, bounded owner-role pool and parameterised active-slug lookup in `TenantDirectory`. The primary JPA/JDBC path stays on the wrapped app pool. This bootstrap lookup returns no tenant data to the caller. Production ignores forwarded host headers by default; a trusted-proxy design remains a later hosting decision.
 
-The separate P05 super-admin endpoints (`/api/admin/**`) remain unimplemented. They will run with empty `TenantContext` behind their own principal/filter chain and may only touch global tables (ArchUnit: `my.baiti.tenancy.admin` may not import domain repositories). Tenant onboarding (UC-T1) writes tenant-scoped rows *before a tenant user exists*: it deliberately uses the **migrator-role datasource** as the single annotated, reviewed exception (`@UsesPrivilegedDataSource`) and must still bind the new tenant for domain-table RLS. The SQL policy tests do not prove that service transaction or caller authorisation.
+Platform endpoints run with an empty `TenantContext` behind the dedicated
+`/api/admin/**` filter chain. The platform principal uses audience
+`baiti:platform` and purpose `platform_access`, verified with the configured JWT
+key. The filter checks that the operator remains active. ArchUnit keeps JPA
+repositories out of `my.baiti.tenancy.admin`. Onboarding (UC-T1) uses the
+annotated migrator-role datasource and binds the new tenant locally within its
+JDBC transaction. A duplicate slug returns 409. A failed seed rolls back the
+tenant and all of its initial rows.
 
 ## 7. Security Architecture
 

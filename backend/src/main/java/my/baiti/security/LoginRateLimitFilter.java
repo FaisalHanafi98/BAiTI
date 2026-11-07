@@ -29,7 +29,7 @@ public final class LoginRateLimitFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain chain)
       throws ServletException, IOException {
     String path = request.getRequestURI().substring(request.getContextPath().length());
-    boolean login = path.equals("/api/auth/login");
+    boolean login = path.equals("/api/auth/login") || path.equals("/api/admin/auth/login");
     boolean refresh = path.equals("/api/auth/refresh");
     if (request.getMethod().equals("POST") && (login || refresh)) {
       if (!limits.allowIp(request.getRemoteAddr(), refresh)) {

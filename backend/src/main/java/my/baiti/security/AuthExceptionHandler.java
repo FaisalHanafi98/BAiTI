@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import my.baiti.common.ApiError;
+import my.baiti.tenancy.admin.PlatformAuthController;
+import my.baiti.tenancy.admin.TenantAdminController;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,7 +14,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice(assignableTypes = AuthController.class)
+@RestControllerAdvice(
+    assignableTypes = {
+      AuthController.class,
+      PlatformAuthController.class,
+      TenantAdminController.class
+    })
 public class AuthExceptionHandler {
 
   @ExceptionHandler(LoginRateLimitException.class)
