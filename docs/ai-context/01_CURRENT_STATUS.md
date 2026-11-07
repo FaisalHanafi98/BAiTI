@@ -1,5 +1,17 @@
 # BAiTI — Current Status
 
+## Resident ownership verified — 8 November 2026
+
+P05c ownership checks use the signed tenant principal and app-role resident
+predicates. Resident record linkage supports owned history. Current unit access
+requires an active association. Test-only routes exercise those predicates and
+the neutral 404 problem response with real PostgreSQL. The full native suite
+passed 151 unit/architecture and 156 integration tests with zero failures,
+errors or skips. See [verification](06_TESTING_EVIDENCE/2026-11-08_resident_scope.md).
+
+Continue with P05d platform authentication and transactional onboarding.
+Actual product routes still need their own permission and ownership tests.
+
 ## Permissions foundation verified — 4 November 2026
 
 Continuing implementation is authorised by the owner after the planning intake.

@@ -9,4 +9,8 @@ public interface ResidentRepository extends JpaRepository<Resident, UUID> {
   List<Resident> findByUnitId(UUID unitId);
 
   Optional<Resident> findByUserIdAndStatus(UUID userId, Resident.Status status);
+
+  boolean existsByIdAndUserId(UUID residentId, UUID userId);
+
+  boolean existsByUserIdAndUnitIdAndStatus(UUID userId, UUID unitId, Resident.Status status);
 }
