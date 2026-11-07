@@ -77,6 +77,54 @@ class AuthenticationFlowIT extends NativePostgresTestSupport {
   }
 
   @Test
+  void firstLoginRequiresPasswordReplacementBeforeNormalTenantAccess() throws Exception {
+    var previousRefresh = refreshCookie(login());
+    fixture.scoped(
+        jdbc ->
+            jdbc.update(
+                "UPDATE users SET must_change_password = true WHERE id = ?", fixture.userId()));
+
+    var temporary = login();
+    assertThat(temporary.getResponse().getHeader("Set-Cookie")).contains("Max-Age=0");
+    String access =
+        JSON.readTree(temporary.getResponse().getContentAsString()).get("accessToken").asString();
+    var bearer = "Bearer " + access;
+    mvc.perform(
+            get("/v3/api-docs")
+                .header("X-Tenant-Slug", "baiti-foundation-a")
+                .header("Authorization", bearer))
+        .andExpect(status().isForbidden());
+    mvc.perform(refresh(previousRefresh)).andExpect(status().isUnauthorized());
+
+    var replacement = "synthetic replacement phrase";
+    mvc.perform(
+            request("/api/auth/password")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    JSON.writeValueAsString(
+                        Map.of("currentPassword", "incorrect", "newPassword", replacement))))
+        .andExpect(status().isUnauthorized());
+    mvc.perform(
+            request("/api/auth/password")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    JSON.writeValueAsString(
+                        Map.of("currentPassword", PASSWORD, "newPassword", replacement))))
+        .andExpect(status().isNoContent());
+    mvc.perform(refresh(previousRefresh)).andExpect(status().isUnauthorized());
+    mvc.perform(
+            get("/v3/api-docs")
+                .header("X-Tenant-Slug", "baiti-foundation-a")
+                .header("Authorization", bearer))
+        .andExpect(status().isForbidden());
+    mvc.perform(loginRequest(fixture.email(), replacement))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.user.mustChangePassword").value(false));
+  }
+
+  @Test
   void verifiedPasswordIssuesAccessAndHttpOnlyRefreshCookie() throws Exception {
     var result = login();
     assertThat(result.getResponse().getHeader("Set-Cookie"))

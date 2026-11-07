@@ -77,6 +77,9 @@ public class RefreshTokenService {
                 tokens.revokeUser(token.getUser().getId(), now);
                 return null;
               }
+              if (user.orElseThrow().mustChangePassword()) {
+                return null;
+              }
               token.setRotatedAt(now);
               return new Rotation(
                   user.orElseThrow(), persist(user.orElseThrow(), token.getFamilyId()));

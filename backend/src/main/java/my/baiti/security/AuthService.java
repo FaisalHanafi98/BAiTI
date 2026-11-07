@@ -5,6 +5,7 @@ import java.util.Set;
 import my.baiti.people.UserAuthentication;
 import my.baiti.people.UserIdentity;
 import my.baiti.tenancy.TenantContext;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,22 +42,43 @@ public class AuthService {
         users
             .verifyPassword(email, password)
             .orElseThrow(() -> new BadCredentialsException("Authentication failed"));
-    String access =
-        jwt.issue(
-            new TenantPrincipal(
-                user.userId(), user.tenantId(), Set.of(user.role()), user.permissions()));
-    return new LoginResult(access, refresh.create(user), user);
+    return new LoginResult(
+        issue(user), user.mustChangePassword() ? null : refresh.create(user), user);
   }
 
   public LoginResult refresh(String raw) {
     var rotated = refresh.rotate(raw);
     var user = rotated.user();
-    return new LoginResult(
-        jwt.issue(
-            new TenantPrincipal(
-                user.userId(), user.tenantId(), Set.of(user.role()), user.permissions())),
-        rotated.raw(),
-        user);
+    return new LoginResult(issue(user), rotated.raw(), user);
+  }
+
+  private String issue(UserIdentity user) {
+    return jwt.issue(
+        new TenantPrincipal(
+            user.userId(),
+            user.tenantId(),
+            Set.of(user.role()),
+            user.permissions(),
+            user.mustChangePassword()));
+  }
+
+  @Transactional
+  public void changeInitialPassword(TenantPrincipal principal, String current, String replacement) {
+    if (principal == null
+        || !principal.mustChangePassword()
+        || !TenantContext.current().filter(principal.tenantId()::equals).isPresent()) {
+      throw new AccessDeniedException("Access denied");
+    }
+    if (!limits.allowAccount(principal.tenantId(), principal.userId().toString())) {
+      throw new LoginRateLimitException();
+    }
+    if (current.equals(replacement)
+        || current.getBytes(StandardCharsets.UTF_8).length > 72
+        || replacement.getBytes(StandardCharsets.UTF_8).length > 72
+        || !users.changeInitialPassword(principal.userId(), current, replacement)) {
+      throw new BadCredentialsException("Authentication failed");
+    }
+    refresh.revokeUser(principal.userId());
   }
 
   public UserIdentity me(TenantPrincipal principal) {

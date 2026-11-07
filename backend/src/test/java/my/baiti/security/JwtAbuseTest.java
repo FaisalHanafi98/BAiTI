@@ -145,6 +145,7 @@ class JwtAbuseTest {
             .expiresAt(NOW.plusSeconds(900))
             .id(UUID.randomUUID().toString())
             .claim("token_use", "tenant_access")
+            .claim("mustChangePassword", false)
             .claim("userId", principal.userId().toString())
             .claim("tenantId", principal.tenantId().toString())
             .claim("roles", List.of("Admin"))

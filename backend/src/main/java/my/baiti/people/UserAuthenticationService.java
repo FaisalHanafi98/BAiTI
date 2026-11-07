@@ -46,6 +46,24 @@ public class UserAuthenticationService implements UserAuthentication {
         .map(this::identity);
   }
 
+  @Override
+  @Transactional
+  public boolean changeInitialPassword(UUID id, String currentPassword, String newPassword) {
+    var candidate = users.findForPasswordChange(id);
+    if (candidate.isEmpty()) {
+      return false;
+    }
+    var user = candidate.orElseThrow();
+    if (user.getStatus() != User.Status.ACTIVE
+        || !user.isMustChangePassword()
+        || !passwords.matches(currentPassword, user.getPasswordHash())) {
+      return false;
+    }
+    user.setPasswordHash(passwords.encode(newPassword));
+    user.setMustChangePassword(false);
+    return true;
+  }
+
   private UserIdentity identity(User user) {
     return new UserIdentity(
         user.getId(),

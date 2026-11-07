@@ -80,6 +80,7 @@ public final class JwtService {
         claims(principal.userId(), AUDIENCE, "tenant_access")
             .claim("userId", principal.userId().toString())
             .claim("tenantId", principal.tenantId().toString())
+            .claim("mustChangePassword", principal.mustChangePassword())
             .claim("roles", principal.roles().stream().sorted().toList())
             .claim("permissions", principal.permissions().stream().sorted().toList())
             .build();
@@ -116,14 +117,16 @@ public final class JwtService {
       var jwt = verified(token, decoder);
       Map<String, Object> claims = jwt.getClaims();
       var user = UUID.fromString(requiredString(claims, "userId"));
-      if (!user.toString().equals(jwt.getSubject())) {
+      if (!user.toString().equals(jwt.getSubject())
+          || !(claims.get("mustChangePassword") instanceof Boolean mustChangePassword)) {
         throw new IllegalArgumentException();
       }
       return new TenantPrincipal(
           user,
           UUID.fromString(requiredString(claims, "tenantId")),
           strings(claims, "roles"),
-          strings(claims, "permissions"));
+          strings(claims, "permissions"),
+          mustChangePassword);
     } catch (JwtException | IllegalArgumentException | ClassCastException invalid) {
       throw new BadCredentialsException("Authentication failed");
     }

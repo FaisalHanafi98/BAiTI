@@ -44,6 +44,10 @@ public final class JwtAuthenticationFilter extends OncePerRequestFilter {
       if (!TenantContext.current().filter(principal.tenantId()::equals).isPresent()) {
         throw new BadCredentialsException("Authentication failed");
       }
+      if (principal.mustChangePassword() && !firstUseRoute(request.getMethod(), path)) {
+        reject(request, response, HttpServletResponse.SC_FORBIDDEN);
+        return;
+      }
       var authentication =
           UsernamePasswordAuthenticationToken.authenticated(
               principal,
@@ -58,6 +62,12 @@ public final class JwtAuthenticationFilter extends OncePerRequestFilter {
     } finally {
       SecurityContextHolder.clearContext();
     }
+  }
+
+  private static boolean firstUseRoute(String method, String path) {
+    return (method.equals("GET") && path.equals("/api/auth/me"))
+        || (method.equals("POST")
+            && (path.equals("/api/auth/password") || path.equals("/api/auth/logout")));
   }
 
   public static void reject(HttpServletRequest request, HttpServletResponse response, int status)

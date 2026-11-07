@@ -3,6 +3,7 @@ POST,/api/auth/login,public-credentials
 POST,/api/auth/refresh,public-credentials
 POST,/api/auth/logout,tenant-identity
 GET,/api/auth/me,tenant-identity
+POST,/api/auth/password,tenant-first-use
 POST,/api/admin/auth/login,public-platform-credentials
 POST,/api/admin/tenants,platform-identity
 GET,/api/admin/tenants,platform-identity

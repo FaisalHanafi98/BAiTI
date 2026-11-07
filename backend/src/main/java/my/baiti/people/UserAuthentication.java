@@ -7,4 +7,6 @@ public interface UserAuthentication {
   Optional<UserIdentity> verifyPassword(String email, String password);
 
   Optional<UserIdentity> findActiveIdentity(UUID userId);
+
+  boolean changeInitialPassword(UUID userId, String currentPassword, String newPassword);
 }

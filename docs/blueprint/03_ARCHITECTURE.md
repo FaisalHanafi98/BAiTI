@@ -133,6 +133,14 @@ tenant and all of its initial rows.
 ### 7.1 AuthN flow
 Stateless JWT per `meeting/03_SPRINGBOOT_REFRESHER.md` §6: CSRF off, sessions STATELESS, `JwtAuthenticationFilter` before username/password filter. Access token 15 min HS256 (`userId`,`tenantId`,`roles`,`permissions`,`jti`); secret is the Base64 encoding of at least 32 random bytes from JWT_SECRET, without a main-profile default. Rotation procedure remains a runbook task. The implemented access boundary checks issuer/audience/token purpose, required UUID claims, HS256 signature and strict expiration; no session/form/basic fallback. Password login and rotating opaque refresh issuance are implemented locally. Login/refresh are public credential endpoints; me/logout require the signed tenant principal. Refresh replay commits family revocation before returning 401, and logout revokes all user refresh families. Existing access tokens remain valid until their signed expiry, bounded to 15 minutes. Native tests use a separate random in-memory key, never a production default.
 
+Tenant access tokens carry a required Boolean `mustChangePassword` claim.
+An account awaiting its first change gets an access token restricted to
+`GET /api/auth/me`, `POST /api/auth/password` and `POST /api/auth/logout`.
+The password endpoint takes `currentPassword` and `newPassword`. A successful
+change clears the flag and revokes existing refresh credentials in the same
+transaction. The user signs in again for normal tenant access. Previously
+issued tenant access tokens need reissuing because they lack the new claim.
+
 ### 7.2 Refresh tokens — rotation with reuse detection
 `refresh_tokens` table (hashed token, family_id, user, tenant, expires_at, rotated_at, revoked_at). Refresh ⇒ old row marked rotated, new row same family. **Presenting a rotated token revokes the family** (stolen-token replay defence, FR-AUTH-03). Logout/deactivation revokes all user rows. Cleanup job purges expired rows.
 

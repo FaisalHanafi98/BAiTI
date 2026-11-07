@@ -1,5 +1,15 @@
 # BAiTI — Current Status
 
+## First-use credentials verified — 8 November 2026
+
+The first admin signs in with a restricted tenant token and replaces the
+initial password at `POST /api/auth/password`. The change revokes prior
+refresh tokens. A fresh sign-in then issues normal tenant credentials. The
+full native suite passed 151 unit/architecture and 161 integration tests.
+See [verification](06_TESTING_EVIDENCE/2026-11-08_first_use.md).
+
+Continue with asynchronous authentication audit and P05e isolation evidence.
+
 ## Platform access and onboarding verified — 8 November 2026
 
 P05d adds separate platform sign-in, protected tenant listing and atomic tenant

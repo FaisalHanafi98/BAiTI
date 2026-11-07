@@ -82,13 +82,27 @@ public class AuthController {
         .build();
   }
 
+  @PostMapping(value = "/password", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Void> changeInitialPassword(
+      @AuthenticationPrincipal TenantPrincipal principal,
+      @Valid @RequestBody PasswordChangeRequest request) {
+    auth.changeInitialPassword(principal, request.currentPassword(), request.newPassword());
+    return ResponseEntity.noContent()
+        .cacheControl(CacheControl.noStore())
+        .header(HttpHeaders.SET_COOKIE, refreshCookie("", java.time.Duration.ZERO).toString())
+        .build();
+  }
+
   private ResponseEntity<AuthResponse> issued(AuthService.LoginResult result) {
     return ResponseEntity.ok()
         .cacheControl(CacheControl.noStore())
         .header(HttpHeaders.PRAGMA, "no-cache")
         .header(
             HttpHeaders.SET_COOKIE,
-            refreshCookie(result.refreshToken(), lifetimes.refresh()).toString())
+            (result.refreshToken() == null
+                    ? refreshCookie("", java.time.Duration.ZERO)
+                    : refreshCookie(result.refreshToken(), lifetimes.refresh()))
+                .toString())
         .body(
             new AuthResponse(result.accessToken(), lifetimes.access().toSeconds(), result.user()));
   }
@@ -116,6 +130,15 @@ public class AuthController {
     @Override
     public String toString() {
       return "RefreshRequest[redacted]";
+    }
+  }
+
+  public record PasswordChangeRequest(
+      @NotBlank @Size(max = 72) String currentPassword,
+      @NotBlank @Size(min = 12, max = 72) String newPassword) {
+    @Override
+    public String toString() {
+      return "PasswordChangeRequest[redacted]";
     }
   }
 
