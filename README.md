@@ -2,11 +2,11 @@
 
 A neighbourhood and resident commercial management system.
 
-Multi-tenant community management platform. The intended isolation design uses JWT tenant claims, application tenant filtering and PostgreSQL row-level security; runtime isolation is not yet proved. The first pilot is a landed RA, combining RA management with later neighborhood commerce.
+Multi-tenant community management platform. Tenant isolation uses signed tenant claims, scoped application queries and PostgreSQL row-level security. The first pilot is a landed residents' association, combining RA management with later neighbourhood commerce.
 
 **Blueprint**: The complete engineering blueprint lives at [`docs/blueprint/`](docs/blueprint/README.md) — start there. Implementation proceeds by executing the AI work packets in [`docs/blueprint/08_ai_packets/`](docs/blueprint/08_ai_packets/README.md).
 
-**Status — 4 November 2026**: the permissions foundation passed 302 native tests today. Catalogue/default sync preserves tenant customisation, method authorities are enforced and persisted actor stamps use the matching tenant principal. Own-record guards, onboarding, complete G-RLS and the frontend remain unfinished. Work continues on `igumi`; `main` and `anep` retain the last shared baseline under the [branch workflow](docs/ai-context/02_SESSION_HISTORY/2026-11-03_three_branch_workflow.md). Docker/Testcontainers, hosting/VPS and deployment stay deferred. Start with [current evidence](docs/ai-context/01_CURRENT_STATUS.md), [native tests](docs/testing/NATIVE_POSTGRES.md), the [runtime decision](docs/adr/0002-supported-spring-baseline.md) and [platform policy](docs/adr/0003-explicit-platform-table-policies.md).
+**Status — 8 November 2026.** P05 and local G-RLS passed on PostgreSQL 16 with 321 tests. The dev profile also passed the two-community authentication smoke. Work continues on `igumi` under the [branch workflow](docs/ai-context/02_SESSION_HISTORY/2026-11-03_three_branch_workflow.md). GitHub CI, Docker, hosting and deployment have separate gates. Start with the [current evidence](docs/ai-context/01_CURRENT_STATUS.md) and the [native test guide](docs/testing/NATIVE_POSTGRES.md).
 
 ## Stack
 
@@ -31,9 +31,9 @@ owned PostgreSQL 16 test target, private settings and synthetic fixtures. Then r
 ./tools/testing/Invoke-NativeTests.ps1
 ```
 
-The ordinary development database is separate. Production tenant resolution and
-onboarding remain unfinished. Docker/Testcontainers, packaging, hosting/VPS and
-CD are deferred; existing infra files are preserved for that later stage.
+Use a separate PostgreSQL database for normal development. The
+[dev seed guide](docs/ai-context/04_DATABASE_STATE/seeders_status.md) describes
+the opt-in fictional communities and their first-use credentials.
 
 ## Ground rules
 

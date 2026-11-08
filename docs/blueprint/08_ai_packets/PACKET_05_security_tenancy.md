@@ -130,17 +130,17 @@ Files: `tenancy/admin/{SuperAdminAuth…,TenantAdminController,TenantOnboardingS
 Tests: I-9 (forced mid-failure ⇒ full rollback); duplicate slug; tenant-admin JWT cannot call `/api/admin/**` (403); ArchUnit: `tenancy.admin` imports no domain repositories.
 
 ## Slice 5e — Dev seed + the isolation suite
-Files: `config/DevDataInitializer.java` (`@Profile("dev")`, idempotent, calls real onboarding for two fictional tenants with synthetic-only data per `docs/ai-context/04_DATABASE_STATE/seeders_status.md` PDPA rules), `test/…/TenantIsolationIT.java`.
+Files: `config/DevDataInitializer.java` (opt-in on a marked native `dev` database, idempotent, calls real onboarding for two fictional tenants with synthetic-only data per `docs/ai-context/04_DATABASE_STATE/seeders_status.md`), `test/…/TenantIsolationIT.java`.
 - Implement I-1…I-9 (06 §5) verbatim as named test methods.
 Exit evidence: full `./mvnw verify` output + the I-suite listing filed to `docs/ai-context/06_TESTING_EVIDENCE/` and `docs/security/RLS_TEST_STRATEGY.md` written (one page: what the suite proves, how to extend it per new table).
 
 ---
 
 **Definition of Done (packet)**
-- [ ] All five slices' tests green in one `./mvnw verify`; coverage gate holds.
-- [ ] G-RLS evidence filed; `docs/ai-context/01_CURRENT_STATUS.md` flips the milestone.
-- [ ] Login→me→refresh→logout demonstrated with curl transcript against dev profile + compose DB (two seeded tenants).
-- [ ] No secret material in repo; JWT secret consumed from env; commits sliced 5a–5e, each user-approved.
+- [x] The full native `mvn verify` suite passed 321 tests. Local changed Java line coverage is 91.3%.
+- [x] [Local G-RLS evidence](../../ai-context/06_TESTING_EVIDENCE/2026-11-08_tenant_isolation.md) is filed and current status is updated. Hosted checks still need a separate run.
+- [x] [Two-tenant curl journey](../../ai-context/06_TESTING_EVIDENCE/2026-11-08_dev_authentication.md) passed against the dev profile on native PostgreSQL 16.
+- [x] The staged secret checks passed. JWT and dev credentials come from the environment. The owner's local commit direction applies to the reviewed slices.
 
 ### Slice 5b access-token checkpoint — 29 October 2026
 

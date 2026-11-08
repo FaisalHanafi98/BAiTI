@@ -169,7 +169,7 @@ Bean Validation on every DTO; Zod mirrors client-side. File uploads: size/type a
 
 ## 8. Configuration Management
 
-Profiles: `dev` (owned native DB, header resolver; application seeding pending P05e), `test` (explicit native PG16 preflight and synthetic fixtures), `prod` (env-only secrets, configured subdomain resolver; hosting target undecided). Container parity is deferred to P18. Test security fixtures are pinned in dynamic properties and never become main-profile secret defaults. `ddl-auto: validate` always — Flyway owns schema.
+Profiles: `dev` (owned native DB, header resolver, [opt-in synthetic seeds](../ai-context/04_DATABASE_STATE/seeders_status.md)), `test` (explicit native PG16 preflight and synthetic fixtures), `prod` (env-only secrets, configured subdomain resolver; hosting target undecided). Container parity is deferred to P18. Test security fixtures are pinned in dynamic properties and never become main-profile secret defaults. `ddl-auto: validate` always — Flyway owns schema.
 
 **Environment variable inventory** (contract for `.env.example`, Packet 02):
 

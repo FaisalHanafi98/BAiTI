@@ -1,5 +1,17 @@
 # BAiTI — Current Status
 
+## P05 and the local G-RLS gate verified — 8 November 2026
+
+The full native suite passed 321 tests, including I1–I9. JaCoCo covered
+91.3% of the executable Java lines changed since P04. The
+[dev-profile smoke](06_TESTING_EVIDENCE/2026-11-08_dev_authentication.md)
+completed first-use password replacement, sign-in, identity, refresh
+and logout for two seeded communities and confirmed restart idempotency.
+
+P08 property backend work can start locally. GitHub verification still
+needs its own run before merge. Docker, hosting and deployment remain
+deferred under the owner's native development direction.
+
 ## Native tenant isolation verified — 8 November 2026
 
 The full native run passed 151 unit/architecture and 170 integration tests,
