@@ -243,16 +243,25 @@ Ordering rules that fixed the old defects: *(a)* every table exists before the R
 | V29 | `V29__fail_closed_tenant_setting.sql` | Safe tenant-setting reader and corresponding policy expressions; no table/column or owner-bypass change |
 | V30 | `V30__explicit_platform_table_policies.sql` | Role-specific global SELECT/INSERT/UPDATE for the intended platform path; no DELETE, app/global or domain-policy expansion |
 | V31 | `V31__index_remaining_foreign_keys.sql` | Six missing FK indexes required by §1.10; no data, constraints, policies or grants changed |
+| V32 | `V32__enforce_same_tenant_foreign_keys.sql` | Pair each existing tenant-to-tenant reference with its tenant ID. Keep existing UUIDs, policies and delete actions. |
+| V33 | `V33__verify_existing_tenant_references.sql` | Inspect existing references one tenant at a time under FORCE RLS. Stop with a constraint name if a legacy reference crosses tenants. |
 
 **Seeding**: no seed migrations. Dev data comes from `DevDataInitializer` (`@Profile("dev")`, idempotent by slug) which calls the real `TenantOnboardingService` to create **two synthetic tenants** (isolation testing needs ≥2; PDPA-safe fictional data per `docs/ai-context/04_DATABASE_STATE/seeders_status.md`). Why not SQL seeds: onboarding logic (role copies, admin user, must-change flag) lives in the service; a SQL twin would drift.
 
 **Discipline**: applied migrations are immutable (checksum); fixes are new versions; `ddl-auto: validate` guards drift; column changes on live systems follow expand-migrate-contract; the Testcontainers migration test (all migrations on empty PG16 + RLS smoke) is the first CI gate (06_TESTING §5.1).
+
+V32 guards new references as soon as it is applied. Its constraint installation
+as the forced-RLS owner does not reliably scan rows from other tenants. V33
+verifies existing references under each tenant's scope with the same owner.
+A failure leaves the existing data intact. Correct the specific bad references
+under an approved repair plan and rerun V33 before starting the application.
 
 ## 7. Integrity Summary (beyond FKs)
 
 | Invariant | Enforced by |
 |---|---|
 | No cross-tenant row visible/writable | RLS USING + WITH CHECK (×24) |
+| A tenant record can reference only a parent in the same tenant | Composite FK `(tenant_id, parent_id)` references `(tenant_id, id)` |
 | One bill per unit/month/type | unique (bills) |
 | Σ payments ≤ bill amount | service tx + `FOR UPDATE` on bill |
 | No double-booking | partial unique (facility_bookings) |
@@ -283,5 +292,6 @@ Assumed v1.0 ceiling (ASM-3): 50 tenants × 2 000 units → bills ≈ 1.2 M rows
 | 10 | — (absent) | `tenants`, `super_admins`, `refresh_tokens`, `visitors.pre_registration_id`, `bills.bill_type/currency/cancelled_reason`, `activity_logs.detail JSONB`, `is_active`/`is_system`/`must_change_password` flags, base audit columns | additions |
 | 11 | no RLS/indexes/uniques in PDF | §5, §4 per-table | additions |
 | 12 | complaint-update actor and audit stamp share `updated_by` in the earlier blueprint | domain actor `user_id` FK plus index; nullable audit `updated_by` retained | column-name collision correction, recorded 29 October 2026 |
+| 13 | UUID-only references between tenant-owned records | V32 includes the tenant ID on both sides of all 28 existing domain FKs | same-tenant integrity, recorded 8 November 2026 |
 
 Every implementation packet that touches schema references this table; replicating a PDF spelling is a review-rejection (`docs/ai-context/01_CURRENT_STATUS.md` Do-Not-Repeat list).

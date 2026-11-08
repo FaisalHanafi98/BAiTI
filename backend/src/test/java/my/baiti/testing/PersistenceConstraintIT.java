@@ -173,6 +173,15 @@ class PersistenceConstraintIT extends NativePostgresTestSupport {
         JOIN pg_namespace n ON n.oid = t.relnamespace
         WHERE n.nspname = 'public' AND t.relname <> 'flyway_schema_history'
           AND x.indisunique AND NOT x.indisprimary
+          AND NOT EXISTS (
+            SELECT 1 FROM pg_constraint fk
+            JOIN pg_attribute scope ON scope.attrelid = t.oid AND scope.attnum = fk.confkey[1]
+            JOIN pg_attribute parent_id ON parent_id.attrelid = t.oid
+              AND parent_id.attnum = fk.confkey[2]
+            WHERE fk.contype = 'f' AND fk.confrelid = t.oid AND fk.conindid = x.indexrelid
+              AND cardinality(fk.confkey) = 2
+              AND scope.attname = 'tenant_id' AND parent_id.attname = 'id'
+          )
         """,
                 String.class)
             .getResultList();

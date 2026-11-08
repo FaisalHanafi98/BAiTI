@@ -126,7 +126,7 @@ The suite creates **two tenants (A, B)** through the real onboarding service, th
 |---|---|---|
 | I-1 | A's user listing units sees only A's units (B seeded with distinctive rows) | full stack |
 | I-2 | A requests B's resource by known UUID ⇒ **404** (not 403, not 200) | app + RLS |
-| I-3 | A attempts write with B's tenant-scoped FK (e.g. payment against B's bill) ⇒ 404/409, no row written | WITH CHECK |
+| I-3 | A attempts write with B's tenant-scoped FK (e.g. a unit linked to B's block) ⇒ 404/409, no row written. The runtime role also attempts the reference in SQL and receives a foreign-key violation. | App + same-tenant FK |
 | I-4 | JWT claim tenant ≠ resolved slug ⇒ 401 before controller | layer 1 |
 | I-5 | Raw `JdbcTemplate` query with **no** tenant context ⇒ 0 rows (fail closed) | RLS alone |
 | I-6 | Raw insert without context ⇒ rejected | RLS WITH CHECK alone |

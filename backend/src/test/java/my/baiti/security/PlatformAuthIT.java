@@ -106,7 +106,7 @@ class PlatformAuthIT extends NativePostgresTestSupport {
   }
 
   @Test
-  void stepFourFailureRollsBackTenantAndEverySeed() {
+  void i9StepFourFailureRollsBackTenantAndEverySeed() {
     var slug = "rollback-" + UUID.randomUUID();
     var candidate = new AtomicReference<UUID>();
     var encoder =

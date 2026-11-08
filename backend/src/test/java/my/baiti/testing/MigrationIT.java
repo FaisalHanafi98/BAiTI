@@ -28,7 +28,49 @@ class MigrationIT {
           """))
           .isEqualTo(26);
       assertThat(scalar(connection, "SELECT count(*) FROM flyway_schema_history WHERE success"))
-          .isEqualTo(31);
+          .isEqualTo(33);
+    }
+  }
+
+  @Test
+  void everyDomainForeignKeyIncludesTheTenantOnBothSides() throws Exception {
+    try (var connection = config.openMigrationConnection()) {
+      String domainReferences =
+          """
+          FROM pg_constraint fk
+          JOIN pg_class child ON child.oid = fk.conrelid
+          JOIN pg_attribute child_tenant ON child_tenant.attrelid = child.oid
+            AND child_tenant.attname = 'tenant_id' AND NOT child_tenant.attisdropped
+          JOIN pg_attribute parent_tenant ON parent_tenant.attrelid = fk.confrelid
+            AND parent_tenant.attname = 'tenant_id' AND NOT parent_tenant.attisdropped
+          WHERE child.relnamespace = 'public'::regnamespace AND fk.contype = 'f'
+          """;
+      assertThat(scalar(connection, "SELECT count(*) " + domainReferences)).isEqualTo(28);
+      assertThat(scalar(connection, "SELECT count(DISTINCT fk.conindid) " + domainReferences))
+          .isEqualTo(12);
+      assertThat(
+              scalar(
+                  connection,
+                  "SELECT count(*) "
+                      + domainReferences
+                      +
+                      """
+                      AND fk.convalidated AND cardinality(fk.conkey) = 2
+                      AND fk.conkey[1] = child_tenant.attnum
+                      AND fk.confkey[1] = parent_tenant.attnum
+                      """))
+          .isEqualTo(28);
+      assertThat(
+              scalar(
+                  connection,
+                  "SELECT count(*) "
+                      + domainReferences
+                      +
+                      """
+                      AND fk.confdeltype = 'n' AND cardinality(fk.confdelsetcols) = 1
+                      AND fk.confdelsetcols[1] = fk.conkey[2]
+                      """))
+          .isEqualTo(2);
     }
   }
 

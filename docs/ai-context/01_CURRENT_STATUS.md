@@ -1,5 +1,17 @@
 # BAiTI — Current Status
 
+## Native tenant isolation verified — 8 November 2026
+
+The full native run passed 151 unit/architecture and 170 integration tests,
+including I1–I9. Two synthetic communities use the real onboarding service.
+V32 pairs all 28 domain foreign keys with the tenant ID. V33 checks legacy
+rows under FORCE RLS and stops on an invalid reference. See the
+[isolation evidence](06_TESTING_EVIDENCE/2026-11-08_tenant_isolation.md) and
+[extension guide](../security/RLS_TEST_STRATEGY.md).
+
+Continue with the separate dev-profile smoke and the remaining P05 exit
+evidence.
+
 ## Asynchronous authentication audit verified — 8 November 2026
 
 Successful sign-in, rejected credentials for resolved tenants, refresh,
