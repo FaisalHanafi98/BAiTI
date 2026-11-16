@@ -2,13 +2,13 @@
 
 **Objective**: A production-shaped React shell: auth (memory access token + silent-refresh cookie flow), routing with guards, generated API types, i18n, testing rig — ending with a real login against the P05 backend.
 
-**Gate on entry: G-ANEP** — do not begin without the recorded meeting outcome (`meeting/05_OUTCOME.md`): frontend ownership + stack ratification. If Anep owns frontend, this packet is his onboarding vehicle; pair-execute.
+**Gate on entry: G-ANEP** — do not begin without the recorded meeting outcome (`docs/collaboration/05_OUTCOME.md`): frontend ownership + stack ratification. If Anep owns frontend, this packet is his onboarding vehicle; pair-execute.
 
 **Scope**
 - In: scaffold, tooling, auth flow, layout shell, login page, dashboard placeholder, type generation, MSW test rig.
 - Out: all domain screens (module packets).
 
-**Dependencies**: P05 (live auth endpoints). **References**: `meeting/04_REACT_REFRESHER.md` (canonical idioms), 03_ARCHITECTURE §5/§7.4, 05_QUALITY §7–8.
+**Dependencies**: P05 (live auth endpoints). **References**: `docs/collaboration/04_REACT_REFRESHER.md` (canonical idioms), 03_ARCHITECTURE §5/§7.4, 05_QUALITY §7–8.
 
 **Files to create**
 ```
@@ -33,6 +33,8 @@ frontend/  (npm create vite@latest -- --template react-ts)
 - `must_change_password` users are force-routed to `ForcedPasswordChange`.
 - ESLint: `no-literal-strings` on JSX (05 §8), react-hooks rules, no-`any` warning; all copy in `en.json`.
 - Accessibility per 05 §7 from the first screen (labelled inputs, focus ring, keyboard path).
+
+The [state transition inventory](../STATE_TRANSITIONS.md#first-consumer-in-the-p07-frontend-shell) maps the server outcomes to client recovery, including first-use sign-in, refresh replay, conflicts and rate limits.
 
 **Testing requirements**
 - Vitest+RTL: login form Zod validation; interceptor refresh-then-retry (MSW); logout on refresh failure; ProtectedRoute redirect; `<Can>` gating; forced-password-change routing.

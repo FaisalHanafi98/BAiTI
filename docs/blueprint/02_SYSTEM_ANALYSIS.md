@@ -157,7 +157,7 @@ stateDiagram-v2
   REJECTED --> [*]
   CLOSED --> [*]
 ```
-Every transition writes a `complaint_updates` row (updated_by, message, resulting status) — the trail IS the collaboration record. Transitions emit notifications: to Managers on OPEN, to the resident on every other transition. Maintenance requests follow the same pattern with states `PENDING → APPROVED → IN_PROGRESS → COMPLETED / REJECTED`.
+Every transition writes a `complaint_updates` row (updated_by, message, resulting status) — the trail IS the collaboration record. Transitions emit notifications: to Managers on OPEN, to the resident on every other transition. Maintenance requests follow `PENDING → APPROVED → IN_PROGRESS → COMPLETED`. Staff can reject a `PENDING` request with a reason.
 
 ### 4.5 Facility booking (UC-B1/B2, v1.x)
 

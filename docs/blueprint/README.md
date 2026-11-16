@@ -2,9 +2,17 @@
 
 > **Produced**: 2026-07-07 · **Project state**: pre-development, zero code
 > **What this is**: the complete, implementation-ready engineering package for BAiTI (formerly MyComunity) — a multi-tenant SaaS condominium/community management platform. It was produced by a full discovery pass over every artifact in this repository and is designed so that any implementation AI (Claude, GPT, GLM, DeepSeek, Kimi, …) or human engineer can build the system safely and consistently.
-> **Authority**: within this repository, `docs/blueprint/` supersedes all older planning documents (`MyComunity_PLAN.txt`, the PDF, `docs/ai-context/` planning facts) wherever they conflict — the ruling and the reasons are in `00_REPOSITORY_INVENTORY.md §2–3`.
+> **Authority**: within this repository, `docs/blueprint/` supersedes all older planning documents (`archive/legacy-plans/MyComunity_PLAN.txt`, the PDF, `docs/ai-context/` planning facts) wherever they conflict — the ruling and the reasons are in `00_REPOSITORY_INVENTORY.md §2–3`.
 
 ---
+
+**Current execution revision — 27 October 2026:** native PostgreSQL 16 and
+GitHub checks now; Docker/Testcontainers, packaging, hosting/VPS and CD later.
+See [testing §3.6](06_TESTING_STRATEGY.md#36-native-postgresql-execution-contract--accepted-27-october-2026),
+[roadmap](07_IMPLEMENTATION_ROADMAP.md) and the
+[readiness delivery sequence](../plans/IMPLEMENTATION_READINESS_2026-10-27.md#delivery-sequence-after-the-owner-revision).
+The July pre-development label above is historical; foundation source now
+exists, while native-harness work and G-RLS runtime proof remain open.
 
 ## The Package
 
@@ -16,9 +24,11 @@
 | 3 | [03_ARCHITECTURE.md](03_ARCHITECTURE.md) | Stack + rationale · layering rules · API strategy · **normative multi-tenancy design (three layers, dual DB roles, fail-closed)** · auth · config · logging · caching/async · scalability · deployment matrix · DR · ADR index |
 | 4 | [04_DATABASE_DESIGN.md](04_DATABASE_DESIGN.md) | The **normative schema**: 26 relations fully specified · ERD · corrected migration sequence V1–V28 · RLS DDL pattern · integrity rules · **PDF deviation register** |
 | 5 | [05_QUALITY_ATTRIBUTES.md](05_QUALITY_ATTRIBUTES.md) | Performance budgets · scalability levers · **STRIDE threat model** · reliability · availability · maintainability · accessibility · i18n · observability · explicit trade-offs |
-| 6 | [06_TESTING_STRATEGY.md](06_TESTING_STRATEGY.md) | Test pyramid · Testcontainers backbone · **tenant-isolation suite I-1…I-9 (release gate)** · authz-matrix testing · UAT · performance/stress · security testing · evidence rules |
+| 6 | [06_TESTING_STRATEGY.md](06_TESTING_STRATEGY.md) | Test pyramid · native real-PG16 harness contract · **tenant-isolation suite I-1…I-9 (release gate)** · authz-matrix testing · UAT · performance/stress · security testing · evidence rules |
 | 7 | [07_IMPLEMENTATION_ROADMAP.md](07_IMPLEMENTATION_ROADMAP.md) | Epics → milestones M0–M7 · gates (G-NAME, G-RLS, G-ANEP, G-PUSH) · dependencies · consolidated risk register · estimates · rollback rules |
 | 8 | [08_ai_packets/](08_ai_packets/README.md) | **19 executable work orders** P00–P18: objective, scope, dependencies, files, architecture, tests, Definition of Done — plus the executor protocol |
+
+The [state transition inventory](STATE_TRANSITIONS.md) links live behavior, tests and planned workflows. Use it when a feature changes the actions users or clients can take from a state.
 
 ## How to Use This Package
 

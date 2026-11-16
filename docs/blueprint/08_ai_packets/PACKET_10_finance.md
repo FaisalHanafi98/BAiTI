@@ -14,7 +14,7 @@
 - **Balance invariant** (04 §4.5): `PaymentService.record()` opens the transaction, `SELECT … FOR UPDATE` the bill, validates status payable + `amount_paid ≤ outstanding`, inserts payment, recomputes bill status — all-or-nothing. Overpay ⇒ 409 problem+json with `outstandingBalance` in detail.
 - Payments append-only: no update/delete endpoints; controller layer doesn't even map them (DB grants already revoke — P03).
 - `BigDecimal` end-to-end; JSON serialises amounts as strings; TS side never does float arithmetic (display only) — FR-FIN-06.
-- Duplicate bill (unit+month+type) ⇒ 409. Cancel requires reason; paid bills uncancellable ⇒ 409.
+- Duplicate bill (unit+month+type) ⇒ 409. Cancel an `UNPAID` bill with a reason. A cancellation request for any other status returns 409, consistent with the lifecycle in 02 §4.3.
 - Proof upload: multipart ≤ 5 MB, jpg/png/pdf allowlist (magic-bytes check, not extension only), stored via `StorageService` under generated key; download endpoint streams with fixed content-type + `Content-Disposition: attachment`; own-scope enforced (a resident downloads only own proofs).
 - Events: `BILL_CREATED` → notification to the unit's active residents (FR-NOT-01) + audit; `PAYMENT_RECORDED` → audit + notification to payer.
 

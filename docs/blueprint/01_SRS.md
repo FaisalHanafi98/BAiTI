@@ -60,7 +60,7 @@ v1.0 is a web application (desktop-first, responsive) with five must-have module
 
 ## 4. Functional Requirements
 
-Priorities: **M** = Must (v1.0) · **S** = Should (v1.x) · **C** = Could (later). The M/S split follows the MVP proposal in `meeting/01_MEETING_BRIEF.md`; it is the blueprint baseline pending Anep ratification (decision D1).
+Priorities: **M** = Must (v1.0) · **S** = Should (v1.x) · **C** = Could (later). The M/S split follows the MVP proposal in `docs/collaboration/01_MEETING_BRIEF.md`; it is the blueprint baseline pending Anep ratification (decision D1).
 
 ### 4.1 Tenancy (FR-TEN) — foundation, Must
 
@@ -139,7 +139,7 @@ FR-RBAC-02's tenant customisation meaningful across restarts and releases.
 | ID | Requirement | Pri |
 |---|---|---|
 | FR-CMP-01 | Residents shall submit complaints: category (tenant-managed list), title, description, auto-captured unit and timestamp. | M |
-| FR-CMP-02 | Complaint lifecycle: `OPEN → IN_PROGRESS → RESOLVED → CLOSED` (+ `REJECTED` from OPEN). Transitions restricted to Manager/Admin except that the submitting resident may close their own resolved complaint. | M |
+| FR-CMP-02 | Complaint lifecycle: `OPEN → IN_PROGRESS → RESOLVED → CLOSED` (+ `REJECTED` from OPEN). Transitions restricted to Manager/Admin except that the submitting resident may close or reopen their own resolved complaint. Reopening returns it to IN_PROGRESS. | M |
 | FR-CMP-03 | Managers/Admins shall append status updates with a message; the full update trail is visible to the complaint's resident and staff. | M |
 | FR-CMP-04 | New complaints shall notify Manager-role users of that tenant (in-app notification record). | M |
 | FR-CMP-05 | Admin shall CRUD complaint categories. | M |
@@ -158,7 +158,7 @@ FR-RBAC-02's tenant customisation meaningful across restarts and releases.
 |---|---|---|
 | FR-FAC-01 | Admin shall CRUD facilities: name, location, capacity, rules text, status (`AVAILABLE`/`MAINTENANCE`/`CLOSED`). | S |
 | FR-FAC-02 | Residents shall book a facility for a date + time slot; overlapping bookings for the same facility/slot shall be rejected at the database level (exclusion/unique constraint), not just in code. | S |
-| FR-FAC-03 | Booking lifecycle: `PENDING → APPROVED/REJECTED → CANCELLED`; approval by Manager/Admin, recorded with approver. | S |
+| FR-FAC-03 | Manager/Admin may approve or reject a `PENDING` booking, with the approver recorded on approval. The booker may cancel a `PENDING` or `APPROVED` booking before its slot starts. | S |
 
 ### 4.10 Community (FR-COM) — Should (v1.x)
 
