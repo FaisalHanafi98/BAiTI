@@ -1,5 +1,55 @@
 # BAiTI — Current Status
 
+## UI/UX, motion and accessibility skills applied — 17 November 2026
+
+Synced canonical workspace skill pointers into `.claude/skills/` (`core@a68d4eb`)
+and applied `frontend-design-aesthetics`, `impeccable` and `ui-accessibility`
+to the P07 authentication/workspace shell and P08 property screens on `igumi`.
+Nine frontend Vitest tests, ESLint (`--max-warnings 0`), TypeScript, the Vite
+production build and a Chrome check across `375x812`, `768x1024`, `1280x800`
+and `prefers-reduced-motion: reduce` passed. See the
+[session record](02_SESSION_HISTORY/2026-11-17_ui_skills_implementation.md) and
+[verification evidence](06_TESTING_EVIDENCE/2026-11-17_ui_skills_implementation.md).
+
+## Single BAiTI checkout — 17 November 2026
+
+Use the project root for planning and implementation. Use Git branches in this
+checkout to separate development. The active branch is `igumi`. The P07/P08
+work and planning files are in its working tree. See the
+[consolidation record](02_SESSION_HISTORY/2026-11-17_single_checkout.md) and
+[project overview](../PROJECT_OVERVIEW.md). P09 People is the next product packet.
+
+## P07 shell and P08 property screens verified — 13 November 2026
+
+The React frontend supports first-use sign-in, refresh, logout and the
+role-scoped property workspace. Eight frontend tests and the real Chrome
+journey passed. The backend matches the verified 330-test baseline.
+See [verification](06_TESTING_EVIDENCE/2026-11-13_p07_p08_frontend.md) and
+[session history](02_SESSION_HISTORY/2026-11-13_transition_fixes_frontend.md).
+
+The blueprint now aligns planned bill cancellation, complaint reopening,
+maintenance rejection and booking cancellation. P09 People owns the next
+product workflow. P06 hosted verification remains open.
+
+## State transition inventory recorded — 12 November 2026
+
+The [inventory](../blueprint/STATE_TRANSITIONS.md) traces live workflows,
+request and worker state, and planned lifecycle rules. The P07 packet links
+to the existing authentication contract and client recovery guidance. The
+native regression suite passed 330 tests. See the
+[verification record](06_TESTING_EVIDENCE/2026-11-12_state_transition_inventory.md).
+
+## P08 property backend verified — 12 November 2026
+
+Block and unit APIs now support tenant-scoped CRUD, filtered and paginated unit
+reads, manual occupancy and audit entries for successful writes. Guard reads
+expose unit numbers. The local native suite passed 330 tests, including I1–I9
+and the permission matrix. JaCoCo covered 97.4% of changed executable Java lines.
+
+See the [session record](02_SESSION_HISTORY/2026-11-12_p08_property_backend.md)
+and [test evidence](06_TESTING_EVIDENCE/2026-11-12_p08_property_backend.md).
+P08 Admin screens and J1 browser acceptance depend on the P07 frontend shell.
+
 ## P05 and the local G-RLS gate verified — 8 November 2026
 
 The full native suite passed 321 tests, including I1–I9. JaCoCo covered

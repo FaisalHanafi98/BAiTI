@@ -1,5 +1,16 @@
 # CURRENT_MODULE_STATE
 
+## P07 and P08 frontend — 13 November 2026
+
+The authentication shell and property workspace passed the local frontend and
+browser checks. See the [current checkpoint](docs/ai-context/01_CURRENT_STATUS.md#p07-shell-and-p08-property-screens-verified--13-november-2026).
+
+## P08 property backend — 12 November 2026
+
+The property APIs passed native PostgreSQL verification on `igumi`. P08 Admin
+screens and the J1 browser checks depend on P07. See
+[the current checkpoint](docs/ai-context/01_CURRENT_STATUS.md#p08-property-backend-verified--12-november-2026).
+
 Current checkpoint — 29 October 2026: supported Spring runtime verification
 passes 111 native tests, including V30's bounded global owner policies. Harness,
 mapping, permission-link, V29 and complaint-history
@@ -15,6 +26,45 @@ The owner authorises continuing checked local commits with SOP/Humanizer message
 keep PRs meaningful and obtain explicit authorisation before any push.
 
 The entries below are historical snapshots.
+
+Current execution revision — 27 October 2026, after readiness planning:
+native PostgreSQL 16 and GitHub verification are the current path. Docker,
+Testcontainers parity, packaging, hosting/VPS, CD and hosted operations are
+deferred until later P18 after local acceptance. The first work is F0 native
+test-harness adaptation (HealthIT currently starts a container), safe owned
+test-target/role verification and missing foundation tests. Full I1–I9 local
+G-RLS still precedes local feature work; activated CI repeats them before merge.
+No runtime verification or application/SQL changes occurred in this plan revision.
+Use [the revised sequence](docs/plans/IMPLEMENTATION_READINESS_2026-10-27.md#delivery-sequence-after-the-owner-revision)
+and [current status](docs/ai-context/01_CURRENT_STATUS.md). Older Docker-gated
+next actions below are historical and are superseded by this section.
+
+Planning continuation — 27 October 2026: [actor-driven readiness plan](docs/plans/IMPLEMENTATION_READINESS_2026-10-27.md)
+and [rendered consolidated ERDs](docs/database/consolidated-erd/README.md) are
+available. Offline test-compile passed today; no tests ran. Docker's Linux
+engine was unavailable at that check. F0/runtime/P05/G-RLS remain open; no feature code or SQL
+was changed by planning.
+
+Review update — 26 October 2026: [Anep ERD improvement and consolidated-version
+brief](docs/plans/ANEP_ERD_CONSOLIDATION_2026-10-26.md) is available. This is a
+proposal only; F0/P05/G-RLS implementation status is unchanged.
+
+## Resume pointer — 22 October 2026
+
+File organization is complete; use [docs/README.md](docs/README.md) for the new
+layout and [archive/README.md](archive/README.md) for superseded sources.
+The review pack now belongs to `docs/research/stakeholder-review-2026-10-22/`.
+
+Current evidence is in
+[`docs/ai-context/01_CURRENT_STATUS.md`](docs/ai-context/01_CURRENT_STATUS.md),
+section "Current evidence and Gemini consolidation — 22 October 2026".
+P03/P04 are partially authored against their packet DoD; earlier test-compile
+passed, tests were not executed, Docker's Linux engine remains unavailable,
+and P05/G-RLS is unproven. Gemini reconciliation is complete with a bounded
+[F0 work order](docs/plans/STAKEHOLDER_RECONCILIATION_2026-10-22.md).
+User confirmed landed RA first, hybrid as RA plus commerce, and budget undecided.
+Application implementation has not started in the consolidation task.
+The historical module block below contains stale P02/P03 and rename statements.
 
 > Living engineering state file. Update at every module boundary and at every session end.
 > Last updated: 08 July 2026 (P02 committed at 794a641 — compile-verified; Docker-gated DoD open)

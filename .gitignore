@@ -19,6 +19,8 @@ dist/
 coverage/
 *.tsbuildinfo
 .vite/
+/frontend/test-results/
+/frontend/playwright-report/
 
 # --- IDE / editor ---
 .idea/
@@ -34,4 +36,9 @@ desktop.ini
 
 # --- tooling residue / local session artifacts ---
 .memsearch/
+.claude/settings.local.json
 *.log
+
+# --- local recovery and full workspace path inventories ---
+archive/recovery/
+docs/research/**/evidence/*.local.*
