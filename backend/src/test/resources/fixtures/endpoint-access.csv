@@ -7,3 +7,13 @@ POST,/api/auth/password,tenant-first-use
 POST,/api/admin/auth/login,public-platform-credentials
 POST,/api/admin/tenants,platform-identity
 GET,/api/admin/tenants,platform-identity
+GET,/api/blocks,BLOCK_MANAGE
+GET,/api/blocks/{id},BLOCK_MANAGE
+POST,/api/blocks,BLOCK_MANAGE
+PUT,/api/blocks/{id},BLOCK_MANAGE
+DELETE,/api/blocks/{id},BLOCK_MANAGE
+GET,/api/units,UNIT_READ_ALL
+GET,/api/units/{id},UNIT_READ_ALL
+POST,/api/units,UNIT_MANAGE
+PUT,/api/units/{id},UNIT_MANAGE
+DELETE,/api/units/{id},UNIT_MANAGE
