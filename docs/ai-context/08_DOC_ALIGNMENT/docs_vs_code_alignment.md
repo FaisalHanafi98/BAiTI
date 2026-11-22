@@ -1,5 +1,16 @@
 # Docs vs Code Alignment Matrix
 
+## Scoped People review — 22 November 2026
+
+FR-RBAC-05 account creation, role assignment and deactivation have application
+and HTTP paths on `igumi`. The first-use and access-token lifetime contracts
+continue through the existing authentication services. P09 remains partial
+until resident/family workflows and role permission editing are implemented.
+The packet and state-transition inventory now distinguish those remaining
+workflows from the account administration slice. The test-only OpenAPI export
+adds the People operations while preserving existing operations and schemas.
+See the [current status](../01_CURRENT_STATUS.md) for dated verification.
+
 ## Scoped current review — 4 November 2026
 
 Continuation after owner implementation direction: catalogue/default sync,

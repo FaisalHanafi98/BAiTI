@@ -83,5 +83,32 @@
   "deleteNamed": "Delete {{name}}",
   "editBlock": "Edit block",
   "editUnit": "Edit unit",
-  "unitNeedsBlock": "Add a block before creating a unit."
+  "unitNeedsBlock": "Add a block before creating a unit.",
+  "people": {
+    "users": "Users",
+    "newUser": "Add user",
+    "create": "Create account",
+    "selectRole": "Choose a role",
+    "empty": "No user accounts yet.",
+    "loading": "Loading users…",
+    "loadFailed": "The user list could not be loaded. Reload it before making changes.",
+    "rolesFailed": "Roles could not be loaded. Reload them before creating an account or changing a role.",
+    "firstUseHelp": "A temporary password will be generated. The user must replace it before entering the community.",
+    "credentials": "New account credentials",
+    "createdFor": "Account created for {{email}}",
+    "temporaryPassword": "Temporary password",
+    "passwordHelp": "Share this password securely with the account holder. It is shown once and cannot be retrieved after dismissal.",
+    "dismissPassword": "Dismiss password",
+    "createUnconfirmed": "The account may have been created. Reload the user list and check before creating it again. A temporary password from a lost response cannot be retrieved.",
+    "duplicateEmail": "An account with this email address already exists in this community.",
+    "changeRole": "Change role",
+    "changeRoleFor": "Change role for {{name}}",
+    "deactivate": "Deactivate",
+    "deactivateFor": "Deactivate {{name}}",
+    "deactivateHelp": "This stops new sign-ins and revokes refresh credentials. An existing access token can remain valid for up to 15 minutes.",
+    "saved": "Account change saved.",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive"
+  }
 }

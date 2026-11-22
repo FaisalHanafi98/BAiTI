@@ -4,7 +4,7 @@ export function isWriteUnconfirmed(error: unknown) {
   return axios.isAxiosError(error) && (!error.response || error.response.status >= 500)
 }
 
-export function describeError(error: unknown, context: 'signIn' | 'password' | 'property') {
+export function describeError(error: unknown, context: 'signIn' | 'password' | 'property' | 'people') {
   if (!axios.isAxiosError(error)) return { key: 'errors.unavailable' }
   const status = error.response?.status
   if (status === 429) {
@@ -19,6 +19,7 @@ export function describeError(error: unknown, context: 'signIn' | 'password' | '
   if (status === 404) return { key: 'errors.missing' }
   if (status === 409) {
     const fields = error.response?.data?.errors
+    if (context === 'people' && Array.isArray(fields) && fields.some((field) => field?.field === 'email')) return { key: 'people.duplicateEmail' }
     if (Array.isArray(fields) && fields.some((field) => field?.field === 'name')) return { key: 'errors.duplicateBlock' }
     if (Array.isArray(fields) && fields.some((field) => field?.field === 'unitNo')) return { key: 'errors.duplicateUnit' }
     return { key: 'errors.conflict' }

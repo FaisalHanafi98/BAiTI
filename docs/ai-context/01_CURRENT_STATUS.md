@@ -1,5 +1,23 @@
 # BAiTI — Current Status
 
+## P09 account administration verified — 22 November 2026
+
+On `igumi`, the account administration slice supports tenant user creation,
+first-use credentials, role choices/assignment and deactivation with refresh
+revocation. The Users screen handles validation, one-time password display,
+confirmation, unknown write outcomes and permission gating. The final native
+run passed 151 unit/architecture and 190 integration tests. Frontend checks
+passed all 14 tests and the Chrome People journey. Existing OpenAPI operations,
+schemas and migration bytes are preserved. See the
+[session record](02_SESSION_HISTORY/2026-11-22_people_user_admin.md) for evidence,
+the two commit groups and remaining P09 scope.
+
+Next are resident registration/unit binding, automatic occupancy, family
+ownership, move-out and role permission editing. P09 J1 and P06 hosted checks
+remain open. The owner subsequently authorised local commits and publication
+to GitHub's `igumi` branch. The account API is commit `79caf75`; the following
+interface commit includes this handoff. Earlier planning edits remain unstaged.
+
 ## UI/UX, motion and accessibility skills applied — 17 November 2026
 
 Synced canonical workspace skill pointers into `.claude/skills/` (`core@a68d4eb`)

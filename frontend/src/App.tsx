@@ -4,6 +4,7 @@ import { Link, Navigate, NavLink, Outlet, Route, Routes } from 'react-router-dom
 import { browserSession, useSession } from './auth/browser'
 import { Login, Password } from './auth/Forms'
 import { Property } from './property/Property'
+import { Users } from './people/Users'
 
 function Layout({ onLogoutUnconfirmed }: { onLogoutUnconfirmed: () => void }) {
   const { t } = useTranslation()
@@ -17,6 +18,7 @@ function Layout({ onLogoutUnconfirmed }: { onLogoutUnconfirmed: () => void }) {
       <nav aria-label={t('workspace')}>
         <NavLink to="/dashboard">{t('dashboard')}</NavLink>
         {showProperty && <NavLink to="/property">{t('property')}</NavLink>}
+        {browserSession.can('USER_MANAGE') && <NavLink to="/people/users">{t('people.users')}</NavLink>}
       </nav>
       <button className="secondary" disabled={pending} onClick={async () => {
         setPending(true)
@@ -66,6 +68,7 @@ export function App() {
   return <Routes>
     <Route element={<Layout onLogoutUnconfirmed={() => setLogoutUnconfirmed(true)} />}>
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/people/users" element={browserSession.can('USER_MANAGE') ? <Users /> : <Navigate to="/dashboard" replace />} />
       <Route path="/property" element={
         browserSession.can('BLOCK_MANAGE') || browserSession.can('UNIT_READ_ALL')
           ? <Property /> : <Navigate to="/dashboard" replace />
