@@ -17,4 +17,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
   Optional<User> findForPasswordChange(@Param("id") UUID id);
 
   boolean existsByEmail(String email);
+
+  @Lock(LockModeType.PESSIMISTIC_WRITE)
+  @Query("select u from User u where u.id = :id")
+  Optional<User> findForAdministration(@Param("id") UUID id);
 }

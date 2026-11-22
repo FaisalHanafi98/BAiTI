@@ -26,6 +26,17 @@ public class TenantActivityWriter {
         activity.resourceId());
   }
 
+  @EventListener
+  public void append(PeopleActivity activity) {
+    app.update(
+        "INSERT INTO activity_logs (tenant_id, user_id, action, detail)"
+            + " VALUES (?, ?, ?, jsonb_build_object('resourceId', CAST(? AS text)))",
+        activity.tenantId(),
+        activity.actorId(),
+        activity.action().name(),
+        activity.resourceId());
+  }
+
   public void append(TenantActivity activity) {
     var occurred = OffsetDateTime.ofInstant(activity.occurredAt(), ZoneOffset.UTC);
     app.update(

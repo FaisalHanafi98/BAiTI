@@ -17,3 +17,9 @@ GET,/api/units/{id},UNIT_READ_ALL
 POST,/api/units,UNIT_MANAGE
 PUT,/api/units/{id},UNIT_MANAGE
 DELETE,/api/units/{id},UNIT_MANAGE
+GET,/api/users,USER_MANAGE
+GET,/api/users/{id},USER_MANAGE
+POST,/api/users,USER_MANAGE
+PUT,/api/users/{id}/role,USER_MANAGE
+POST,/api/users/{id}/deactivate,USER_MANAGE
+GET,/api/roles,USER_MANAGE|ROLE_MANAGE

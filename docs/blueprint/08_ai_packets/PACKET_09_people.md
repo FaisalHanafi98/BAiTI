@@ -8,6 +8,34 @@
 
 **Dependencies**: P08. **Requirements**: FR-RBAC-01/02/05, FR-RES-01…04 · matrix rows `USER_MANAGE`, `ROLE_MANAGE`, `RESIDENT_MANAGE`, `RESIDENT_READ_ALL`, `FAMILY_MANAGE_OWN`.
 
+## Active user administration slice — 22 November 2026
+
+Owner authorised continuing implementation with staged changes and SOP message
+drafts for small commits. This slice delivers FR-RBAC-05 through `/api/users`
+and a tenant role picker at `/api/roles`, followed by the Users screen. Preserve
+the existing first-use, token expiry and property contracts. Resident/family
+workflows and role permission editing follow as separate P09 slices.
+
+The read-only role picker accepts `USER_MANAGE` or `ROLE_MANAGE`, so a custom
+account administrator can select a role without permission editing authority.
+Account mutations still require `USER_MANAGE`.
+
+The baseline is `0f8737d` on `igumi`, with unrelated planning edits present.
+Existing users, roles, RLS and refresh revocation support the slice without DDL.
+HTTP validation and method authorities feed `UserAdminService`, existing
+repositories and `RefreshTokenService`. Successful writes append a tenant audit
+inside the same transaction. Responses expose a generated temporary password
+only on creation, with cache prevention and redacted string representations.
+
+Acceptance covers forced password replacement, tenant-scoped paginated reads,
+role assignment, deactivation and refresh rejection, duplicate email conflicts,
+input validation, denied default non-admin roles and foreign resource 404s.
+The client must preserve drafts, prevent duplicate submits after an unconfirmed
+write, and keep the temporary password out of query caches and storage.
+Use the owned synthetic native PostgreSQL target and fixture-owned cleanup.
+Run focused red/green tests, the native regression suite and frontend checks.
+Stage explicit paths in backend and frontend groups with their evidence.
+
 **Files to create** — backend `my.baiti.people/`: `UserAdminService`, `UserAdminController` (`/api/users`), `RoleController` (`/api/roles` — list + permission-assignment editing within tenant, `is_system` roles undeletable), `ResidentService`, `ResidentController` (`/api/residents`), `FamilyMemberController` (nested `/api/residents/{id}/family-members`), DTOs; tests `PeopleModuleIT`, `OwnScopeIT`. Frontend: `pages/people/{UsersPage,RolesPage,ResidentsPage,ResidentDetailPage}.tsx`, forms/tables/hooks + specs.
 
 **Expected architecture** (deltas)

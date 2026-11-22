@@ -4,6 +4,22 @@
  */
 
 export interface paths {
+    "/api/users/{id}/role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["assignUserRole"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/units/{id}": {
         parameters: {
             query?: never;
@@ -32,6 +48,38 @@ export interface paths {
         put: operations["update_1"];
         post?: never;
         delete: operations["delete_1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listUsers"];
+        put?: never;
+        post: operations["createUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/users/{id}/deactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["deactivateUser"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -166,6 +214,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getUser"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listRoles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/me": {
         parameters: {
             query?: never;
@@ -186,6 +266,22 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AssignRoleRequest: {
+            /** Format: uuid */
+            roleId: string;
+        };
+        UserResponse: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            email?: string;
+            /** Format: uuid */
+            roleId?: string;
+            roleName?: string;
+            /** @enum {string} */
+            status?: "ACTIVE" | "INACTIVE";
+            mustChangePassword?: boolean;
+        };
         UpdateUnitRequest: {
             /** Format: uuid */
             blockId: string;
@@ -216,6 +312,17 @@ export interface components {
             id?: string;
             name?: string;
             description?: string;
+        };
+        CreateUserRequest: {
+            name: string;
+            /** Format: email */
+            email: string;
+            /** Format: uuid */
+            roleId: string;
+        };
+        CreatedUserResponse: {
+            user?: components["schemas"]["UserResponse"];
+            temporaryPassword?: string;
         };
         CreateUnitRequest: {
             /** Format: uuid */
@@ -278,6 +385,17 @@ export interface components {
             /** Format: int64 */
             expiresIn?: number;
         };
+        PeoplePageUserResponse: {
+            content?: components["schemas"]["UserResponse"][];
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+        };
         GuardUnitResponse: {
             unitNo?: string;
         };
@@ -293,6 +411,24 @@ export interface components {
             size?: number;
         };
         UnitView: components["schemas"]["UnitResponse"] | components["schemas"]["GuardUnitResponse"];
+        PeoplePageRoleResponse: {
+            content?: components["schemas"]["RoleResponse"][];
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+        };
+        RoleResponse: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            description?: string;
+            system?: boolean;
+        };
         PropertyPageBlockResponse: {
             content?: components["schemas"]["BlockResponse"][];
             /** Format: int64 */
@@ -331,6 +467,32 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    assignUserRole: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignRoleRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UserResponse"];
+                };
+            };
+        };
+    };
     get: {
         parameters: {
             query?: never;
@@ -460,6 +622,77 @@ export interface operations {
         responses: {
             /** @description No Content */
             204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listUsers: {
+        parameters: {
+            query?: {
+                /** @description Zero-based page index (0..N) */
+                page?: number;
+                /** @description The size of the page to be returned */
+                size?: number;
+                /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+                sort?: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PeoplePageUserResponse"];
+                };
+            };
+        };
+    };
+    createUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateUserRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CreatedUserResponse"];
+                };
+            };
+        };
+    };
+    deactivateUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -730,6 +963,55 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PlatformAccess"];
+                };
+            };
+        };
+    };
+    getUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UserResponse"];
+                };
+            };
+        };
+    };
+    listRoles: {
+        parameters: {
+            query?: {
+                /** @description Zero-based page index (0..N) */
+                page?: number;
+                /** @description The size of the page to be returned */
+                size?: number;
+                /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+                sort?: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PeoplePageRoleResponse"];
                 };
             };
         };
